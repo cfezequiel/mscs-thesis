@@ -1,14 +1,25 @@
-% Obstacle function:
-% Author: K. Passino, Version: 1/25/01
-function J=obstaclefunction(x,w1)
-
-% An example function to represent sensed obstacles:
-
-	J=...
-		w1*max([exp(-0.8*((x(1,1)-20)^2+(x(2,1)-15)^2)),...
-		exp(-0.8*((x(1,1)-8)^2+(x(2,1)-10)^2)),...
-		exp(-0.8*((x(1,1)-10)^2+(x(2,1)-10)^2)),...
-		exp(-0.8*((x(1,1)-12)^2+(x(2,1)-10)^2)),...
-		exp(-0.8*((x(1,1)-24)^2+(x(2,1)-20)^2)),...
-		exp(-0.8*((x(1,1)-18)^2+(x(2,1)-20)^2))]);
+function out = obstaclefunction(X, Y, obstacles, weight)
+    
+    nX = size(X, 2);
+    nY = size(Y, 2);
+    nObstacles = size(obstacles, 1);
+    m = zeros(1, nObstacles);
+    
+    % Constant factor
+    % What is this for?
+    c = -0.8;
+    
+    v = zeros(nY, nX);
+    for i = 1:nX
+        for j = 1:nY
+            for k = 1:nObstacles
+                xo = obstacles(k, 1);
+                yo = obstacles(k, 2);
+                m(k) = exp(c * ((X(i) - xo)^2 + (Y(j) - yo)^2));
+            end
+            v(j, i) = weight * max(m);
+        end
+    end
+    out = v;
+    
 

@@ -77,6 +77,8 @@ for jj=1:length(xx)
 	end
 end
 
+disp(zz);
+
 figure(2)
 clf
 surf(xx,yy,zz);

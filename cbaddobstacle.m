@@ -10,7 +10,7 @@ function cbaddobstacle(map, eventdata, handles)
     % obstacle' button is selected
     set(handle, 'ButtonDownFcn', {@cbremoveobstacle_, map});  
     mapData = get(map, 'UserData');
-    mapData.obstacles = [mapData.obstacles handle]
+    mapData.obstacles = [mapData.obstacles handle];
     set(map, 'UserData', mapData);
 
 end

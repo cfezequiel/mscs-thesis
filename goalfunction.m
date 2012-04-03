@@ -1,10 +1,16 @@
-% Gaol function:
-% Author: K. Passino, Version: 1/25/01
-function Jg=goalfunction(x,xgoal,w2)
+function out = goalfunction(X, Y, goal, weight)
+    
+    % FIXME: How to integrate multiple 'goals'?
+    
+    nX = size(X, 2);
+    nY = size(Y, 2);
 
-% An example gaol function:
-
-	Jg=w2*(x-xgoal)'*(x-xgoal);
-%	Jg=0.01*(x-xgoal)'*(x-xgoal)/(1-0.01*(x-xgoal)'*(x-xgoal));
+    v = zeros(nY, nX);
+    for i=1:nX
+        for j=1:nY
+            v(j, i) = weight * ([X(i); Y(j)] - goal')' * ([X(i); Y(j)] - goal');
+        end
+    end
+	out = v;
 	
 
