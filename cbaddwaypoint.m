@@ -8,15 +8,24 @@ function cbaddwaypoint(map, eventdata, handles)
     y = pos(1,2);
     
     % Add waypoint to map
-    handle = line(x, y, 0, 'Marker', 'x');
+    h = impoint(map, x, y);
+    % Construct boundary constraint function
+    fcn = makeConstrainToRectFcn('impoint', get(map,'XLim'), get(map,'YLim'));
+    % Enforce boundary constraint function using setPositionConstraintFcn
+    setPositionConstraintFcn(h, fcn);
     
+    % Construct boundary constraint function
+    fcn = makeConstrainToRectFcn('impoint',get(gca,'XLim'),get(gca,'YLim'));
+    % Enforce boundary constraint function using setPositionConstraintFcn
+    setPositionConstraintFcn(h,fcn);
+
     % Add callback for each waypoint to remove itself when 'remove
     % waypoint' button is selected
-    set(handle, 'ButtonDownFcn', {@cbremovewaypoint_, map});  
+    set(h, 'ButtonDownFcn', {@cbremovewaypoint_, map});  
     
     % Update map data
     mapData = get(map, 'UserData');
-    mapData.waypoints = [mapData.waypoints handle]
+    mapData.waypoints = [mapData.waypoints h];
     set(map, 'UserData', mapData);
 
 end
