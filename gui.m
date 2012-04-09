@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 09-Apr-2012 00:47:52
+% Last Modified by GUIDE v2.5 09-Apr-2012 17:55:09
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -339,8 +339,23 @@ function tbppDelete_OffCallback(hObject, eventdata, handles)
         set(hObject, 'State', 'on');
     end
     
+% --------------------------------------------------------------------
+function tbppRunPathSimulation_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to tbppRunPathSimulation (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
 
-
-
-
+    % --- Check if all minimum requirements exist ---
+    mapInfo = get(handles.axesMap, 'UserData');
+    % TODO: add message box on error (i.e. no startpoint, no waypoint, etc)
+    if isempty(mapInfo.startpoint)
+        return;
+    end
     
+    if isempty(mapInfo.waypoints)
+        return;
+    end
+    
+    cbrunsim(handles.axesMap)
+     
+   
