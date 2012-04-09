@@ -5,15 +5,15 @@ function cbaddobstacleline(map, eventdata, handles)
     pos = get(map, 'CurrentPoint');
     x = pos(1,1); 
     y = pos(1,2);
-    handle = imline(map, [x x], [y y]);
-    % Add callback for each obstacle to remove itself when 'remove
-    % obstacle' button is selected
-    set(handle, 'ButtonDownFcn', {@cbremoveobstacle_, map});  
+    h = imline(map, [x x], [y y]);
+   
+    % Add delete callback, which is activated when 'delete' tool selected
+    set(h, 'ButtonDownFcn', {@cbdeleteobstacleline, map});
     
     % Add object to list of obstacles
-    mapData = get(map, 'UserData');
-    mapData.obstacles = [mapData.obstacles handle];
-    set(map, 'UserData', mapData);
+    mapInfo = get(map, 'UserData');
+    mapInfo.obstacleLines = [mapInfo.obstacleLines; h];
+    set(map, 'UserData', mapInfo);
 
 end
 

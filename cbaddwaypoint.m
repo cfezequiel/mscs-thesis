@@ -19,14 +19,27 @@ function cbaddwaypoint(map, eventdata, handles)
     % Enforce boundary constraint function using setPositionConstraintFcn
     setPositionConstraintFcn(h,fcn);
 
-    % Add callback for each waypoint to remove itself when 'remove
-    % waypoint' button is selected
-    set(h, 'ButtonDownFcn', {@cbremovewaypoint_, map});  
+    % Add delete callback, which is activated when 'delete' tool selected
+    set(h, 'ButtonDownFcn', {@cbdeletewaypoint, map, handles.lbWaypoints});  
+
+    % Set waypoint name
+    mapInfo = get(map, 'UserData');
+    name = int2str(mapInfo.lastWaypointIndex);
+    setString(h, name);
+    set(h, 'DisplayName', name);
+
+    % Set waypoint priority
+    set(h, 'UserData', mapInfo.lastWaypointIndex);
+    
+    % Add waypoint to listbox
+    list = get(handles.lbWaypoints, 'String');
+    list{end + 1} = name;
+    set(handles.lbWaypoints, 'string', list);
     
     % Update map data
-    mapData = get(map, 'UserData');
-    mapData.waypoints = [mapData.waypoints h];
-    set(map, 'UserData', mapData);
+    mapInfo.waypoints = [mapInfo.waypoints; h];
+    mapInfo.lastWaypointIndex = mapInfo.lastWaypointIndex + 1;
+    set(map, 'UserData', mapInfo);
 
 end
 
