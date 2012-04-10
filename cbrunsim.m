@@ -6,6 +6,7 @@ function cbrunsim(map)
     % Set weights
     wObstacleCircle = 1;
     wObstacleLine = 1;
+    wObstacle = 1;
     wGoal = 1.0000e-04;
     
     % Number of points on a circular pattern to sense
@@ -15,10 +16,10 @@ function cbrunsim(map)
     rSense = 1;
     
     % Maximum number of steps to produce
-    nSteps = 2000;      
+    nSteps = 500;      
     
     % Step size to take in chosen direction at each move
-    lambda = 0.1;
+    lambda = 1;
     
     % === end: Simulation Parameters ===
     
@@ -48,11 +49,23 @@ function cbrunsim(map)
     nObstacleLines = size(mapInfo.obstacleLines, 1);
     obstacleLines = zeros(nObstacleLines, 4);
     for j = 1:nObstacleLines
-        posTmp = getPosition(obstacleLines(j));
+        posTmp = getPosition(mapInfo.obstacleLines(j));
         % Note: pos = [x1 y1; x2 y2]
         % But we need to store it as [x1 y1 x2 y2]
         obstacleLines(j, :) = reshape(posTmp', 1, 4);
     end
+    
+    % Get boundary lines
+    nBoundaries = size(mapInfo.boundaries, 1);
+    boundaries = zeros(nBoundaries, 4);
+    for j = 1:nBoundaries;
+       X = get(mapInfo.boundaries(j), 'XData');
+       Y = get(mapInfo.boundaries(j), 'YData');
+       boundaries(j, :) = [X(1) Y(1) X(2) Y(2)];
+    end
+    
+    % Combine obstacle lines and boundaries 
+    linesAndBoundaries = vertcat(obstacleLines, boundaries);
     
     % Get waypoints (goals)
     nWaypoints = size(mapInfo.waypoints, 1);
@@ -60,17 +73,7 @@ function cbrunsim(map)
     for j = 1:nWaypoints
         waypoints(j, :) = getPosition(mapInfo.waypoints(j));
     end
-    
-    % Get obstacle circle function values
-    %oc = obstaclecirclefunction(X, Y, obstacleCircles, wObstacleCircle);
-    
-    % Get obstacle line function values
-    %TODO: rewrite function
-    %ol = obstaclelinefunction(X, Y, obstacleLines, wObstacleLine);
-    
-    % Get goal function values
-    %g = goalfunction(X, Y, waypoints(1, :), wGoal);
-    
+       
     % --- Start of simulation loop ---
     % Position matrix
     pos = posStart;
@@ -107,13 +110,12 @@ function cbrunsim(map)
                                  pos(2, j) + rSense * sin(theta(k, 1))];
             % Compute the obstacle function 
             % (What is sensed at each sensed point)
-            Joc(k, 1) = obstaclecirclefunction(sensePoints(1, k), ... 
-                                               sensePoints(2, k), ...
-                                               obstacleCircles, ...
-                                               wObstacleCircle);
+            Joc(k, 1) = obstaclefunction(sensePoints(:, k), ... 
+                                         obstacleCircles, ...
+                                         linesAndBoundaries, ...
+                                         wObstacle);
             % Compute how well each point moves toward the goal
-            Jg(k, 1) = goalfunction(sensePoints(1, k), ...
-                                    sensePoints(2, k), ...
+            Jg(k, 1) = goalfunction(sensePoints(:, k), ...
                                     pGoal, ...
                                     wGoal);
             
@@ -132,9 +134,12 @@ function cbrunsim(map)
     end
     % --- Simulation loop end ---
     
-    % Plot the simulated path
+    % Plot the simulated path/s
     hold on
-    plot(pos(1, :), pos(2, :), 'r-');
+    mapInfo.paths(1) = plot(pos(1, :), pos(2, :), 'r-');
     hold off
+    
+    % Update map data with path/s
+    set(map, 'UserData', mapInfo);
     
 end

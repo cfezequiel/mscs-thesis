@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 09-Apr-2012 17:55:09
+% Last Modified by GUIDE v2.5 10-Apr-2012 01:50:56
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -71,11 +71,16 @@ mapInfo.lastWaypointIndex = 1;
 mapInfo.boundaries = [];
 mapInfo.obstacleCircles = [];
 mapInfo.obstacleLines = [];
+mapInfo.paths = [];
 set(handles.axesMap, 'UserData', mapInfo);
 set(handles.axesMap, 'ButtonDownFcn', []);
 
 % Add fixed boundaries
 addboundaries(handles.axesMap);
+
+% Create figure?
+figure(handles.axesMap);
+
 
 % --- Outputs from this function are returned to the command line.
 function varargout = gui_OutputFcn(hObject, eventdata, handles) 
@@ -357,5 +362,24 @@ function tbppRunPathSimulation_ClickedCallback(hObject, eventdata, handles)
     end
     
     cbrunsim(handles.axesMap)
-     
-   
+    
+    % Disable simulation tool (reset will re-enable this)
+    set(hObject, 'Enable', 'off');
+
+
+% --------------------------------------------------------------------
+function tbppReset_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to tbppReset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    % Delete all simulation paths
+    mapInfo = get(handles.axesMap, 'UserData');
+    for i = 1:size(mapInfo.paths, 1)
+        delete(mapInfo.paths(i));
+    end
+    mapInfo.paths = [];
+    set(handles.axesMap, 'UserData', mapInfo);
+    
+    % Re-enable simulation tool
+    set(handles.tbppRunPathSimulation, 'Enable', 'on');

@@ -5,13 +5,13 @@ function cbdeletewaypoint(src, event, map, listbox)
     mapInfo = get(map, 'UserData');
     if strcmp(mapInfo.state, 'Delete')
         % Remove waypoint from list
-        i = mapInfo.waypoints == src;
+        i = find(mapInfo.waypoints == src);
         mapInfo.waypoints(i) = [];
         
         % Remove the waypoint from listbox
         list = get(listbox, 'String');
         waypointName = get(src, 'DisplayName');
-        newList = {};
+        newList = cell(size(list, 2) - 1);
         j = 1;
         for i = 1:length(list)
             if ~strcmp(list{i}, waypointName)
@@ -25,6 +25,7 @@ function cbdeletewaypoint(src, event, map, listbox)
         delete(src);
         set(map, 'UserData', mapInfo);
     end
-    
+    disp('kaboodle');
+    disp(mapInfo.waypoints);
 end
 
