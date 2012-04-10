@@ -1,0 +1,11 @@
+Simulate path for all waypoints in proper sequence.
+Fix delete object problem where object is not deleted from object list.
+Optimize simulation function (it is too slow).
+Add up/down buttons for changing waypoint priorities.
+Incorporate 'thickness' parameter into obstacle circles.
+Fix 'stuck' situation when path towards goal is too tight.
+
+
+
+
+

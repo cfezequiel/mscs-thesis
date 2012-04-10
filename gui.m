@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 10-Apr-2012 01:50:56
+% Last Modified by GUIDE v2.5 10-Apr-2012 16:56:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -77,10 +77,6 @@ set(handles.axesMap, 'ButtonDownFcn', []);
 
 % Add fixed boundaries
 addboundaries(handles.axesMap);
-
-% Create figure?
-figure(handles.axesMap);
-
 
 % --- Outputs from this function are returned to the command line.
 function varargout = gui_OutputFcn(hObject, eventdata, handles) 
@@ -361,10 +357,16 @@ function tbppRunPathSimulation_ClickedCallback(hObject, eventdata, handles)
         return;
     end
     
-    cbrunsim(handles.axesMap)
+    simInfo = cbrunsim(handles.axesMap);
+    
+    % Store simulation information
+    set(hObject, 'UserData', simInfo);
     
     % Disable simulation tool (reset will re-enable this)
     set(hObject, 'Enable', 'off');
+    
+    % Enable contour tool
+    set(handles.tbppToggleObstacleContours, 'Enable', 'on');
 
 
 % --------------------------------------------------------------------
@@ -374,12 +376,61 @@ function tbppReset_ClickedCallback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
     % Delete all simulation paths
-    mapInfo = get(handles.axesMap, 'UserData');
-    for i = 1:size(mapInfo.paths, 1)
-        delete(mapInfo.paths(i));
+    simInfo = get(handles.tbppRunPathSimulation, 'UserData');
+    for i = 1:size(simInfo.paths, 1)
+        delete(simInfo.paths(i));
     end
-    mapInfo.paths = [];
-    set(handles.axesMap, 'UserData', mapInfo);
+    simInfo.paths = [];
+    set(handles.tbppRunPathSimulation, 'UserData', simInfo);
     
     % Re-enable simulation tool
     set(handles.tbppRunPathSimulation, 'Enable', 'on');
+    
+    % Disable contour tool
+    set(handles.tbppToggleObstacleContours, 'Enable', 'off');
+    
+    % Remove generated contour, if any
+    h = get(handles.tbppToggleObstacleContours, 'UserData');
+    if h
+        delete(h);
+        set(handles.tbppToggleObstacleContours, 'UserData', []);
+    end
+
+% --------------------------------------------------------------------
+function tbppToggleObstacleContours_OnCallback(hObject, eventdata, handles)
+% hObject    handle to tbppToggleObstacleContours (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    % If contour already exists
+    h = get(hObject, 'UserData');
+    if h
+        set(h, 'Visible', 'on');
+        return;
+    else
+        % Otherwise, generate contour
+        % Get simulation data 
+        simInfo = get(handles.tbppRunPathSimulation, 'UserData');
+
+        % Show contour
+        hold on;
+        h = showcontour(simInfo.X, simInfo.Y, simInfo.obstacleCircles, ...
+                        simInfo.obstacleLines, simInfo.wObstacle);
+        hold off;
+
+        % Store contour handle
+        set(hObject, 'UserData', h);
+    end
+
+% --------------------------------------------------------------------
+function tbppToggleObstacleContours_OffCallback(hObject, eventdata, handles)
+% hObject    handle to tbppToggleObstacleContours (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    h = get(hObject, 'UserData');
+    if h
+        set(h, 'Visible', 'off');
+    end
+
+    

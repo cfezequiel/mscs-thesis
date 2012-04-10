@@ -1,12 +1,10 @@
-function cbrunsim(map)
+function out = cbrunsim(map)
 %CBRUNSIM Summary of this function goes here
 %   Detailed explanation goes here
-
+  
     % === start: Simulation Parameters ===
     % Set weights
-    wObstacleCircle = 1;
-    wObstacleLine = 1;
-    wObstacle = 1;
+    wObstacle = 2;
     wGoal = 1.0000e-04;
     
     % Number of points on a circular pattern to sense
@@ -28,8 +26,6 @@ function cbrunsim(map)
     yrange = get(map, 'YLim');
     pmin = [xrange(1); yrange(1)];
     pmax = [xrange(2); yrange(2)];
-    X = pmin(1):pmax(1);
-    Y = pmin(2):pmax(2);
     
     % Get map information
     mapInfo = get(map, 'UserData');
@@ -73,7 +69,7 @@ function cbrunsim(map)
     for j = 1:nWaypoints
         waypoints(j, :) = getPosition(mapInfo.waypoints(j));
     end
-       
+    
     % --- Start of simulation loop ---
     % Position matrix
     pos = posStart;
@@ -134,12 +130,24 @@ function cbrunsim(map)
     end
     % --- Simulation loop end ---
     
-    % Plot the simulated path/s
-    hold on
-    mapInfo.paths(1) = plot(pos(1, :), pos(2, :), 'r-');
-    hold off
+    % Display path/s
+    hold on;
+    h = plot(pos(1, :), pos(2, :), 'r-');
+    hold off;
+    
+    % Compile simulation info
+    X = pmin(1):pmax(1);
+    Y = pmin(2):pmax(2);
+    simInfo.X = X;
+    simInfo.Y = Y;
+    simInfo.obstacleCircles = obstacleCircles;
+    simInfo.obstacleLines = linesAndBoundaries;
+    simInfo.wObstacle = wObstacle;
+    simInfo.paths = [h];
     
     % Update map data with path/s
     set(map, 'UserData', mapInfo);
     
+    % Set output value
+    out = simInfo;
 end
