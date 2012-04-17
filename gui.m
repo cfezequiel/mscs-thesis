@@ -367,7 +367,9 @@ function tbppRunPathSimulation_ClickedCallback(hObject, eventdata, handles)
     
     % Enable contour tool
     set(handles.tbppToggleObstacleContours, 'Enable', 'on');
-
+    
+    % Enable reset tool
+    set(handles.tbppReset, 'Enable', 'on');
 
 % --------------------------------------------------------------------
 function tbppReset_ClickedCallback(hObject, eventdata, handles)
@@ -395,6 +397,9 @@ function tbppReset_ClickedCallback(hObject, eventdata, handles)
         delete(h);
         set(handles.tbppToggleObstacleContours, 'UserData', []);
     end
+    
+    % Disable reset tool
+    set(hObject, 'Enable', 'off');
 
 % --------------------------------------------------------------------
 function tbppToggleObstacleContours_OnCallback(hObject, eventdata, handles)
