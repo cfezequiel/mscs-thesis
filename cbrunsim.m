@@ -19,13 +19,8 @@ function out = cbrunsim(map)
     posStart = getPosition(mapInfo.startpoint)';
     
     % Get obstacle circles
-    nObstacleCircles = size(mapInfo.obstacleCircles, 1);
-    obstacleCircles = zeros(nObstacleCircles, 4);
-    for j = 1:nObstacleCircles
-        % Note: obstacleCircles(j, :) = [x y width height]
-        obstacleCircles(j, :) = getPosition(mapInfo.obstacleCircles(j));
-    end
-    
+    obstacleCircles = getPosition(mapInfo.obstacleCircles);
+
     % Get obstacle lines
     nObstacleLines = size(mapInfo.obstacleLines, 1);
     obstacleLines = zeros(nObstacleLines, 4);

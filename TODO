@@ -1,7 +1,7 @@
 Fix delete object problem where object is not deleted from object list.
-Optimize simulation function (it is too slow).
+Optimize simulation function (vectorize for-loops).
 Add up/down buttons for changing waypoint priorities.
 Fix 'stuck' situation when path towards goal is too tight.
 Add GUI controls to change various simulation parameters.
-
+Add load/save .map files (contains info on obstacles and waypoints).
 
