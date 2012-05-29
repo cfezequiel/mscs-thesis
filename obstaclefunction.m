@@ -10,30 +10,27 @@ function out = obstaclefunction(point, obstacleCircles, obstacleLines, weight)
         out = 0;
         return;
     end
-    
-    % Allocate memory
-    m = zeros(1, nObstacles);
-       
+          
     % Iterate over circular obstacles
-    for i = 1:nObstacleCircles
-        % Radius (using elliptic width)
-        r = obstacleCircles(i, 3) / 2;
-        % Get the center
-        % Note: obstacle position (x,y) represents the lower-left point
-        % of the imaginary 'bounding box' that surrounds the circle
-        xo = obstacleCircles(i, 1) + r;
-        yo = obstacleCircles(i, 2) + r;
-        C = (9.75 / (2 * r^2));
-        m(i) = exp(-C * ((point(1) - xo)^2 + (point(2) - yo)^2));
+    if ~isempty(obstacleCircles)
+        R = obstacleCircles(:, 3) ./ 2;
+        X = obstacleCircles(:, 1) + R;
+        Y = obstacleCircles(:, 2) + R;
+        C = 9.75 / (2 .* R.^2);
+        Xp = point(1);
+        Yp = point(2);
+        JC = exp(-C .* ((Xp - X).^2 .* (Yp - Y).^2));
+        disp(JC);
+    else
+        JC = 0;
     end
     
-    % Iterate over linear obstacles
-    i = nObstacleCircles;
     %FIXME: lines have uniform thickness?
     C = 10;
+    JL = zeros(nObstacleLines, 1);
     for j = 1:nObstacleLines
-        m(i + j) = exp(-C * pldist(point, obstacleLines(j, :))^2);
+        JL(j) = exp(-C * pldist(point, obstacleLines(j, :))^2);
     end
-    out = weight * max(m);
+    out = weight * max([JC; JL]);
             
 end
