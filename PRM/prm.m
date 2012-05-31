@@ -57,15 +57,13 @@ t1 = toc;
 
 % ===== Build the roadmap =====
 
+tic;
+
 % Combine the coordinate matrix with start and end nodes
 Csg = [start(1), start(2); C; goal(1), goal(2)]; 
 
-tic;
-
 % Generate the distance matrix
 D = pdist2(Csg, Csg);
-
-t2 = toc;
 
 % Get the nearest neighbor radius
 r = sqrt(xint^2 + yint^2);
@@ -73,10 +71,12 @@ r = sqrt(xint^2 + yint^2);
 % Set distances of 'non-near' neighbors to infinite
 D(D > r) = Inf;
 
-tic;
+t2 = toc;
 
 
 % ===== Get shortest path =====
+
+tic;
 
 % Use Dijkstra's algorithm to get shortest path
 [dist pred] = dijkstra(D, 1);
