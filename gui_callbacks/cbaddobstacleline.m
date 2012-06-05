@@ -1,5 +1,5 @@
 function cbaddobstacleline(map, eventdata, handles)
-%CBADDOBSTACLELINE Summary of this function goes here
+%CBADDOBSTACLELINE Add a draggable, resizable line obstacle
 %   Detailed explanation goes here
 
     pos = get(map, 'CurrentPoint');

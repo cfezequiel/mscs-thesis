@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 05-Jun-2012 15:25:35
+% Last Modified by GUIDE v2.5 05-Jun-2012 15:54:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -68,15 +68,18 @@ mapInfo.state = 'Select';
 mapInfo.startpoint = [];
 mapInfo.waypoints = [];
 mapInfo.lastWaypointIndex = 1;
-mapInfo.boundaries = [];
+mapInfo.staticObstacles = struct('X', [], 'Y', []);
 mapInfo.obstacleCircles = [];
 mapInfo.obstacleLines = [];
 mapInfo.paths = [];
-set(handles.axesMap, 'UserData', mapInfo);
 set(handles.axesMap, 'ButtonDownFcn', []);
 
 % Add fixed boundaries
-addboundaries(handles.axesMap);
+mapInfo = setstaticboundaries(mapInfo);
+
+% Store the map information in the axes
+set(handles.axesMap, 'UserData', mapInfo);
+
 
 % --- Outputs from this function are returned to the command line.
 function varargout = gui_OutputFcn(hObject, eventdata, handles) 
@@ -346,7 +349,8 @@ function tbppRunPathSimulation_ClickedCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-    %TODO: algorithm
+    % Execute path planning simulation
+    runsim(handles.axesMap);
     
     % Disable simulation tool (reset will re-enable this)
     set(hObject, 'Enable', 'off');
