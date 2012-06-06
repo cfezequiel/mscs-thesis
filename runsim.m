@@ -17,7 +17,10 @@ mapInfo = get(map, 'UserData');
 start = getPosition(mapInfo.startpoint);
 
 % Get goal position/s
-goals = getPosition(mapInfo.waypoints);
+goals = zeros(size(mapInfo.waypoints, 1), 2);
+for i = 1:size(mapInfo.waypoints, 1)
+    goals(i, :) = getPosition(mapInfo.waypoints(i));
+end
 
 % Get map dimensions
 xLim = get(map, 'XLim');
@@ -81,28 +84,31 @@ tic;
 
 % Generate shortest paths
 offset = 1 + size(Cfree, 1);
-paths = cell(size(goals));
+paths = cell(size(goals), 1);
 iStart = 1;
-for i = 1:size(goals, 1) - 1
-    [dist pred] = dijkstra(D, iStart);
-    iParent = size(Csg, offset + i);
+for i = 1:size(goals, 1)
     
-    path = [];
+    % Use Dijkstra's algorithm to get all shortest paths from start pos
+    [~, pred] = dijkstra(D, iStart);
+    
+    
+    % Build the path vector from end to start
+    iEnd = offset + i;
+    iParent = iEnd;
+    onePath = [];
     while (iParent > 0)
-        path = [path, iParent];
+        onePath = [onePath, iParent];
         iParent = pred(iParent);
     end
-
-    if (pred(size(Csg, 1)) == 0)
-        path = [];
-    else
-        path = fliplr(path);
-    end
     
-    paths(i) = path;
+    % Flip the path vector so it goes from start to end
+    onePath = fliplr(onePath);
+    
+    % Add path to list of paths
+    paths{i} = onePath;
     
     % Set new starting point
-    iStart = iStart + 1;
+    iStart = iEnd;
 end
 
 t3 = toc;
@@ -114,8 +120,10 @@ hold on
 % Plot the grid of free dots
 plot(Cfree(:, 1), Cfree(:, 2), '.', 'MarkerSize', 1);
 
-% Plot shortest path
-plot(Csg(path, 1),Csg(path, 2),'b','LineWidth',2)
+% Plot  paths
+for i = 1:size(paths, 1)
+    plot(Csg(paths{i}, 1),Csg(paths{i}, 2),'b','LineWidth',2)
+end
 
 hold off
 
