@@ -2,7 +2,7 @@
     * Optimize for undirected case
     * Consider adding destination as a factor
 - GUI
-    * Add obstacles
+    * OK - Add obstacles
     * Delete obstacles
     * Delete waypoints
     * Move waypoints

@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 05-Jun-2012 15:54:00
+% Last Modified by GUIDE v2.5 06-Jun-2012 17:47:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,16 +61,15 @@ guidata(hObject, handles);
 % UIWAIT makes gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-% 'Global' Variables
+% ===== 'Global' Variables =====
 % Map information
-% Map state (Select, StartPoint, Waypoint, ObstacleCircle, ObstacleLine, Delete)
 mapInfo.state = 'Select';
 mapInfo.startpoint = [];
 mapInfo.waypoints = [];
 mapInfo.lastWaypointIndex = 1;
 mapInfo.staticObstacles = struct('X', [], 'Y', []);
 mapInfo.obstacleCircles = [];
-mapInfo.obstacleLines = [];
+mapInfo.obstacleRects = [];
 mapInfo.paths = [];
 set(handles.axesMap, 'ButtonDownFcn', []);
 
@@ -102,7 +101,7 @@ function tbppSelect_ClickedCallback(hObject, eventdata, handles)
     set(handles.tbppSetStartPoint, 'State', 'off');
     set(handles.tbppAddWaypoint, 'State', 'off');
     set(handles.tbppAddObstacleCircle, 'State', 'off');
-    set(handles.tbppAddObstacleLine, 'State', 'off');
+    set(handles.tbppAddObstacleRect, 'State', 'off');
     set(handles.tbppDelete, 'State', 'off');
 
 % --------------------------------------------------------------------
@@ -115,7 +114,7 @@ function tbppSetStartPoint_ClickedCallback(hObject, eventdata, handles)
     set(handles.tbppSelect, 'State', 'off');
     set(handles.tbppAddWaypoint, 'State', 'off');
     set(handles.tbppAddObstacleCircle, 'State', 'off');
-    set(handles.tbppAddObstacleLine, 'State', 'off');
+    set(handles.tbppAddObstacleRect, 'State', 'off');
     set(handles.tbppDelete, 'State', 'off');
     
 % --------------------------------------------------------------------
@@ -128,7 +127,7 @@ function tbppAddWaypoint_ClickedCallback(hObject, eventdata, handles)
     set(handles.tbppSetStartPoint, 'State', 'off');
     set(handles.tbppSelect, 'State', 'off');
     set(handles.tbppAddObstacleCircle, 'State', 'off');
-    set(handles.tbppAddObstacleLine, 'State', 'off');
+    set(handles.tbppAddObstacleRect, 'State', 'off');
     set(handles.tbppDelete, 'State', 'off');
 
 % --------------------------------------------------------------------
@@ -141,20 +140,7 @@ function tbppAddObstacleCircle_ClickedCallback(hObject, eventdata, handles)
     set(handles.tbppSetStartPoint, 'State', 'off');
     set(handles.tbppSelect, 'State', 'off');
     set(handles.tbppAddWaypoint, 'State', 'off');
-    set(handles.tbppAddObstacleLine, 'State', 'off');
-    set(handles.tbppDelete, 'State', 'off');
-
-% --------------------------------------------------------------------
-function tbppAddObstacleLine_ClickedCallback(hObject, eventdata, handles)
-% hObject    handle to tbppAddObstacleLine (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-    % Disable other path planning toggle tools
-    set(handles.tbppSetStartPoint, 'State', 'off');
-    set(handles.tbppSelect, 'State', 'off');
-    set(handles.tbppAddWaypoint, 'State', 'off');
-    set(handles.tbppAddObstacleCircle, 'State', 'off');
+    set(handles.tbppAddObstacleRect, 'State', 'off');
     set(handles.tbppDelete, 'State', 'off');
 
 % --------------------------------------------------------------------
@@ -168,7 +154,7 @@ function tbppDelete_ClickedCallback(hObject, eventdata, handles)
     set(handles.tbppSelect, 'State', 'off');
     set(handles.tbppAddWaypoint, 'State', 'off');
     set(handles.tbppAddObstacleCircle, 'State', 'off');
-    set(handles.tbppAddObstacleLine, 'State', 'off');
+    set(handles.tbppAddObstacleRect, 'State', 'off');
     
 % --- Executes on selection change in lbWaypoints.
 function lbWaypoints_Callback(hObject, eventdata, handles)
@@ -250,20 +236,6 @@ function tbppAddObstacleCircle_OnCallback(hObject, eventdata, handles)
     set(handles.axesMap, 'ButtonDownFcn', {@cbaddobstaclecircle});
 
 % --------------------------------------------------------------------
-function tbppAddObstacleLine_OnCallback(hObject, eventdata, handles)
-% hObject    handle to tbppAddObstacleLine (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-    % Update the state
-    mapInfo = get(handles.axesMap, 'UserData');
-    mapInfo.state = 'ObstacleLine';
-    set(handles.axesMap, 'UserData', mapInfo);
-    
-    % Set 'button down' function of axesMap
-    set(handles.axesMap, 'ButtonDownFcn', {@cbaddobstacleline});
-
-% --------------------------------------------------------------------
 function tbppDelete_OnCallback(hObject, eventdata, handles)
 % hObject    handle to tbppDelete (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -320,17 +292,6 @@ function tbppAddObstacleCircle_OffCallback(hObject, eventdata, handles)
     if strcmp(mapInfo.state, 'ObstacleCircle')
         set(hObject, 'State', 'on');
     end
-    
-% --------------------------------------------------------------------
-function tbppAddObstacleLine_OffCallback(hObject, eventdata, handles)
-% hObject    handle to tbppAddObstacleLine (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-
-    mapInfo = get(handles.axesMap, 'UserData');
-    if strcmp(mapInfo.state, 'ObstacleLine')
-        set(hObject, 'State', 'on');
-    end
 
 % --------------------------------------------------------------------
 function tbppDelete_OffCallback(hObject, eventdata, handles)
@@ -372,4 +333,42 @@ function tbppReset_ClickedCallback(hObject, eventdata, handles)
     % Disable reset tool
     set(hObject, 'Enable', 'off')
     
+
+
+% --------------------------------------------------------------------
+function tbppAddObstacleRect_ClickedCallback(hObject, eventdata, handles)
+% hObject    handle to tbppAddObstacleRect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    % Disable other path planning toggle tools
+    set(handles.tbppSetStartPoint, 'State', 'off');
+    set(handles.tbppAddWaypoint, 'State', 'off');
+    set(handles.tbppAddObstacleCircle, 'State', 'off');
+    set(handles.tbppSelect, 'State', 'off');
+    set(handles.tbppDelete, 'State', 'off');
+
+% --------------------------------------------------------------------
+function tbppAddObstacleRect_OffCallback(hObject, eventdata, handles)
+% hObject    handle to tbppAddObstacleRect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    mapInfo = get(handles.axesMap, 'UserData');
+    if strcmp(mapInfo.state, 'ObstacleRect')
+        set(hObject, 'State', 'on');
+    end
     
+% --------------------------------------------------------------------
+function tbppAddObstacleRect_OnCallback(hObject, eventdata, handles)
+% hObject    handle to tbppAddObstacleRect (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    % Update the state
+    mapInfo = get(handles.axesMap, 'UserData');
+    mapInfo.state = 'ObstacleRect';
+    set(handles.axesMap, 'UserData', mapInfo);
+    
+    % Set 'button down' function of axesMap
+    set(handles.axesMap, 'ButtonDownFcn', {@cbaddobstaclerect, handles});

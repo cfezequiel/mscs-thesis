@@ -1,8 +1,8 @@
-function cbdeleteobstacleline(src, event, map)
+function cbdeleteobstaclerect(src, event, map)
 %CBDELETEOBSTACLELINE Summary of this function goes here
 %   Detailed explanation goes here
     
-    disp('Line: you touched me!');
+    disp('Rect: you touched me!');
     
     % Find and remove the handle from the list
     mapInfo = get(map, 'UserData');
