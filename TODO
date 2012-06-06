@@ -1,0 +1,10 @@
+- Improve dijkstra's algorithm function
+    * Optimize for undirected case
+    * Consider adding destination as a factor
+- GUI
+    * Add obstacles
+    * Delete obstacles
+    * Delete waypoints
+    * Move waypoints
+    * Change waypoint names from numbers to letters
+    * Add "zoom to robot" tool 

@@ -1,10 +1,13 @@
 function runsim(map)
 %RUNSIM Run path planning simulation
+%       This uses a modified version of the probabilistic roadmap method
+%       (PRM). The configurations are plotted as an NxN grid of points in
+%       2D space. Points that are within obstacles are removed. 
 
 % ===== Test parameters =====
 
 % Initial number of configurations (NxN)
-N = 100;
+N = 150;
 
 % ===========================
 
