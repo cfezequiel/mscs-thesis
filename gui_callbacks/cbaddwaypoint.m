@@ -24,21 +24,27 @@ function cbaddwaypoint(map, eventdata, handles)
 
     % Set waypoint name
     mapInfo = get(map, 'UserData');
-    name = int2str(mapInfo.lastWaypointIndex);
+    % NOTE: 26 - Number of lowercase letters 
+    maxChars = 26; 
+    offset = mod(mapInfo.nextWaypointIndex, maxChars);
+    reps = ((mapInfo.nextWaypointIndex - offset) / maxChars) + 1;
+    % NOTE: 97 - ASCII integer for 'a'
+    iChar = 97 + offset;
+    name = char(ones(1, reps) .* iChar); 
     setString(h, name);
     set(h, 'DisplayName', name);
 
     % Set waypoint priority
-    set(h, 'UserData', mapInfo.lastWaypointIndex);
+    set(h, 'UserData', mapInfo.nextWaypointIndex);
     
     % Add waypoint to listbox
     list = get(handles.lbWaypoints, 'String');
     list{end + 1} = name;
-    set(handles.lbWaypoints, 'string', list);
+    set(handles.lbWaypoints, 'String', list);
     
     % Update map data
     mapInfo.waypoints = [mapInfo.waypoints; h];
-    mapInfo.lastWaypointIndex = mapInfo.lastWaypointIndex + 1;
+    mapInfo.nextWaypointIndex = mapInfo.nextWaypointIndex + 1;
     set(map, 'UserData', mapInfo);
 
 end

@@ -7,7 +7,7 @@ function runsim(map)
 % ===== Test parameters =====
 
 % Initial number of configurations (NxN)
-N = 150;
+N = 100;
 
 % ===========================
 
@@ -33,6 +33,11 @@ yLim = get(map, 'YLim');
 xStatObsExp = mapInfo.staticObstacles.X;
 yStatObsExp = mapInfo.staticObstacles.Y;
 
+% Get rectangular obstacles
+%TODO
+
+% Get circular obstacles
+%TODO
 
 % ===== Generate the configuration space =====
 
@@ -87,7 +92,7 @@ tic;
 
 % Generate shortest paths
 offset = 1 + size(Cfree, 1);
-paths = cell(size(goals), 1);
+paths = cell(size(goals, 1), 1);
 iStart = 1;
 for i = 1:size(goals, 1)
     
@@ -121,11 +126,12 @@ t3 = toc;
 hold on
 
 % Plot the grid of free dots
-plot(Cfree(:, 1), Cfree(:, 2), '.', 'MarkerSize', 1);
+mapInfo.cFree = plot(Cfree(:, 1), Cfree(:, 2), '.', 'MarkerSize', 1);
 
 % Plot  paths
 for i = 1:size(paths, 1)
-    plot(Csg(paths{i}, 1),Csg(paths{i}, 2),'b','LineWidth',2)
+    h = plot(Csg(paths{i}, 1),Csg(paths{i}, 2),'b','LineWidth',2);
+    mapInfo.paths = [mapInfo.paths; h];
 end
 
 hold off
@@ -138,6 +144,12 @@ fprintf(' - %d collision-free samples were generated in\n %d seconds.\n\n',...
 fprintf(' - All node distances were calculated in\n %d seconds.\n\n', t2)
 fprintf(' - Dijkstra''s Algorithm finished after\n %d seconds.\n\n', t3)
 
+
+% ===== Update global map information =====
+
+set(map, 'UserData', mapInfo);
+
+disp(mapInfo);
 
 end
 

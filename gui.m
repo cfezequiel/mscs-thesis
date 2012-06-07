@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 06-Jun-2012 17:47:45
+% Last Modified by GUIDE v2.5 07-Jun-2012 16:39:33
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -61,16 +61,16 @@ guidata(hObject, handles);
 % UIWAIT makes gui wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 
-% ===== 'Global' Variables =====
-% Map information
+% ===== Map information =====
 mapInfo.state = 'Select';
 mapInfo.startpoint = [];
 mapInfo.waypoints = [];
-mapInfo.lastWaypointIndex = 1;
+mapInfo.nextWaypointIndex = 0;
 mapInfo.staticObstacles = struct('X', [], 'Y', []);
 mapInfo.obstacleCircles = [];
 mapInfo.obstacleRects = [];
 mapInfo.paths = [];
+mapInfo.cFree = [];
 set(handles.axesMap, 'ButtonDownFcn', []);
 
 % Add fixed boundaries
@@ -78,6 +78,8 @@ mapInfo = setstaticboundaries(mapInfo);
 
 % Store the map information in the axes
 set(handles.axesMap, 'UserData', mapInfo);
+
+% ===========================
 
 
 % --- Outputs from this function are returned to the command line.
@@ -310,6 +312,18 @@ function tbppRunPathSimulation_ClickedCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
+    % ===== Check if minimum simulation requirements are met =====
+    mapInfo = get(handles.axesMap, 'UserData');
+    if isempty(mapInfo.startpoint)
+       return
+    end
+    
+    if isempty(mapInfo.waypoints)
+        return
+    end
+    
+    % ============================================================
+        
     % Execute path planning simulation
     runsim(handles.axesMap);
     
@@ -325,7 +339,35 @@ function tbppReset_ClickedCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-    % TODO: remove paths
+    % ===== Remove non-static map objects =====
+    mapInfo = get(handles.axesMap, 'UserData');
+    
+    % Delete startpoint
+    delete(mapInfo.startpoint);
+    mapInfo.startpoint = [];
+    
+    % Delete waypoints
+    delete(mapInfo.waypoints);
+    mapInfo.waypoints = [];
+    
+    % Delete paths
+    delete(mapInfo.paths);
+    mapInfo.paths = [];
+    
+    % Delete obstacles
+    delete(mapInfo.obstacleCircles);
+    mapInfo.obstacleCircles = [];
+    delete(mapInfo.obstacleRects);
+    mapInfo.obstacleRects = [];
+    
+    % Delete free configuration space
+    delete(mapInfo.cFree);
+    mapInfo.cFree = [];
+    
+    % Store changes to the map object
+    set(handles.axesMap, 'UserData', mapInfo);
+    
+    % =====================================
     
     % Re-enable simulation tool
     set(handles.tbppRunPathSimulation, 'Enable', 'on');
@@ -333,7 +375,6 @@ function tbppReset_ClickedCallback(hObject, eventdata, handles)
     % Disable reset tool
     set(hObject, 'Enable', 'off')
     
-
 
 % --------------------------------------------------------------------
 function tbppAddObstacleRect_ClickedCallback(hObject, eventdata, handles)
@@ -372,3 +413,60 @@ function tbppAddObstacleRect_OnCallback(hObject, eventdata, handles)
     
     % Set 'button down' function of axesMap
     set(handles.axesMap, 'ButtonDownFcn', {@cbaddobstaclerect, handles});
+
+
+% --- Executes on button press in pbWaypointUp.
+function pbWaypointUp_Callback(hObject, eventdata, handles)
+% hObject    handle to pbWaypointUp (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    iName = get(handles.lbWaypoints, 'Value');
+    if iName > 1
+        iNamePrev  = iName - 1;
+        
+        % Move the waypoint name up in the list box
+        waypointNames = get(handles.lbWaypoints, 'String');
+        tmp = waypointNames{iNamePrev};
+        waypointNames{iNamePrev} = waypointNames{iName};
+        waypointNames{iName} = tmp;
+        set(handles.lbWaypoints, 'String', waypointNames);
+        
+        % Move the waypoint up in the list of waypoint handles
+        mapInfo = get(handles.axesMap, 'UserData');
+        tmp = mapInfo.waypoints(iNamePrev);
+        mapInfo.waypoints(iNamePrev) = mapInfo.waypoints(iName);
+        mapInfo.waypoints(iName) = tmp;
+        set(handles.axesMap, 'UserData', mapInfo);
+        
+        % Set the new selected value
+        set(handles.lbWaypoints, 'Value', iNamePrev);
+    end
+
+% --- Executes on button press in pbWaypointDown.
+function pbWaypointDown_Callback(hObject, eventdata, handles)
+% hObject    handle to pbWaypointDown (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    iName = get(handles.lbWaypoints, 'Value');
+    waypointNames = get(handles.lbWaypoints, 'String');
+    if iName < size(waypointNames, 1);
+        iNameNext  = iName + 1;
+        
+        % Move the waypoint name down in the list box
+        tmp = waypointNames{iNameNext};
+        waypointNames{iNameNext} = waypointNames{iName};
+        waypointNames{iName} = tmp;
+        set(handles.lbWaypoints, 'String', waypointNames);
+        
+        % Move the waypoint up in the list of waypoint handles
+        mapInfo = get(handles.axesMap, 'UserData');
+        tmp = mapInfo.waypoints(iNameNext);
+        mapInfo.waypoints(iNameNext) = mapInfo.waypoints(iName);
+        mapInfo.waypoints(iName) = tmp;
+        set(handles.axesMap, 'UserData', mapInfo);
+        
+        % Set the new selected value
+        set(handles.lbWaypoints, 'Value', iNameNext);
+    end

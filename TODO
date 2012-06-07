@@ -4,7 +4,15 @@
 - GUI
     * OK - Add obstacles
     * Delete obstacles
-    * Delete waypoints
-    * Move waypoints
-    * Change waypoint names from numbers to letters
+    * Fix delete waypoint
     * Add "zoom to robot" tool 
+    * Add load/save map menu option
+    === Today ===
+    * OK - Fix reset tool functionality 
+    * OK - Add min requirement checks to simulate tool
+    * OK - Change waypoint names from numbers to letters
+    * OK - Move waypoints
+    * OK - Check that paths are still correct when waypoints moved
+    =============
+- Simulation
+    * Incorporate obstacles in path planning

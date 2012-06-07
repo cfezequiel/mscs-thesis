@@ -2,7 +2,7 @@ function [out] = setstaticboundaries(mapInfo)
 %SETSTATICBOUNDARIES Set the static (fixed) boundaries of the map
 
     % Set the robot-wall gap value
-    gap = 2;
+    gap = 1;
     
     % Define the vertices of the static obstacles
     xStatObs = [7 7 61;
