@@ -8,16 +8,11 @@ function cbaddstartpoint(map, eventdata, handles)
     y = pos(1,2);
     
     % Add waypoint to map
-    h = impoint(map, x, y);
+    h = impoint(map, [x y]);        
     % Construct boundary constraint function
-    fcn = makeConstrainToRectFcn('impoint', get(map,'XLim'), get(map,'YLim'));
+    %fcn = makeConstrainToRectFcn('impoint',get(map,'XLim'),get(map,'YLim'));
     % Enforce boundary constraint function using setPositionConstraintFcn
-    setPositionConstraintFcn(h, fcn);
-        
-    % Construct boundary constraint function
-    fcn = makeConstrainToRectFcn('impoint',get(gca,'XLim'),get(gca,'YLim'));
-    % Enforce boundary constraint function using setPositionConstraintFcn
-    setPositionConstraintFcn(h,fcn);
+    %setPositionConstraintFcn(h,fcn);
     
     % Change color
     setColor(h, 'g');

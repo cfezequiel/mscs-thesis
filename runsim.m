@@ -9,6 +9,9 @@ function runsim(map)
 % Initial number of configurations (NxN)
 N = 100;
 
+% Gap between path and obstacles
+gap = 1;
+
 % ===========================
 
 % ===== Extract map information =====
@@ -34,10 +37,37 @@ xStatObsExp = mapInfo.staticObstacles.X;
 yStatObsExp = mapInfo.staticObstacles.Y;
 
 % Get rectangular obstacles
-%TODO
+nObstacleRects = size(mapInfo.obstacleRects, 1);
+xObstacleRects = zeros(4, nObstacleRects);
+yObstacleRects  = zeros(4, nObstacleRects);
+for i = 1:nObstacleRects
+    pos = getPosition(mapInfo.obstacleRects(i));
+    xmin = pos(1);
+    ymin = pos(2);
+    w = pos(3) + gap;
+    h = pos(4) + gap;
+    xObstacleRects(:, i) = [xmin; xmin; xmin + w; xmin + w];
+    yObstacleRects(:, i) = [ymin; ymin + h; ymin + h; ymin];
+end
 
 % Get circular obstacles
-%TODO
+nObstacleCircles = size(mapInfo.obstacleCircles, 1);
+angles = deg2rad([0; 45; 90; 135; 180; 225; 270; 315]);
+nAngles = size(angles, 1);
+xObstacleCircles = zeros(nAngles, nObstacleCircles);
+yObstacleCircles = zeros(nAngles, nObstacleCircles);
+for i = 1:nObstacleCircles
+    pos = getPosition(mapInfo.obstacleCircles(i));
+    xmin = pos(1);
+    ymin = pos(2);
+    w = pos(3);
+    % NOTE: No need to extract h (height), h = w for circles
+    r = 0.5 * w;
+    cx = xmin + r;
+    cy = ymin + r;
+    xObstacleCircles(:, i) = r .* cos(angles) + cx;
+    yObstacleCircles(:, i) = r .* sin(angles) + cy;
+end
 
 % ===== Generate the configuration space =====
 
@@ -56,16 +86,31 @@ Y = Y(:);
 % Create the configuration matrix
 C = [X'; Y']';
 
-% Create the free configuration matrix
+% Create binary matrix for determining whether point is in/out of polygon
 IN = ones(size(C, 1), 1);
+
+% Collision check static obstacles
 for i = 1:size(xStatObsExp, 2)
     IN = IN .* ~inpolygon(C(:, 1), C(:, 2), xStatObsExp(:, i), yStatObsExp(:, i));
 end
+
+% Collision check rectangular obstacles
+for i = 1:size(xObstacleRects, 2)
+    IN = IN .* ~inpolygon(C(:, 1), C(:, 2), xObstacleRects(:, i), ...
+        yObstacleRects(:, i));
+end
+
+% Collision check circular obstacles
+for i = 1:size(xObstacleCircles, 2)
+    IN = IN .* ~inpolygon(C(:, 1), C(:, 2), xObstacleCircles(:, i), ...
+        yObstacleCircles(:, i));
+end
+
+% Create the free configuration matrix 
 Cfree = [(C(:, 1) .* IN)'; (C(:, 2) .* IN)']';
 Cfree(all(Cfree == 0, 2), :) = [];
 
 t1 = toc;
-
 
 % ===== Build the roadmap =====
 
@@ -85,7 +130,6 @@ D(D > r) = Inf;
 
 t2 = toc;
 
-
 % ===== Get shortest paths =====
 
 tic;
@@ -95,7 +139,6 @@ offset = 1 + size(Cfree, 1);
 paths = cell(size(goals, 1), 1);
 iStart = 1;
 for i = 1:size(goals, 1)
-    
     % Use Dijkstra's algorithm to get all shortest paths from start pos
     [~, pred] = dijkstra(D, iStart);
     
@@ -121,16 +164,16 @@ end
 
 t3 = toc;
 
-% ===== Plot the graph ====
+% ===== Plot the simulation data on the map ====
 
 hold on
 
 % Plot the grid of free dots
-mapInfo.cFree = plot(Cfree(:, 1), Cfree(:, 2), '.', 'MarkerSize', 1);
+mapInfo.cFree = plot(map, Cfree(:, 1), Cfree(:, 2), '.', 'MarkerSize', 1);
 
-% Plot  paths
+% Plot paths
 for i = 1:size(paths, 1)
-    h = plot(Csg(paths{i}, 1),Csg(paths{i}, 2),'b','LineWidth',2);
+    h = plot(map, Csg(paths{i}, 1),Csg(paths{i}, 2),'b','LineWidth',2);
     mapInfo.paths = [mapInfo.paths; h];
 end
 
@@ -148,8 +191,6 @@ fprintf(' - Dijkstra''s Algorithm finished after\n %d seconds.\n\n', t3)
 % ===== Update global map information =====
 
 set(map, 'UserData', mapInfo);
-
-disp(mapInfo);
 
 end
 

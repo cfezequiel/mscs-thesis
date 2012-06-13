@@ -1,18 +1,11 @@
-- Improve dijkstra's algorithm function
-    * Optimize for undirected case
-    * Consider adding destination as a factor
+- Improve path planning algorithm
+    * Implement A-star algorithm
 - GUI
-    * OK - Add obstacles
-    * Delete obstacles
-    * Fix delete waypoint
+    * Fix delete obstacles
+    * OK - Fix delete waypoint
     * Add "zoom to robot" tool 
     * Add load/save map menu option
-    === Today ===
-    * OK - Fix reset tool functionality 
-    * OK - Add min requirement checks to simulate tool
-    * OK - Change waypoint names from numbers to letters
-    * OK - Move waypoints
-    * OK - Check that paths are still correct when waypoints moved
-    =============
+    * Move startpoint on map
+    * Move waypoints on map
 - Simulation
-    * Incorporate obstacles in path planning
+    * OK - Incorporate obstacles in path planning

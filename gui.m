@@ -339,28 +339,14 @@ function tbppReset_ClickedCallback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-    % ===== Remove non-static map objects =====
+    % ===== Remove simulation objects =====
     mapInfo = get(handles.axesMap, 'UserData');
-    
-    % Delete startpoint
-    delete(mapInfo.startpoint);
-    mapInfo.startpoint = [];
-    
-    % Delete waypoints
-    delete(mapInfo.waypoints);
-    mapInfo.waypoints = [];
     
     % Delete paths
     delete(mapInfo.paths);
     mapInfo.paths = [];
     
-    % Delete obstacles
-    delete(mapInfo.obstacleCircles);
-    mapInfo.obstacleCircles = [];
-    delete(mapInfo.obstacleRects);
-    mapInfo.obstacleRects = [];
-    
-    % Delete free configuration space
+    % Delete free configuration points
     delete(mapInfo.cFree);
     mapInfo.cFree = [];
     
