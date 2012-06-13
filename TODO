@@ -1,5 +1,5 @@
 - Improve path planning algorithm
-    * Implement A-star algorithm
+    * OK - Implement A-star algorithm
 - GUI
     * Fix delete obstacles
     * OK - Fix delete waypoint
@@ -7,5 +7,3 @@
     * Add load/save map menu option
     * Move startpoint on map
     * Move waypoints on map
-- Simulation
-    * OK - Incorporate obstacles in path planning

@@ -125,8 +125,9 @@ D = pdist2(Csg, Csg);
 % Set the nearest neighbor radius
 r = sqrt(xint^2 + yint^2);
 
-% Set distances of 'non-near' neighbors to infinite
-D(D > r) = Inf;
+% Generate the adjacency matrix
+A = D;
+A(A > r) = Inf;
 
 t2 = toc;
 
@@ -139,27 +140,17 @@ offset = 1 + size(Cfree, 1);
 paths = cell(size(goals, 1), 1);
 iStart = 1;
 for i = 1:size(goals, 1)
-    % Use Dijkstra's algorithm to get all shortest paths from start pos
-    [~, pred] = dijkstra(D, iStart);
     
+    % ==== Use A* algorithm to get shortest path  ====
+    % Generate heuristic matrix
+    iGoal = offset + i;
+    h = D(iGoal, :);
+    [~, path, ~] = astar(A, h, iStart, iGoal);
     
-    % Build the path vector from end to start
-    iEnd = offset + i;
-    iParent = iEnd;
-    onePath = [];
-    while (iParent > 0)
-        onePath = [onePath, iParent];
-        iParent = pred(iParent);
-    end
-    
-    % Flip the path vector so it goes from start to end
-    onePath = fliplr(onePath);
-    
-    % Add path to list of paths
-    paths{i} = onePath;
+    paths{i} = path;
     
     % Set new starting point
-    iStart = iEnd;
+    iStart = iGoal;
 end
 
 t3 = toc;
@@ -185,7 +176,7 @@ hold off
 fprintf(' - %d collision-free samples were generated in\n %d seconds.\n\n',...
         size(Cfree, 1), t1)
 fprintf(' - All node distances were calculated in\n %d seconds.\n\n', t2)
-fprintf(' - Dijkstra''s Algorithm finished after\n %d seconds.\n\n', t3)
+fprintf(' - A-star Algorithm finished after\n %d seconds.\n\n', t3)
 
 
 % ===== Update global map information =====
