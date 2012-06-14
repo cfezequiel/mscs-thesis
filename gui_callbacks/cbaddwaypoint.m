@@ -20,7 +20,8 @@ function cbaddwaypoint(map, eventdata, handles)
     setPositionConstraintFcn(h,fcn);
 
     % Add delete callback, which is activated when 'delete' tool selected
-    set(h, 'ButtonDownFcn', {@cbdeletewaypoint, map, handles.lbWaypoints});  
+    %FIXME: Disable for now due to bug
+    %set(h, 'ButtonDownFcn', {@cbdeletewaypoint, map, handles.lbWaypoints});  
 
     % Set waypoint name
     mapInfo = get(map, 'UserData');

@@ -1,9 +1,7 @@
-- Improve path planning algorithm
-    * OK - Implement A-star algorithm
 - GUI
-    * Fix delete obstacles
-    * OK - Fix delete waypoint
     * Add "zoom to robot" tool 
-    * Add load/save map menu option
-    * Move startpoint on map
-    * Move waypoints on map
+    * Implement load/save map menu option
+    * Move startpoint on map (impossibru!)
+        FIX: Set the 'ButtonDownFcn' to default (i.e. removed delete callback)
+- Video
+    * Implement video streaming capabilities in GUI

@@ -28,6 +28,5 @@ function cbdeletewaypoint(src, event, map, listbox)
         delete(src);
         set(map, 'UserData', mapInfo);
     end
-    disp('kaboodle');
 end
 

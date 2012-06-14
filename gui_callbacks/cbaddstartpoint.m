@@ -18,7 +18,7 @@ function cbaddstartpoint(map, eventdata, handles)
     setColor(h, 'g');
     
     % Add delete callback, which is activated when 'delete' tool selected
-    set(h, 'ButtonDownFcn', {@cbdeletestartpoint, map, handles.tbppSetStartPoint});  
+    %set(h, 'ButtonDownFcn', {@cbdeletestartpoint, map, handles.tbppSetStartPoint});  
   
     % Update map data
     mapInfo = get(map, 'UserData');
@@ -30,6 +30,9 @@ function cbaddstartpoint(map, eventdata, handles)
     
     % Disable start point tool
     set(handles.tbppSetStartPoint, 'Enable', 'off');
+    
+    % Enable 'Delete start point' menu option
+    set(handles.menuEditDeleteStartPoint, 'Enable', 'on');
 
 end
 

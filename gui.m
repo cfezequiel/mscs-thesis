@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 07-Jun-2012 16:39:33
+% Last Modified by GUIDE v2.5 14-Jun-2012 18:53:54
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -249,7 +249,7 @@ function tbppDelete_OnCallback(hObject, eventdata, handles)
     set(handles.axesMap, 'UserData', mapInfo);
     
     % Set 'button down' function of axesMap
-    set(handles.axesMap, 'ButtonDownFcn', []);
+    set(handles.axesMap, 'ButtonDownFcn', {@cbdeleteobstacle})
 
 % --------------------------------------------------------------------
 function tbppSelect_OffCallback(hObject, eventdata, handles)
@@ -456,3 +456,75 @@ function pbWaypointDown_Callback(hObject, eventdata, handles)
         % Set the new selected value
         set(handles.lbWaypoints, 'Value', iNameNext);
     end
+
+
+% --- Executes on button press in pbWaypointDelete.
+function pbWaypointDelete_Callback(hObject, eventdata, handles)
+% hObject    handle to pbWaypointDelete (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    iName = get(handles.lbWaypoints, 'Value');
+    
+    % Remove waypoint name from listbox
+    waypointNames = get(handles.lbWaypoints, 'String');
+    waypointNames(iName) = [];
+    set(handles.lbWaypoints, 'String', waypointNames);
+
+    % Remove waypoint in the list of waypoint object handles
+    mapInfo = get(handles.axesMap, 'UserData');
+    hWaypoint = mapInfo.waypoints(iName);
+    mapInfo.waypoints(iName) = [];
+    set(handles.axesMap, 'UserData', mapInfo);
+    
+    % Delete waypoint
+    delete(hWaypoint);
+    
+    % Set value
+    nWaypoints = size(waypointNames, 1);
+    value = nWaypoints;
+    set(handles.lbWaypoints, 'Value', value);
+    
+% --------------------------------------------------------------------
+function menuFile_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFile (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menuFileLoadMap_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFileLoadMap (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menuFileSaveMap_Callback(hObject, eventdata, handles)
+% hObject    handle to menuFileSaveMap (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menuEdit_Callback(hObject, eventdata, handles)
+% hObject    handle to menuEdit (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% --------------------------------------------------------------------
+function menuEditDeleteStartPoint_Callback(hObject, eventdata, handles)
+% hObject    handle to menuEditDeleteStartPoint (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+    % Delete the startpoint
+    mapInfo = get(handles.axesMap, 'UserData');
+    h = mapInfo.startpoint;
+    delete(h);
+    mapInfo.startpoint = [];
+    
+    % Disable this option
+    set(hObject, 'Enable', 'off');
+    
+    % Enable start point option
+    set(handles.tbppSetStartPoint, 'Enable', 'on');
+
+    

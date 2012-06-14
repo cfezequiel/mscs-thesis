@@ -8,12 +8,17 @@ function cbaddobstaclerect(map, eventdata, handles)
     h = imrect(map, [x y 10 10]);
    
     % Add delete callback, which is activated when 'delete' tool selected
-    set(h, 'ButtonDownFcn', {@cbdeleteobstaclerect, map});
+    % set(h, 'ButtonDownFcn', {@cbdeleteobstaclerect, map});
     
     % Add object to list of obstacles
     mapInfo = get(map, 'UserData');
     mapInfo.obstacleRects = [mapInfo.obstacleRects; h];
     set(map, 'UserData', mapInfo);
-
+    
+    % Add delete callback as a context menu option
+    hContextMenu = uicontextmenu;
+    hMenuDelete = uimenu(hContextMenu, 'Label', 'Delete', ...
+                         'Callback', {@cbdeleteobstaclerect, map});
+    set(h, 'UIContextMenu', hContextMenu);
 end
 
