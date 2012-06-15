@@ -45,6 +45,9 @@ function cbdeleteobstacle(src, eventdata)
         h = mapInfo.obstacleCircles(iClosest);
         delete(h);
         mapInfo.obstacleCircles(iClosest) = [];
+        if size(mapInfo.obstacleCircles, 2) == 0
+            mapInfo.obstacleCircles = [];
+        end
     end
     
     % Save map information
