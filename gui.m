@@ -22,7 +22,7 @@ function varargout = gui(varargin)
 
 % Edit the above text to modify the response to help gui
 
-% Last Modified by GUIDE v2.5 14-Jun-2012 18:53:54
+% Last Modified by GUIDE v2.5 20-Jun-2012 15:28:07
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -325,7 +325,7 @@ function tbppRunPathSimulation_ClickedCallback(hObject, eventdata, handles)
     % ============================================================
         
     % Execute path planning simulation
-    runsim(handles.axesMap);
+    runsim(handles);
     
     % Disable simulation tool (reset will re-enable this)
     set(hObject, 'Enable', 'off');
@@ -528,3 +528,26 @@ function menuEditDeleteStartPoint_Callback(hObject, eventdata, handles)
     set(handles.tbppSetStartPoint, 'Enable', 'on');
 
     
+
+
+
+function editGap_Callback(hObject, eventdata, handles)
+% hObject    handle to editGap (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of editGap as text
+%        str2double(get(hObject,'String')) returns contents of editGap as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function editGap_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editGap (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end

@@ -1,20 +1,30 @@
-function runsim(map)
+function runsim(handles)
 %RUNSIM Run path planning simulation
 %       This uses a modified version of the probabilistic roadmap method
 %       (PRM). The configurations are plotted as an NxN grid of points in
 %       2D space. Points that are within obstacles are removed. 
 
-% ===== Test parameters =====
+% ===== Fixed parameters =====
 
 % Initial number of configurations (NxN)
 N = 100;
 
-% Gap between path and obstacles
-gap = 1;
-
 % ===========================
 
+% =====Extract parameters =====
+
+% Gap between path and obstacles
+gap = str2num(get(handles.editGap, 'String'));
+if gap == 0 || isempty(gap)
+    msgbox('Robot-obstacle gap value must be 1 or greater', ...
+           'Simulation Error', ...
+           'error');
+    return;
+end
+
 % ===== Extract map information =====
+
+map = handles.axesMap;
 
 % Get map information
 mapInfo = get(map, 'UserData');
@@ -160,11 +170,11 @@ t3 = toc;
 hold on
 
 % Plot the grid of free dots
-mapInfo.cFree = plot(map, Cfree(:, 1), Cfree(:, 2), '.', 'MarkerSize', 1);
+mapInfo.cFree = plot(map, Cfree(:, 1), Cfree(:, 2), '.', 'MarkerSize', 2);
 
 % Plot paths
 for i = 1:size(paths, 1)
-    h = plot(map, Csg(paths{i}, 1),Csg(paths{i}, 2),'b','LineWidth',2);
+    h = plot(map, Csg(paths{i}, 1),Csg(paths{i}, 2),'r','LineWidth',2);
     mapInfo.paths = [mapInfo.paths; h];
 end
 

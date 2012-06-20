@@ -22,6 +22,9 @@ function [out] = setstaticboundaries(mapInfo)
     yStatObsExp([1,4,5,8,9,12]) = yStatObsExp([1,4,5,8,9,12]) - gap;
     yStatObsExp([2,3,6,7,10,11]) = yStatObsExp([2,3,6,7,10,11]) + gap;
     
+    % Plot the extended obstacles
+    patch(xStatObsExp, yStatObsExp, 'k');
+    
     % Plot the static obstacles
     patch(xStatObs, yStatObs, 'g');
         
