@@ -11,8 +11,18 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        robotgui.cpp
+        robotgui.cpp \
+        connectdialog.cpp \
+        ariarobot.cpp
 
-HEADERS  += robotgui.h
+HEADERS  += robotgui.h \
+            connectdialog.h \
+            ariarobot.h \
 
 FORMS    += robotgui.ui
+
+LIBS += -L/usr/local/Aria/lib -lAria -lArNetworking -lpthread -ldl -lrt
+
+INCLUDEPATH += /usr/local/Aria/include \
+               /usr/local/Aria/ArNetworking/include
+
