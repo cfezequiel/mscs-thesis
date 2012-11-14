@@ -5,7 +5,7 @@
 CXX=g++
 TARGETS=simpleConnect
 
-CFLAGS=-fPIC -g -Wall -fno-exceptions
+CFLAGS=-fPIC -g -w -Wall -pedantic -fno-exceptions
 ARIA_INCLUDE=-I/usr/local/Aria/include -I/usr/local/Aria/ArNetworking/include
 ARIA_LINK=-L/usr/local/Aria/lib -lAria -lArNetworking -lpthread -ldl -lrt
 

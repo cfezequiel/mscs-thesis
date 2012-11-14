@@ -12,7 +12,9 @@ class AriaRobot
 {
 public:
     AriaRobot();
+    ~AriaRobot();
     void connect(string username, string password, string server);
+    void disconnect();
 
 private:
     ArClientBase *client;

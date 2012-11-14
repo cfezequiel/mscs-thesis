@@ -41,5 +41,6 @@ void robotGui::on_actionConnect_triggered()
                   server.toStdString());
 
     // Show status on the log
+
     // Show robot on the map
 }

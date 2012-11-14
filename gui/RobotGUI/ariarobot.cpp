@@ -3,12 +3,19 @@
 AriaRobot::AriaRobot()
 {
     // do nothing
+    // TODO: put guards on ARIA initialization so that it is only invoked
+    // once
+    Aria::init();
+}
+
+AriaRobot::~AriaRobot()
+{
+    // FIXME : this should be done only when last robot is being destroyed
+    Aria::shutdown();
 }
 
 void AriaRobot::connect(string username, string password, string server)
 {
-    Aria::init();
-
     client = new ArClientBase;
 
     ArArgumentBuilder builder;
@@ -36,7 +43,7 @@ void AriaRobot::connect(string username, string password, string server)
             printf("Could not connect to server '%s', exiting\n",
                    client->getHost());
         }
-        exit(1);
+        return;
     }
 
     // Set the robot name as server host name
@@ -45,10 +52,12 @@ void AriaRobot::connect(string username, string password, string server)
     // Run the client in a background thread
     client->runAsync();
 
-    // Client will stop running when disconnected with server,
-    // or Aria is shutdown
-    client->disconnect();
-    Aria::shutdown();
+    // TODO: find way to keep the client 'alive'
 
     return;
+}
+
+void AriaRobot::disconnect()
+{
+    client.disconnect();
 }
