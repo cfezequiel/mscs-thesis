@@ -1,9 +1,12 @@
 #ifndef ROBOTGUI_H
 #define ROBOTGUI_H
 
+#include <vector>
+
 #include <QMainWindow>
 #include "connectdialog.h"
 #include "ariarobot.h"
+#include "robotgraphic.h"
 
 namespace Ui {
 class robotGui;
@@ -22,7 +25,10 @@ private slots:
 
 private:
     Ui::robotGui *ui;
-    ConnectDialog *connectDialog;
+    ConnectDialog *_connectDialog;
+    QGraphicsScene *_mapScene;
+
+    vector<RobotGraphic *> _robotGraphics;
 
     //FIXME: for now, just support one robot (ARIA)
     AriaRobot *robot;

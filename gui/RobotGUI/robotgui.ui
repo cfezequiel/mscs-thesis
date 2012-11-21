@@ -14,7 +14,7 @@
    <string>robotGui</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="QTextEdit" name="logTextEdit">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -23,8 +23,11 @@
       <height>111</height>
      </rect>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
-   <widget class="QGraphicsView" name="graphicsView">
+   <widget class="QGraphicsView" name="mapGraphicsView">
     <property name="geometry">
      <rect>
       <x>10</x>

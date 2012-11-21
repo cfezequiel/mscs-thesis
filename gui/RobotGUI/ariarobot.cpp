@@ -59,5 +59,5 @@ void AriaRobot::connect(string username, string password, string server)
 
 void AriaRobot::disconnect()
 {
-    client.disconnect();
+    client->disconnect();
 }
