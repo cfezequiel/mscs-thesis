@@ -5,8 +5,9 @@
 
 #include <QMainWindow>
 #include "connectdialog.h"
-#include "ariarobot.h"
+#include "robotclient.h"
 #include "robotgraphic.h"
+#include "robotmap.h"
 
 namespace Ui {
 class robotGui;
@@ -26,12 +27,12 @@ private slots:
 private:
     Ui::robotGui *ui;
     ConnectDialog *_connectDialog;
-    QGraphicsScene *_mapScene;
+    RobotMap *_robotMap;
 
     vector<RobotGraphic *> _robotGraphics;
 
     //FIXME: for now, just support one robot (ARIA)
-    AriaRobot *robot;
+    RobotClient *robot;
 };
 
 #endif // ROBOTGUI_H

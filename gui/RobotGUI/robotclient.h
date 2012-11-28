@@ -1,5 +1,5 @@
-#ifndef ARIAROBOT_H
-#define ARIAROBOT_H
+#ifndef ROBOTCLIENT_H
+#define ROBOTCLIENT_H
 
 #include <string>
 #include "Aria.h"
@@ -7,12 +7,12 @@
 using namespace std;
 
 // Class to connect to an Adept MobileRobots robot server,
-// based the Advanced Robot Interface for Applications (ARIA) library
-class AriaRobot
+// based on the Advanced Robot Interface for Applications (ARIA) library
+class RobotClient
 {
 public:
-    AriaRobot();
-    ~AriaRobot();
+    RobotClient();
+    ~RobotClient();
     void connect(string username, string password, string server);
     void disconnect();
 
@@ -20,4 +20,4 @@ private:
     ArClientBase *client;
 };
 
-#endif // ARIAROBOT_H
+#endif // ROBOTCLIENT_H

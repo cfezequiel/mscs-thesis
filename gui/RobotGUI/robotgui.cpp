@@ -7,10 +7,10 @@ robotGui::robotGui(QWidget *parent) :
 {
     ui->setupUi(this);
     _connectDialog = new ConnectDialog;
-    _mapScene = new QGraphicsScene;
-    _mapScene->setSceneRect(-300, -300, 600, 600);
+    _robotMap = new RobotMap;
+    _robotMap->setSceneRect(-300, -300, 600, 600);
 
-    ui->mapGraphicsView->setScene(_mapScene);
+    ui->mapGraphicsView->setScene(_robotMap);
     ui->mapGraphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
 
 }
@@ -19,7 +19,7 @@ robotGui::~robotGui()
 {
     delete ui;
     delete _connectDialog;
-    delete _mapScene;
+    delete _robotMap;
 }
 
 void robotGui::on_actionConnect_triggered()
@@ -39,24 +39,27 @@ void robotGui::on_actionConnect_triggered()
     }
 
     // Connect to robot
-    // FIXME: for now, support only ARIA-based robot
     username = _connectDialog->getUsername();
     password = _connectDialog->getPassword();
     server = _connectDialog->getServer();
-    robot = new AriaRobot;
+    robot = new RobotClient;
     robot->connect(username.toStdString(),
                   password.toStdString(),
                   server.toStdString());
 
     // Show status on the log
-    // TODO: create log widget
+    //TODO: create log widget
     QString msg;
     QTextStream msgStream(&msg, QIODevice::WriteOnly);
     msgStream << "Connected to robot server at " << server << endl;
     ui->logTextEdit->setText(msg);
 
-    // Show robot on the map
+    // Show robot on the map interface
     RobotGraphic *robotGraphic = new RobotGraphic;
     _robotGraphics.push_back(robotGraphic);
-    _mapScene->addItem(robotGraphic);
+    _robotMap->addItem(robotGraphic);
+
+    // Load the robot map
+    //TODO
+
 }

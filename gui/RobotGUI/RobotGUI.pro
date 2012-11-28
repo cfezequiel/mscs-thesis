@@ -13,13 +13,15 @@ TEMPLATE = app
 SOURCES += main.cpp\
         robotgui.cpp \
         connectdialog.cpp \
-        ariarobot.cpp \
-    robotgraphic.cpp
+        robotgraphic.cpp \
+        robotclient.cpp \
+    robotmap.cpp
 
 HEADERS  += robotgui.h \
             connectdialog.h \
-            ariarobot.h \
-    robotgraphic.h
+    robotgraphic.h \
+    robotclient.h \
+    robotmap.h
 
 FORMS    += robotgui.ui
 

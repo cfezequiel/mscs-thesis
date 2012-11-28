@@ -1,6 +1,6 @@
-#include "ariarobot.h"
+#include "robotclient.h"
 
-AriaRobot::AriaRobot()
+RobotClient::RobotClient()
 {
     // do nothing
     // TODO: put guards on ARIA initialization so that it is only invoked
@@ -8,13 +8,13 @@ AriaRobot::AriaRobot()
     Aria::init();
 }
 
-AriaRobot::~AriaRobot()
+RobotClient::~RobotClient()
 {
     // FIXME : this should be done only when last robot is being destroyed
     Aria::shutdown();
 }
 
-void AriaRobot::connect(string username, string password, string server)
+void RobotClient::connect(string username, string password, string server)
 {
     client = new ArClientBase;
 
@@ -52,12 +52,10 @@ void AriaRobot::connect(string username, string password, string server)
     // Run the client in a background thread
     client->runAsync();
 
-    // TODO: find way to keep the client 'alive'
-
     return;
 }
 
-void AriaRobot::disconnect()
+void RobotClient::disconnect()
 {
     client->disconnect();
 }
