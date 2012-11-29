@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <cstdlib>
+#include <cstdio>
 #include <sstream>
 #include <iostream>
 
@@ -13,18 +14,16 @@ ArClientHandlerMap::ArClientHandlerMap(ArClientBase *client, ArMap *map)
     _client = client;
     _map = map;
 
-    ArFunctor1<ArNetPacket *> requestMapHandlerCB(&_requestMapHandler);
-    client.addHandler("getMap", &requestMapHandlerCB);
+    _requestMapHandlerCB = new ArFunctor1C<ArClientHandlerMap, ArNetPacket *>(this,
+                &ArClientHandlerMap::_requestMapHandler);
+    client->addHandler("getMap", _requestMapHandlerCB);
     _allMapDataReceived = false;
-
-    // Set temporary map file name
-    stringstream ss;
-    ss << "tmp_" << rand();
-    _mapFileName.assign(ss.str());
 }
 
-void ArClientHandlerMap::requestMapHandler(ArNetPacket *packet)
+void ArClientHandlerMap::_requestMapHandler(ArNetPacket *packet)
 {
+    assert(_mapFile != NULL);
+
     // Get packet data length
     int packetDataLength = packet->getDataLength(); 
 
@@ -33,39 +32,35 @@ void ArClientHandlerMap::requestMapHandler(ArNetPacket *packet)
     packet->bufToData(data, packetDataLength);
 
     // Write data to file
-    mapFile.open(_mapFileName.c_str(), fstream::out, fstream::app);
-    if (!_mapFile)
-    {
-        ArLog::log(ArLog::Normal, "Could not open temporary map file");
-        return;
-    }
-    _mapFile << data;
-    mapFile.close();
+    fprintf(_mapFile, "%s\n", data);
 
     // If all map data has been received, read data into the ArMap object
-    if (data[0] == '\0' && _allMapDataReceived = false)
+    if (data[0] == '\0' && _allMapDataReceived == false)
     {
         _allMapDataReceived = true;
 
-        _map->readFile(_mapFileName.c_str());
+        // Close the file
+        fclose(_mapFile);
 
-        // Delete map file
+        // Store map data in appropriate data structure
+        _map->readFile(_mapFileName);
+
+        // Delete temporary map file
         if (remove(_mapFileName) == -1)
         {
             ArLog::log(ArLog::Normal, "Could not delete temporary map file");
             return;
         }
-
-        // Assign new temporary map file name
-        stringstream ss;
-        ss << "tmp_" << rand();
-        _mapFileName.assign(ss.str());
     }
 }
 
 void ArClientHandlerMap::requestMap()
 {
     _allMapDataReceived = false;
+
+    // Create temporary file to store map data
+    snprintf(_mapFileName, MAXLEN, "tmp_%d.map", rand());
+    _mapFile = fopen(_mapFileName, "w");
 
     if (!_client->dataExists("getMap"))
     {
