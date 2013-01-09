@@ -1,11 +1,6 @@
-- GUI
-    * Add "zoom to robot" tool 
-    * Implement load/save map menu option
-    * Fix toggle on/off of tools in the toolbar
-- Algorithm
-    * Add heuristic to prioritize 'straight line' movement over
-      'turning' movement
-- Video
-    * Implement wireless video streaming program 
-- Network
-    * Investigate how to connect to a network in Matlab
+2013-01-08
+----------
+- Parse map string data into an ArMap object
+- Implement 'sendMap' in robot client
+
+- Investigate "RobotClient" implementation in Python        OK
