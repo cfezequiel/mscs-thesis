@@ -37,7 +37,7 @@ class AriaRobotClient(ArClientBase):
         self.mapDataStr = ''
         self.serverStatus = ''
         self.serverMode = ''
-        self.batVoltage = 0
+        self.batVoltage = 0 
         self.xpos = 0
         self.ypos = 0
         self.theta = 0
@@ -71,15 +71,21 @@ class AriaRobotClient(ArClientBase):
         '''Handler for receiving map data.'''
 
         s = self._readPacketToStr(packet)
-        print s
         self.mapDataStr += s
+        print s
         if s.find('DATA') >= 0:
             print 'Got map.'
             self.gotMapData = True
-            d = self.deferreds['map']
-            d.callback(self.mapDataStr)
+            return
 
-        # TODO: parse the map string into an ArMap object
+            # Save map
+            mapFilename = 'tmp_'
+            fp = open(mapFilename, 'w')
+            fp.write(self.mapDataStr)
+            fp.close()
+            
+            d = self.deferreds['map']
+            d.callback()
 
     def _handleGetGoals(self, packet):
         '''Handler for receiving list of goals from robot server.'''
@@ -102,9 +108,9 @@ class AriaRobotClient(ArClientBase):
         self.ypos = float(packet.bufToByte4())
         self.theta = float(packet.bufToByte2())
 
-        print '%s, %s @ (%d, %d, %d) bat = %d' % \
-            (self.serverStatus, self.serverMode, self.xpos, self.ypos,
-             self.theta, self.batVoltage)
+#print '%s, %s @ (%d, %d, %d) bat = %d' % \
+#            (self.serverStatus, self.serverMode, self.xpos, self.ypos,
+#             self.theta, self.batVoltage)
 
     def _handleListDrawings(self, packet):
         '''Handler for receiving drawable figures.'''
@@ -144,11 +150,8 @@ class AriaRobotClient(ArClientBase):
         # Run the client as a background thread
         self.runAsync()
 
-        # Add handlers
-        self.addHandler('getMap', self._handleGetMap)
-        self.addHandler('getGoals', self._handleGetGoals)
-        self.addHandler('update', self._handleUpdate)
-        self.addHandler('listDrawings', self._handleListDrawings)
+        # Initialize request handlers
+#self.initHandlers()
         
         # Set robot name as server host name
         self.setRobotName(self.getHost())
@@ -156,8 +159,14 @@ class AriaRobotClient(ArClientBase):
         # Request robot status updates periodically
         self.request('update', 100)
 
-        d.callback("Connected.")
+        d.callback(self)
         return d
+
+    def initHandlers(self):
+        self.addHandler('getMap', self._handleGetMap)
+        self.addHandler('getGoals', self._handleGetGoals)
+        self.addHandler('update', self._handleUpdate)
+        self.addHandler('listDrawings', self._handleListDrawings)
 
     def getRobotMap(self):
         '''Retrieve the robot's map data.'''
@@ -173,6 +182,8 @@ class AriaRobotClient(ArClientBase):
             print "Robot server does not support 'getMap'"
 
         ArUtil_sleep(1000)
+
+        self.gotMap = False
 
         return d
 
@@ -214,13 +225,15 @@ class AriaRobotClient(ArClientBase):
 
         self.requestOnce('stop')
 
+def initialize():
+    '''Initialize ARIA data structures.'''
+    Aria_init()
 
 # -- For testing purposes only --
 def myPrint(s):
     print s
 
 def main():
-    Aria_init()
     client = AriaRobotClient()
     d = client.connect("localhost", 7272, "guest", ".")
     d.add_callback(lambda _: client.getRobotMap())
