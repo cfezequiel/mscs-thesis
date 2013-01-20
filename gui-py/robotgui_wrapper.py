@@ -9,16 +9,13 @@ from connectdialog_wrapper import ConnectDialogWrapper
 
 class RobotGUIWrapper(QtGui.QMainWindow):
     def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtGui.QWidget.__init__(self)
         self.ui = Ui_robotGui()
         self.ui.setupUi(self)
         self.connectDialog = ConnectDialogWrapper(self)
         self.robots = {}
 
-        # Temporary
-        self.client = 0
-
-        # Connect objects with actions
+        # Connect action objects to actions
         self.ui.actionQuit.triggered.connect(self.close)
         self.ui.actionConnect.triggered.connect(self.openConnectDialog)
 

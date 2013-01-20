@@ -151,7 +151,7 @@ class AriaRobotClient(ArClientBase):
         self.runAsync()
 
         # Initialize request handlers
-#self.initHandlers()
+        self.initHandlers()
         
         # Set robot name as server host name
         self.setRobotName(self.getHost())
