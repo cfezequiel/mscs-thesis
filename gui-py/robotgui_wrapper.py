@@ -18,6 +18,13 @@ class RobotGUIWrapper(QtGui.QMainWindow):
         # Connect action objects to actions
         self.ui.actionQuit.triggered.connect(self.close)
         self.ui.actionConnect.triggered.connect(self.openConnectDialog)
+        self.ui.buttonUpdate.clicked.connect(self.update)
+
+    def update(self):
+        if self.robots:
+            name = self.robots.keys()[0]
+            client = self.robots[name]
+            client.getUpdates()
 
     def openConnectDialog(self):
         '''Open dialog box for inputting server connection information.'''

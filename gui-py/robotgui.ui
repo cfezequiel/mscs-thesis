@@ -30,8 +30,21 @@
       <x>10</x>
       <y>450</y>
       <width>421</width>
-      <height>211</height>
+      <height>161</height>
      </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="buttonUpdate">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>630</y>
+      <width>98</width>
+      <height>27</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Update</string>
     </property>
    </widget>
   </widget>
@@ -50,7 +63,7 @@
     </property>
     <addaction name="actionConnect"/>
     <addaction name="separator"/>
-    <addaction name="action_Quit"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuRobot"/>
   </widget>
@@ -95,7 +108,7 @@
     <string>Connect to a robot</string>
    </property>
   </action>
-  <action name="action_Quit">
+  <action name="actionQuit">
    <property name="text">
     <string>&amp;Quit</string>
    </property>

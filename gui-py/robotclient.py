@@ -41,6 +41,8 @@ class AriaRobotClient(ArClientBase):
         self.xpos = 0
         self.ypos = 0
         self.theta = 0
+        self.goals = []
+        self.figures = []
 
     def _readPacketToStr(self, packet):
         '''Read packet data and return a string'''
@@ -84,19 +86,13 @@ class AriaRobotClient(ArClientBase):
             fp.write(self.mapDataStr)
             fp.close()
             
-            d = self.deferreds['map']
-            d.callback()
-
     def _handleGetGoals(self, packet):
         '''Handler for receiving list of goals from robot server.'''
 
-        goals = self._readPacketToStrList(packet)
+        self.goals = self._readPacketToStrList(packet)
 
         # Get rid of last element which is ''
-        goals = goals[:-1]
-
-        d = self.deferreds['goals']
-        d.callback(goals)
+        self.goals = self.goals[:-1]
 
     def _handleUpdate(self, packet):
         '''Handler for receiving robot status updates.'''
@@ -108,16 +104,15 @@ class AriaRobotClient(ArClientBase):
         self.ypos = float(packet.bufToByte4())
         self.theta = float(packet.bufToByte2())
 
-#print '%s, %s @ (%d, %d, %d) bat = %d' % \
-#            (self.serverStatus, self.serverMode, self.xpos, self.ypos,
-#             self.theta, self.batVoltage)
+        print '%s, %s @ (%d, %d, %d) bat = %d' % \
+            (self.serverStatus, self.serverMode, self.xpos, self.ypos, 
+            self.theta, self.batVoltage) 
 
     def _handleListDrawings(self, packet):
         '''Handler for receiving drawable figures.'''
 
         numFigures = packet.bufToUByte4()
         print 'Number of figures: %d' % numFigures
-        figures = []
         for i in range(numFigures):
             fig = Figure()
             fig.figureName = self._readPacketToStr(packet)
@@ -125,27 +120,17 @@ class AriaRobotClient(ArClientBase):
             fig.colorPrimary = packet.bufToUByte4()
             fig.shapeSize = packet.bufToUByte4()
             fig.layerNum = packet.bufToUByte4()
-            fig.refreshTime = packet.bufToUByte4()
-            fig.colorSecond = packet.bufToUByte4()
+            fig.refreshTime = packet.bufToUByte4() 
+            fig.colorSecond = packet.bufToUByte4() 
             print str(fig)
-            figures.append(fig)
-
-        d = self.deferreds['figures']
-        d.callback(figures)
-        return d
+            self.figures.append(fig)
 
     def connect(self, host, port, username='', password=''):
         '''Connects to the robot server.'''
 
-        d = defer.Deferred()
-        server = (host, str(port))
-
         # Connect to the robot server
         if not self.blockingConnect(host, port, username, password):
-            s = ":".join(server)
-            print s
-            d.errback(Exception("Could not connect to server (%s)" % s))
-            return d
+            return False
 
         # Run the client as a background thread
         self.runAsync()
@@ -156,11 +141,7 @@ class AriaRobotClient(ArClientBase):
         # Set robot name as server host name
         self.setRobotName(self.getHost())
 
-        # Request robot status updates periodically
-        self.request('update', 100)
-
-        d.callback(self)
-        return d
+        return True
 
     def initHandlers(self):
         self.addHandler('getMap', self._handleGetMap)
@@ -168,62 +149,46 @@ class AriaRobotClient(ArClientBase):
         self.addHandler('update', self._handleUpdate)
         self.addHandler('listDrawings', self._handleListDrawings)
 
-    def getRobotMap(self):
+    def getMap(self):
         '''Retrieve the robot's map data.'''
 
-        d = defer.Deferred()
-        self.deferreds['map'] = d
-
-        if self.dataExists("getMap"):
-            print 'Requesting map data...' 
-            if not self.request("getMap", -1):
-                print "Request for map failed."
-        else:
-            print "Robot server does not support 'getMap'"
-
+        result = self.request("getMap", -1)
         ArUtil_sleep(1000)
+        return result
 
-        self.gotMap = False
-
-        return d
-
-    def getRobotGoals(self):
+    def getGoals(self):
         '''Retrieve robot's list of goals.'''
 
-        d = defer.Deferred()
-        self.deferreds['goals'] = d
-
-        if self.dataExists('getGoals'):
-            if not self.requestOnce('getGoals'):
-                print 'Request for goals list failed'
-                return d.errback('Error: request')
-        else:
-            print 'Robot server does not support \'getGoals\''
-            return d.errback('Error: does not exist')
-
+        result = self.requestOnce('getGoals')
         ArUtil_sleep(1000)
+        return result
 
-        return d
+    def getUpdates(self):
+        '''Get status updates from the robot periodically.'''
+
+        result = self.request('update', 100)
+        ArUtil_sleep(1000)
+        return result
 
     def getFigures(self):
         '''Get list of drawable figures from the robot server.'''
 
-        d = defer.Deferred()
-        self.deferreds['figures'] = d
-        self.requestOnce('listDrawings')
+        result = self.requestOnce('listDrawings')
         ArUtil_sleep(1000)
-        return d
+        return result
 
     def gotoGoal(self, goalName):
         '''Go to the goal specified by \'goalName\'.'''
 
-        self.requestOnceWithString('gotoGoal', goalName)
+        result = self.requestOnceWithString('gotoGoal', goalName)
         ArUtil_sleep(1000)
+        return result
 
     def stopRobot(self):
         '''Stops the robot.'''
 
-        self.requestOnce('stop')
+        result = self.requestOnce('stop')
+        return result
 
 def initialize():
     '''Initialize ARIA data structures.'''
@@ -235,16 +200,10 @@ def myPrint(s):
 
 def main():
     client = AriaRobotClient()
-    d = client.connect("localhost", 7272, "guest", ".")
-    d.add_callback(lambda _: client.getRobotMap())
-    d.add_callback(lambda _: client.getFigures())
-    d.add_callback(lambda _: client.getRobotGoals())
-    d.add_callback(lambda goals: client.gotoGoal(random.choice(goals)))
-    d.add_callback(lambda _: ArUtil_sleep(2000))
-    d.add_callback(lambda _: client.stopRobot())
-    d.add_callback(lambda _: client.disconnect())
-    d.add_callback(lambda _: Aria_exit(0))
-    return d
+    client.connect("localhost", 7272, "guest", ".")
+    client.getUpdates()
+
+    ArUtil_sleep(5000)
 
 if __name__ == '__main__':
     main()

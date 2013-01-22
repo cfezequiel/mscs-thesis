@@ -15,11 +15,6 @@ class ConnectDialogWrapper(QtGui.QDialog):
         # Connect objects with actions
         self.ui.connectButton.clicked.connect(self.connect)
 
-    def cbConnect(self, client):
-        name = client.getRobotName()
-        print 'Connected to', name
-        self.parent.robots[name] = client
-
     def connect(self):
         # Get input parameters
         host = str(self.ui.hostLineEdit.text())
@@ -30,12 +25,14 @@ class ConnectDialogWrapper(QtGui.QDialog):
         # Connect client to server
         initialize()
         client = AriaRobotClient()
-        d = client.connect(host, port, username, password)
-        d.add_callback(self.cbConnect)
+        client.connect(host, port, username, password)
+        name = client.getRobotName()
+        print 'Connected to', name
+        self.parent.robots[name] = client
 
         # Close dialog window
-        d.add_callback(lambda _: self.close())
+        self.close()
 
-        return d
+        
 
 
