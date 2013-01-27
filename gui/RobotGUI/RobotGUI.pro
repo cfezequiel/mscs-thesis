@@ -15,13 +15,15 @@ SOURCES += main.cpp\
         connectdialog.cpp \
         robotgraphic.cpp \
         robotclient.cpp \
-    robotmap.cpp
+    robotmap.cpp \
+    arclient.cpp
 
 HEADERS  += robotgui.h \
             connectdialog.h \
     robotgraphic.h \
     robotclient.h \
-    robotmap.h
+    robotmap.h \
+    arclient.h
 
 FORMS    += robotgui.ui
 

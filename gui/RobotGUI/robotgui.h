@@ -24,6 +24,8 @@ public:
 private slots:
     void on_actionConnect_triggered();
 
+    void on_buttonConnect_clicked();
+
 private:
     Ui::robotGui *ui;
     ConnectDialog *_connectDialog;

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "robotgui.h"
 #include "ui_robotgui.h"
 
@@ -62,4 +63,9 @@ void robotGui::on_actionConnect_triggered()
     // Load the robot map
     //TODO
 
+}
+
+void robotGui::on_buttonConnect_clicked()
+{
+    cout << "Clicked." << endl;
 }
