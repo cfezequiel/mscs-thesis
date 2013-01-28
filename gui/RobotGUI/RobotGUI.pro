@@ -14,16 +14,14 @@ SOURCES += main.cpp\
         robotgui.cpp \
         connectdialog.cpp \
         robotgraphic.cpp \
-        robotclient.cpp \
-    robotmap.cpp \
-    arclient.cpp
+    ArClient.cpp \
+    mapscene.cpp
 
 HEADERS  += robotgui.h \
             connectdialog.h \
     robotgraphic.h \
-    robotclient.h \
-    robotmap.h \
-    arclient.h
+    ArClient.h \
+    mapscene.h
 
 FORMS    += robotgui.ui
 
