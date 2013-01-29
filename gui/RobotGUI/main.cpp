@@ -1,10 +1,10 @@
 #include <QtGui/QApplication>
-#include "robotgui.h"
+#include "mainwindow.h"
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
-    robotGui w;
+    MainWindow w;
     w.show();
 
     return a.exec();

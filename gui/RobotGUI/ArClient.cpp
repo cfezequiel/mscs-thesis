@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <fstream>
 #include <iostream>
-#include "arclient.h"
+#include "ArClient.h"
 
 using namespace std;
 

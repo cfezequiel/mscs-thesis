@@ -11,17 +11,18 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        robotgui.cpp \
         connectdialog.cpp \
         robotgraphic.cpp \
     ArClient.cpp \
-    mapscene.cpp
+    mapscene.cpp \
+    mainwindow.cpp
 
-HEADERS  += robotgui.h \
+HEADERS  += \
             connectdialog.h \
     robotgraphic.h \
     ArClient.h \
-    mapscene.h
+    mapscene.h \
+    mainwindow.h
 
 FORMS    += robotgui.ui
 

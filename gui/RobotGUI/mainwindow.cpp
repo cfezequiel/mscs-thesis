@@ -1,30 +1,24 @@
 #include <iostream>
 #include <vector>
 
-#include "robotgui.h"
+#include "mainwindow.h"
 #include "ui_robotgui.h"
 
 using namespace std;
 
 // Constructor
-robotGui::robotGui(QWidget *parent) :
+MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::robotGui)
+    ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     _connectDialog = new ConnectDialog;
-    _robotMap->setSceneRect(-300, -300, 600, 600);
-
-    ui->mapGraphicsView->setScene(_robotMap);
-    ui->mapGraphicsView->setDragMode(QGraphicsView::ScrollHandDrag);
-
 }
 
-robotGui::~robotGui()
+MainWindow::~MainWindow()
 {
     delete ui;
     delete _connectDialog;
-    delete _robotMap;
 
     for (vector<ArClient *>::iterator i = _clients.begin();
          i != _clients.end(); i++)
@@ -34,8 +28,9 @@ robotGui::~robotGui()
     }
 }
 
-void robotGui::on_actionConnect_triggered()
+void MainWindow::on_actionConnect_triggered()
 {
+#if 0
     QString username;
     QString password;
     QString server;
@@ -70,10 +65,11 @@ void robotGui::on_actionConnect_triggered()
     RobotGraphic *robotGraphic = new RobotGraphic;
     _robotGraphics.push_back(robotGraphic);
     _robotMap->addItem(robotGraphic);
+#endif
 
 }
 
-void robotGui::on_buttonConnect_clicked()
+void MainWindow::on_buttonConnect_clicked()
 {
     // Create client
     ArClient *client = new ArClient();

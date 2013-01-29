@@ -9,16 +9,16 @@
 #include "ArClient.h"
 
 namespace Ui {
-class robotGui;
+class MainWindow;
 }
 
-class robotGui : public QMainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
     
 public:
-    explicit robotGui(QWidget *parent = 0);
-    ~robotGui();
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
     
 private slots:
     void on_actionConnect_triggered();
@@ -26,10 +26,9 @@ private slots:
     void on_buttonConnect_clicked();
 
 private:
-    Ui::robotGui *ui;
+    Ui::MainWindow *ui;
     ConnectDialog *_connectDialog;
 
-    vector<RobotGraphic *> _robotGraphics;
     vector<ArClient *> _clients;
 };
 
