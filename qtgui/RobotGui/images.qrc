@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/stop.png</file>
+        <file>images/goto.png</file>
+        <file>images/obstacle_rect.png</file>
+    </qresource>
+</RCC>
