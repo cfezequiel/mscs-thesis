@@ -9,7 +9,7 @@ class QArClient : public QObject, public ArClient
     Q_OBJECT
 public:
     explicit QArClient(QObject *parent = 0);
-    
+
 signals:
     void update();
     

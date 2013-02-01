@@ -9,5 +9,4 @@ QArClient::QArClient(QObject *parent) :
     QObject(parent), ArClient()
 {
 
-
 }

@@ -9,13 +9,25 @@
 
 using namespace std;
 
+static const int STRLEN = 256;
+struct ArRobotInfo
+{
+    ArTypes::Byte2 batVoltage;
+    ArTypes::Byte4 xpos;
+    ArTypes::Byte4 ypos;
+    ArTypes::Byte2 theta;
+    ArTypes::Byte2 forwardVel;
+    ArTypes::Byte2 rotationVel;
+    char status[STRLEN];
+    char mode[STRLEN];
+};
+
 class ArClient : public ArClientBase
 {
 public:
     ArClient();
     ~ArClient();
     bool connect(char *host, int port, char *username=NULL, char *password=NULL);
-    void getRobotInfo();
     bool mapReceived() { return _mapReceived; }
     ArMap * getMap();
     void getDrawings();
@@ -42,8 +54,11 @@ private:
     bool _commandsReceived;
 
     // Update handler
-    void _handleUpdate(ArNetPacket *packet);
-    ArFunctor1C<ArClient, ArNetPacket *> *_updateCB;
+    void _handleUpdateNumbers(ArNetPacket *packet);
+    ArFunctor1C<ArClient, ArNetPacket *> *_updateNumbersCB;
+    void _handleUpdateStrings(ArNetPacket *packet);
+    ArFunctor1C<ArClient, ArNetPacket *> *_updateStringsCB;
+    ArRobotInfo _robotInfo;
 };
 
 #endif // ARCLIENT_H

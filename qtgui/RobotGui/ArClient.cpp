@@ -10,14 +10,16 @@
 
 using namespace std;
 
-static const int STRLEN = 64;
-
 ArClient::ArClient() : ArClientBase()
 {
     _getMapCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
                     &ArClient::_handleGetMap);
     _listCommandsCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
                       &ArClient::_handleListCommands);
+    _updateNumbersCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
+                      &ArClient::_handleUpdateNumbers);
+    _updateStringsCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
+                      &ArClient::_handleUpdateStrings);
     _mapReceived = false;
     _nCommands = 0;
     _commandsReceived = false;
@@ -50,6 +52,10 @@ bool ArClient::connect(char *host, int port, char *username, char *password)
 
     // Add list commands handler
     addHandler("listCommands", _listCommandsCB);
+
+    // Add update handlers
+    addHandler("updateNumbers", _updateNumbersCB);
+    addHandler("updateStrings", _updateStringsCB);
 
     // Run client
     runAsync();
@@ -89,11 +95,6 @@ list<string> * ArClient::listCommands()
     }
 
     return &_strListBuf;
-}
-
-void ArClient::getRobotInfo()
-{
-    request("update", -1);
 }
 
 ArMap * ArClient::getMap()
@@ -184,11 +185,37 @@ void ArClient::sendMap(ArMap *map)
 
 void ArClient::getUpdates(int frequency)
 {
-    request("update", frequency);
+    request("updateNumbers", frequency);
+    request("updateStrings", -1);
 }
 
-void _handleUpdate(ArNetPacket *packet)
+void ArClient::_handleUpdateNumbers(ArNetPacket *packet)
 {
+    _robotInfo.batVoltage = packet->bufToByte2();
+    _robotInfo.xpos = packet->bufToByte4();
+    _robotInfo.ypos = packet->bufToByte4();
+    _robotInfo.theta = packet->bufToByte2();
+    _robotInfo.forwardVel = packet->bufToByte2();
+    _robotInfo.rotationVel = packet->bufToByte2();
 
+    ArRobotInfo *r = &_robotInfo;
+    cout << "Battery voltage: " << r->batVoltage << endl
+         << "X-pos: " << r->xpos << endl
+         << "Y-pos: " << r->ypos << endl
+         << "theta: " << r->theta << endl
+         << "Forward velocity: " << r->forwardVel << endl
+         << "Rotation velocity: " << r->rotationVel << endl
+         ;
+}
+
+void ArClient::_handleUpdateStrings(ArNetPacket *packet)
+{
+    packet->bufToStr(_robotInfo.status, STRLEN);
+    packet->bufToStr(_robotInfo.mode, STRLEN);
+
+    ArRobotInfo *r = &_robotInfo;
+    cout << "Status: " << r->status << endl
+         << "Mode: " << r->mode << endl
+         ;
 }
 

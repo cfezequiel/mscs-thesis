@@ -29,11 +29,11 @@ void MainWindow::on_actionConnect_triggered()
     // FIXME: temporary (refactor later)
 
     // Connect client
-    QArClient *client = new QArClient();
+    QArClient *client = new QArClient;
     char host[] = "localhost";
     int port = 7272;
 
-    if (!client->connect(host, port))
+    if (!client->ArClient::connect(host, port))
     {
         cerr << "Failed to connect to " << host;
         return;
@@ -53,5 +53,4 @@ void MainWindow::on_actionConnect_triggered()
 
     // Get periodic updates
     client->getUpdates(100);
-
 }
