@@ -4,7 +4,7 @@
 #include <QMainWindow>
 
 #include "mapscene.h"
-#include "ArClient.h"
+#include "qarclient.h"
 
 namespace Ui {
 class MainWindow;

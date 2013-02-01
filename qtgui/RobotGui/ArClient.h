@@ -19,10 +19,10 @@ public:
     bool mapReceived() { return _mapReceived; }
     ArMap * getMap();
     void getDrawings();
-    void getUpdates(int frequency);
     list<string> * listCommands();
     ArConfig * getConfig();
     void sendMap(ArMap *map);
+    void getUpdates(int frequency);
 
 private:
     ArClientHandlerConfig *_configHandler;
@@ -40,6 +40,10 @@ private:
     unsigned int _nCommands; 
     list<string> _strListBuf;
     bool _commandsReceived;
+
+    // Update handler
+    void _handleUpdate(ArNetPacket *packet);
+    ArFunctor1C<ArClient, ArNetPacket *> *_updateCB;
 };
 
 #endif // ARCLIENT_H

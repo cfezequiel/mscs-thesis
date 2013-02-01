@@ -182,3 +182,13 @@ void ArClient::sendMap(ArMap *map)
     _configHandler->reloadConfigOnServer();
 }
 
+void ArClient::getUpdates(int frequency)
+{
+    request("update", frequency);
+}
+
+void _handleUpdate(ArNetPacket *packet)
+{
+
+}
+
