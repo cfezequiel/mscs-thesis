@@ -11,7 +11,12 @@ public:
     explicit QArClient(QObject *parent = 0);
 
 signals:
-    void update();
+    void updateNumbers(ArRobotInfo *robotInfo);
+    void updateStrings(ArRobotInfo *robotInfo);
+
+protected:
+    void updateNumbersReceived(ArRobotInfo *robotInfo);
+    void updateStringsReceived(ArRobotInfo *robotInfo);
     
 public slots:
 

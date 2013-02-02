@@ -36,6 +36,10 @@ public:
     void sendMap(ArMap *map);
     void getUpdates(int frequency);
 
+protected:
+    virtual void updateNumbersReceived(ArRobotInfo *robotInfo) {}
+    virtual void updateStringsReceived(ArRobotInfo *robotInfo) {}
+
 private:
     ArClientHandlerConfig *_configHandler;
     ArClientFileFromClient *_clientFileFromClient;
@@ -54,10 +58,10 @@ private:
     bool _commandsReceived;
 
     // Update handler
-    void _handleUpdateNumbers(ArNetPacket *packet);
     ArFunctor1C<ArClient, ArNetPacket *> *_updateNumbersCB;
-    void _handleUpdateStrings(ArNetPacket *packet);
     ArFunctor1C<ArClient, ArNetPacket *> *_updateStringsCB;
+    void _handleUpdateNumbers(ArNetPacket *packet);
+    void _handleUpdateStrings(ArNetPacket *packet);
     ArRobotInfo _robotInfo;
 };
 

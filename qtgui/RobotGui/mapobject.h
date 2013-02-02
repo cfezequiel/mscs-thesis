@@ -21,8 +21,7 @@ public:
     void setLineColor(Qt::GlobalColor color);
     void setFillColor(Qt::GlobalColor color);
 
-signals:
-    
+
 protected:
     qreal width;
     qreal height;

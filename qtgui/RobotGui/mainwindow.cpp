@@ -2,7 +2,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-
 using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -33,6 +32,9 @@ void MainWindow::on_actionConnect_triggered()
     char host[] = "localhost";
     int port = 7272;
 
+    QObject::connect((QObject *) client, SIGNAL(updateNumbers(ArRobotInfo *)),
+                     _mapScene, SLOT(updateRobotPose(ArRobotInfo *)));
+
     if (!client->ArClient::connect(host, port))
     {
         cerr << "Failed to connect to " << host;
@@ -40,6 +42,7 @@ void MainWindow::on_actionConnect_triggered()
     }
 
     // Set as main client
+    // FIXME: support only one robot for now
     _client = client;
 
     // Get map
@@ -48,8 +51,9 @@ void MainWindow::on_actionConnect_triggered()
     // Render map
     _mapScene->renderMap(map);
     //FIXME: correct the view dimensions
-    ui->mapView->fitInView(QRectF(-228,-8028, 1929, 10034),
-                           Qt::KeepAspectRatio);
+    ui->mapView->fitInView(_mapScene->sceneRect(), Qt::KeepAspectRatio);
+
+    // Get initial robot pose
 
     // Get periodic updates
     client->getUpdates(100);

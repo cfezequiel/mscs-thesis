@@ -10,3 +10,14 @@ QArClient::QArClient(QObject *parent) :
 {
 
 }
+
+void QArClient::updateNumbersReceived(ArRobotInfo *robotInfo)
+{
+    emit updateNumbers(robotInfo);
+}
+
+void QArClient::updateStringsReceived(ArRobotInfo *robotInfo)
+{
+    emit updateStrings(robotInfo);
+}
+

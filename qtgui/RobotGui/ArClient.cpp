@@ -191,31 +191,25 @@ void ArClient::getUpdates(int frequency)
 
 void ArClient::_handleUpdateNumbers(ArNetPacket *packet)
 {
+    lock();
     _robotInfo.batVoltage = packet->bufToByte2();
     _robotInfo.xpos = packet->bufToByte4();
     _robotInfo.ypos = packet->bufToByte4();
     _robotInfo.theta = packet->bufToByte2();
     _robotInfo.forwardVel = packet->bufToByte2();
     _robotInfo.rotationVel = packet->bufToByte2();
+    unlock();
 
-    ArRobotInfo *r = &_robotInfo;
-    cout << "Battery voltage: " << r->batVoltage << endl
-         << "X-pos: " << r->xpos << endl
-         << "Y-pos: " << r->ypos << endl
-         << "theta: " << r->theta << endl
-         << "Forward velocity: " << r->forwardVel << endl
-         << "Rotation velocity: " << r->rotationVel << endl
-         ;
+    updateNumbersReceived(&_robotInfo);
 }
 
 void ArClient::_handleUpdateStrings(ArNetPacket *packet)
 {
+    lock();
     packet->bufToStr(_robotInfo.status, STRLEN);
     packet->bufToStr(_robotInfo.mode, STRLEN);
+    unlock();
 
-    ArRobotInfo *r = &_robotInfo;
-    cout << "Status: " << r->status << endl
-         << "Mode: " << r->mode << endl
-         ;
+    updateStringsReceived(&_robotInfo);
 }
 

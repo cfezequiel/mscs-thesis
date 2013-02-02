@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
@@ -13,7 +14,6 @@
 #include <QPointF>
 
 #include "mapscene.h"
-#include "mapobject.h"
 
 using namespace std;
 
@@ -99,10 +99,45 @@ void MapScene::renderMap(ArMap *map)
 
             addItem(obj);
         }
-    }
+    } // end render map objects
+
+    // Render robot
+    _robot = new RobotObject;
+    _robot->setZValue(1);
+    //_robot->setRotation(90);
+    addItem(_robot);
 }
 
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-
+    // Do nothing (yet)
 }
+
+// FIXME: this should connect to RobotObject not the scene
+void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
+{
+    assert(robotInfo != NULL);
+    assert(_robot != NULL);
+
+    // Redraw the robot on the map based on robot telemetry info
+    qreal x = robotInfo->xpos;
+    qreal y = robotInfo->ypos;
+    qreal th = robotInfo->theta;
+    _robot->setPos(x, -y);
+
+    //FIXME: term below only considers th > 0,
+    // consider also when th < 0
+    _robot->setRotation(-th + 90);
+    advance();
+
+    // Temp
+    ArRobotInfo *r = robotInfo;
+    cout << "Battery voltage: " << r->batVoltage << endl
+         << "X-pos: " << r->xpos << endl
+         << "Y-pos: " << r->ypos << endl
+         << "theta: " << r->theta << endl
+         << "Forward velocity: " << r->forwardVel << endl
+         << "Rotation velocity: " << r->rotationVel << endl
+         ;
+}
+

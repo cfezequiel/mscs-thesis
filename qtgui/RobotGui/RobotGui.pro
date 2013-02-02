@@ -15,13 +15,15 @@ SOURCES += main.cpp\
            mapscene.cpp\
            mapobject.cpp\
            ArClient.cpp \
-    qarclient.cpp
+    qarclient.cpp \
+    robotobject.cpp
 
 HEADERS  += mainwindow.h\
             mapscene.h\
             mapobject.h\
             ArClient.h \
-    qarclient.h
+    qarclient.h \
+    robotobject.h
 
 FORMS    += mainwindow.ui
 

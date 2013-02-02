@@ -3,7 +3,7 @@
 MapObject::MapObject(QGraphicsItem *parent) :
     QGraphicsItem(parent)
 {
-    // Set default values
+    // Set parameters
     width = 501;
     height = 512;
     setLineColor(QColor(Qt::black));
