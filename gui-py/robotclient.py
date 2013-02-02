@@ -97,6 +97,7 @@ class AriaRobotClient(ArClientBase):
     def _handleUpdate(self, packet):
         '''Handler for receiving robot status updates.'''
 
+        '''
         self.serverStatus = self._readPacketToStr(packet)
         self.serverMode = self._readPacketToStr(packet)
         self.batVoltage = packet.bufToUByte2() 
@@ -107,6 +108,8 @@ class AriaRobotClient(ArClientBase):
         print '%s, %s @ (%d, %d, %d) bat = %d' % \
             (self.serverStatus, self.serverMode, self.xpos, self.ypos, 
             self.theta, self.batVoltage) 
+        '''
+        pass
 
     def _handleListDrawings(self, packet):
         '''Handler for receiving drawable figures.'''
@@ -166,7 +169,7 @@ class AriaRobotClient(ArClientBase):
     def getUpdates(self):
         '''Get status updates from the robot periodically.'''
 
-        result = self.request('update', 100)
+        result = self.request('update', -1)
         ArUtil_sleep(1000)
         return result
 

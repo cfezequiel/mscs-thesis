@@ -6,6 +6,7 @@ import sys
 from PyQt4 import QtCore, QtGui
 from robotgui import Ui_robotGui
 from connectdialog_wrapper import ConnectDialogWrapper
+from robotclient import AriaRobotClient, initialize
 
 class RobotGUIWrapper(QtGui.QMainWindow):
     def __init__(self, parent=None):

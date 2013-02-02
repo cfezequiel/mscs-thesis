@@ -4,6 +4,8 @@ import sys
 from PyQt4 import QtCore, QtGui
 from connectdialog import Ui_connectDialog
 from robotclient import AriaRobotClient, initialize
+from AriaPy import *
+from ArNetworkingPy import *
 
 class ConnectDialogWrapper(QtGui.QDialog):
     def __init__(self, parent=None):
@@ -29,6 +31,8 @@ class ConnectDialogWrapper(QtGui.QDialog):
         name = client.getRobotName()
         print 'Connected to', name
         self.parent.robots[name] = client
+
+        client.request('update', 100)
 
         # Close dialog window
         self.close()
