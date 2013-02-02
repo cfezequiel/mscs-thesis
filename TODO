@@ -1,6 +1,0 @@
-2013-01-08
-----------
-- Parse map string data into an ArMap object
-- Implement 'sendMap' in robot client
-
-- Investigate "RobotClient" implementation in Python        OK
