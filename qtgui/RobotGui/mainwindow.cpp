@@ -1,6 +1,7 @@
 #include <iostream>
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "mapobject.h"
 
 using namespace std;
 
@@ -32,8 +33,11 @@ void MainWindow::on_actionConnect_triggered()
     char host[] = "localhost";
     int port = 7272;
 
+    // Connect client signals to mapscene slots
     QObject::connect((QObject *) client, SIGNAL(updateNumbers(ArRobotInfo *)),
                      _mapScene, SLOT(updateRobotPose(ArRobotInfo *)));
+    QObject::connect((QObject *) client, SIGNAL(updatePath(list<Point>)),
+                     _mapScene, SLOT(updateRobotPath(list<Point>)));
 
     if (!client->ArClient::connect(host, port))
     {
@@ -53,8 +57,27 @@ void MainWindow::on_actionConnect_triggered()
     //FIXME: correct the view dimensions
     ui->mapView->fitInView(_mapScene->sceneRect(), Qt::KeepAspectRatio);
 
-    // Get initial robot pose
-
     // Get periodic updates
     client->getUpdates(100);
+}
+
+void MainWindow::on_actionGoto_triggered()
+{
+    // FIXME: hardcoded goal value
+    _client->lock();
+    _client->requestOnceWithString("gotoGoal", "G");
+    _client->unlock();
+
+    ArUtil::sleep(100);
+
+    // Request planned path
+    _client->lock();
+    _client->request("getPath", 1000);
+    _client->unlock();
+}
+
+void MainWindow::on_actionStop_triggered()
+{
+    // Stop the robot
+    _client->requestOnce("stop");
 }

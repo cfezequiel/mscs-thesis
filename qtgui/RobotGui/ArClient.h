@@ -3,24 +3,13 @@
 
 #include <string>
 #include <sstream>
+#include <list>
 
 #include "Aria.h"
 #include "ArNetworking.h"
+#include "mapdata.h"
 
 using namespace std;
-
-static const int STRLEN = 256;
-struct ArRobotInfo
-{
-    ArTypes::Byte2 batVoltage;
-    ArTypes::Byte4 xpos;
-    ArTypes::Byte4 ypos;
-    ArTypes::Byte2 theta;
-    ArTypes::Byte2 forwardVel;
-    ArTypes::Byte2 rotationVel;
-    char status[STRLEN];
-    char mode[STRLEN];
-};
 
 class ArClient : public ArClientBase
 {
@@ -39,6 +28,7 @@ public:
 protected:
     virtual void updateNumbersReceived(ArRobotInfo *robotInfo) {}
     virtual void updateStringsReceived(ArRobotInfo *robotInfo) {}
+    virtual void getPathReceived(list<Point> points) {}
 
 private:
     ArClientHandlerConfig *_configHandler;
@@ -63,6 +53,10 @@ private:
     void _handleUpdateNumbers(ArNetPacket *packet);
     void _handleUpdateStrings(ArNetPacket *packet);
     ArRobotInfo _robotInfo;
+
+    // Robot path handler
+    ArFunctor1C<ArClient, ArNetPacket *> *_getPathCB;
+    void _handleGetPath(ArNetPacket *packet);
 };
 
 #endif // ARCLIENT_H

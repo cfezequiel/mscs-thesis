@@ -21,6 +21,9 @@ public:
     
 private slots:
     void on_actionConnect_triggered();
+    void on_actionGoto_triggered();
+
+    void on_actionStop_triggered();
 
 private:
     Ui::MainWindow *ui;
