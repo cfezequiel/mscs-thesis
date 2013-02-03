@@ -1,6 +1,8 @@
 #ifndef MAPSCENE_H
 #define MAPSCENE_H
 
+#include <list>
+
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QRectF>
@@ -9,9 +11,12 @@
 
 #include "Aria.h"
 #include "ArNetworking.h"
-#include "qarclient.h"
 #include "robotobject.h"
 #include "mapobject.h"
+#include "mapdata.h"
+#include "pathobject.h"
+
+using namespace std;
 
 class MapScene : public QGraphicsScene
 {
@@ -28,9 +33,11 @@ signals:
     
 public slots:
     void updateRobotPose(ArRobotInfo * robotInfo);
+    void updateRobotPath(list<Point> points);
 
 private:
     RobotObject *_robot;
+    PathObject *_path;
 };
 
 #endif // MAPSCENE_H

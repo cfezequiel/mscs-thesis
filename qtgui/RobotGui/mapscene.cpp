@@ -103,9 +103,14 @@ void MapScene::renderMap(ArMap *map)
 
     // Render robot
     _robot = new RobotObject;
-    _robot->setZValue(1);
+    _robot->setZValue(2);
     //_robot->setRotation(90);
     addItem(_robot);
+
+    // Render path (should be invisible initially)
+    _path = new PathObject;
+    _path->setZValue(1);
+    addItem(_path);
 }
 
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -129,7 +134,16 @@ void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
     // consider also when th < 0
     _robot->setRotation(-th + 90);
     advance();
+}
 
+void MapScene::updateRobotPath(list<Point> points)
+{
+    _path->update(points);
+    cout << "hey3!" << endl;
+}
+
+void printRobotInfo(ArRobotInfo *robotInfo)
+{
     // Temp
     ArRobotInfo *r = robotInfo;
     cout << "Battery voltage: " << r->batVoltage << endl
@@ -140,4 +154,3 @@ void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
          << "Rotation velocity: " << r->rotationVel << endl
          ;
 }
-

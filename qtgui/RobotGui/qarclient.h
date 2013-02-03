@@ -1,8 +1,13 @@
 #ifndef QARCLIENT_H
 #define QARCLIENT_H
 
+#include <list>
 #include <QObject>
+#include <QMetaType>
 #include "ArClient.h"
+#include "mapdata.h"
+
+
 
 class QArClient : public QObject, public ArClient
 {
@@ -13,11 +18,13 @@ public:
 signals:
     void updateNumbers(ArRobotInfo *robotInfo);
     void updateStrings(ArRobotInfo *robotInfo);
+    void updatePath(list<Point> points);
 
 protected:
     void updateNumbersReceived(ArRobotInfo *robotInfo);
     void updateStringsReceived(ArRobotInfo *robotInfo);
-    
+    void getPathReceived(list<Point> points);
+
 public slots:
 
 private:

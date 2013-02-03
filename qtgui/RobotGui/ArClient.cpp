@@ -12,7 +12,8 @@ using namespace std;
 
 ArClient::ArClient() : ArClientBase()
 {
-    _getMapCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
+    // Initialize callbacks
+    _getMapCB = new ArFunctor1C<ArClient, ArNetPacket *>(this,
                     &ArClient::_handleGetMap);
     _listCommandsCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
                       &ArClient::_handleListCommands);
@@ -20,6 +21,8 @@ ArClient::ArClient() : ArClientBase()
                       &ArClient::_handleUpdateNumbers);
     _updateStringsCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
                       &ArClient::_handleUpdateStrings);
+    _getPathCB = new ArFunctor1C<ArClient, ArNetPacket *>(this,
+                      &ArClient::_handleGetPath);
     _mapReceived = false;
     _nCommands = 0;
     _commandsReceived = false;
@@ -56,6 +59,9 @@ bool ArClient::connect(char *host, int port, char *username, char *password)
     // Add update handlers
     addHandler("updateNumbers", _updateNumbersCB);
     addHandler("updateStrings", _updateStringsCB);
+
+    // Add path handler
+    addHandler("getPath", _getPathCB);
 
     // Run client
     runAsync();
@@ -213,3 +219,18 @@ void ArClient::_handleUpdateStrings(ArNetPacket *packet)
     updateStringsReceived(&_robotInfo);
 }
 
+void ArClient::_handleGetPath(ArNetPacket *packet)
+{
+    int numPoints = packet->bufToByte2();
+    list<Point> points;
+
+    Point point;
+    for (int i = 0; i < numPoints; i++)
+    {
+        point.x = packet->bufToByte4();
+        point.y = packet->bufToByte4();
+        points.push_back(point);
+    }
+
+    getPathReceived(points);
+}
