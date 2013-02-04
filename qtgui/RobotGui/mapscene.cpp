@@ -134,6 +134,15 @@ void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
     // consider also when th < 0
     _robot->setRotation(-th + 90);
     advance();
+
+    cout << "MapScene::updateRobotPose" << endl;
+}
+
+void MapScene::updateRobotPath(Points *path)
+{
+    _path->update(path);
+    _path->setPos(_path->getPos());
+    advance();
 }
 
 void printRobotInfo(ArRobotInfo *robotInfo)
@@ -148,11 +157,3 @@ void printRobotInfo(ArRobotInfo *robotInfo)
          << "Rotation velocity: " << r->rotationVel << endl
          ;
 }
-
-void MapScene::updateRobotPath(Points *path)
-{
-    _path->update(path);
-    _path->setPos(_path->getPos());
-    advance();
-}
-

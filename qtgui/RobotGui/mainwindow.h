@@ -25,6 +25,8 @@ private slots:
 
     void on_actionStop_triggered();
 
+    void on_actionResetToHome_triggered();
+
 private:
     Ui::MainWindow *ui;
 

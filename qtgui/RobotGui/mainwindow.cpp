@@ -74,10 +74,26 @@ void MainWindow::on_actionGoto_triggered()
     _client->lock();
     _client->request("getPath", 1000);
     _client->unlock();
+
+    cout << "Goto" << endl;
 }
 
 void MainWindow::on_actionStop_triggered()
 {
     // Stop the robot
+    _client->lock();
     _client->requestOnce("stop");
+    _client->unlock();
+
+    cout << "Stop" << endl;
+}
+
+void MainWindow::on_actionResetToHome_triggered()
+{
+    // Sets the robot's current pose as home
+    _client->lock();
+    _client->requestOnce("resetToHome");
+    _client->unlock();
+
+    cout << "ResetToHome" << endl;
 }
