@@ -28,7 +28,7 @@ public:
 protected:
     virtual void updateNumbersReceived(ArRobotInfo *robotInfo) {}
     virtual void updateStringsReceived(ArRobotInfo *robotInfo) {}
-    virtual void getPathReceived(list<Point> points) {}
+    virtual void getPathReceived(Points *path) {}
 
 private:
     ArClientHandlerConfig *_configHandler;
@@ -57,6 +57,7 @@ private:
     // Robot path handler
     ArFunctor1C<ArClient, ArNetPacket *> *_getPathCB;
     void _handleGetPath(ArNetPacket *packet);
+    Points _path;
 };
 
 #endif // ARCLIENT_H

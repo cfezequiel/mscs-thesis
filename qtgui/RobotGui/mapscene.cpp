@@ -136,12 +136,6 @@ void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
     advance();
 }
 
-void MapScene::updateRobotPath(list<Point> points)
-{
-    _path->update(points);
-    cout << "hey3!" << endl;
-}
-
 void printRobotInfo(ArRobotInfo *robotInfo)
 {
     // Temp
@@ -154,3 +148,11 @@ void printRobotInfo(ArRobotInfo *robotInfo)
          << "Rotation velocity: " << r->rotationVel << endl
          ;
 }
+
+void MapScene::updateRobotPath(Points *path)
+{
+    _path->update(path);
+    _path->setPos(_path->getPos());
+    advance();
+}
+

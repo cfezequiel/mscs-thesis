@@ -28,7 +28,9 @@ struct Point
     int y;
 };
 
-Q_DECLARE_METATYPE(Point)
-Q_DECLARE_METATYPE(list<Point>)
+struct Points
+{
+    list<Point> data;
+};
 
 #endif // MAPDATA_H

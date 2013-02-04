@@ -23,15 +23,13 @@ void QArClient::updateStringsReceived(ArRobotInfo *robotInfo)
     emit updateStrings(robotInfo);
 }
 
-void QArClient::getPathReceived(list<Point> points)
+void QArClient::getPathReceived(Points *path)
 {
     // Correct for change in coordinate system (i.e. y = -y)
-    for (list<Point>::iterator i = points.begin(); i != points.end(); i++)
+    for (list<Point>::iterator i = path->data.begin(); i != path->data.end(); i++)
     {
         i->y = -i->y;
     }
-    emit updatePath(points);
-
-    cout << "QArClient::getPathReceived" << endl;
+    emit updatePath(path);
 }
 

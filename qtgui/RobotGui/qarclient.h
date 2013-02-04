@@ -18,12 +18,12 @@ public:
 signals:
     void updateNumbers(ArRobotInfo *robotInfo);
     void updateStrings(ArRobotInfo *robotInfo);
-    void updatePath(list<Point> points);
+    void updatePath(Points *path);
 
 protected:
     void updateNumbersReceived(ArRobotInfo *robotInfo);
     void updateStringsReceived(ArRobotInfo *robotInfo);
-    void getPathReceived(list<Point> points);
+    void getPathReceived(Points *path);
 
 public slots:
 

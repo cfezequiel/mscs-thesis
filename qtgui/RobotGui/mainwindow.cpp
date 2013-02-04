@@ -36,8 +36,8 @@ void MainWindow::on_actionConnect_triggered()
     // Connect client signals to mapscene slots
     QObject::connect((QObject *) client, SIGNAL(updateNumbers(ArRobotInfo *)),
                      _mapScene, SLOT(updateRobotPose(ArRobotInfo *)));
-    QObject::connect((QObject *) client, SIGNAL(updatePath(list<Point>)),
-                     _mapScene, SLOT(updateRobotPath(list<Point>)));
+    QObject::connect((QObject *) client, SIGNAL(updatePath(Points *)),
+                     _mapScene, SLOT(updateRobotPath(Points *)));
 
     if (!client->ArClient::connect(host, port))
     {
