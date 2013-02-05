@@ -14,10 +14,11 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget);
-    void update(list<Point> points);
+    void update(Points *path);
+    QPointF getPos();
 
 private:
-    list<Point> _points;
+    Points _points;
     QColor _lineColor;
 
 };

@@ -12,18 +12,18 @@ PathObject::PathObject(QGraphicsItem *parent):
 
 QRectF PathObject::boundingRect() const
 {
-    if (_points.empty())
+    if (_points.data.empty())
     {
-        return QRectF(0,0,0,0);
+        return QRectF(0,0,1,1);
     }
 
-    int top = INT_MIN;
+    int top = INT_MAX;
     int left = INT_MAX;
-    int bottom = INT_MAX;
+    int bottom = INT_MIN;
     int right = INT_MIN;
 
     // Find the min/max x and y points
-    for (list<Point>::const_iterator i = _points.begin(); i != _points.end(); i++)
+    for (list<Point>::const_iterator i = _points.data.begin(); i != _points.data.end(); i++)
     {
         if (i->x <= left)
         {
@@ -33,11 +33,11 @@ QRectF PathObject::boundingRect() const
         {
             right = i->x;
         }
-        if (i->y >= top)
+        if (i->y <= top)
         {
             top = i->y;
         }
-        if (i->y <= bottom)
+        if (i->y >= bottom)
         {
             bottom = i->y;
         }
@@ -58,9 +58,9 @@ void PathObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
     // Paint a line based on the points
     qreal x1,x2,y1,y2;
-    for (list<Point>::iterator i = _points.begin(); i != _points.end(); i++)
+    for (list<Point>::iterator i = _points.data.begin(); i != _points.data.end(); i++)
     {
-        if (i == _points.begin())
+        if (i == _points.data.begin())
         {
             x1 = i->x;
             y1 = i->y;
@@ -73,7 +73,9 @@ void PathObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         }
 
         // Paint line
-        painter->drawLine(x1, y1, x2, y2);
+        QPointF p1 = mapFromScene(QPointF(x1, y1));
+        QPointF p2 = mapFromScene(QPointF(x2, y2));
+        painter->drawLine(p1, p2);
 
         // Store current value as prev value
         x1 = x2;
@@ -81,8 +83,27 @@ void PathObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     }
 }
 
-void PathObject::update(list<Point> points)
+void PathObject::update(Points *path)
 {
-    _points = points;
+    _points = *path;
     QGraphicsItem::update(boundingRect());
+}
+
+QPointF PathObject::getPos()
+{
+    qreal sumX = 0;
+    qreal sumY = 0;
+    for (list<Point>::iterator i = _points.data.begin();
+         i != _points.data.end(); i++)
+    {
+        sumX += i->x;
+        sumY += i->y;
+    }
+
+    // Get centroid
+    qreal n = _points.data.size();
+    qreal cx = sumX / n;
+    qreal cy = sumY / n;
+
+    return QPointF(cx, cy);
 }

@@ -3,5 +3,6 @@
         <file>images/stop.png</file>
         <file>images/goto.png</file>
         <file>images/obstacle_rect.png</file>
+        <file>images/home.png</file>
     </qresource>
 </RCC>

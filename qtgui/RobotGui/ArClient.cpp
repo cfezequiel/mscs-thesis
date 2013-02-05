@@ -222,15 +222,15 @@ void ArClient::_handleUpdateStrings(ArNetPacket *packet)
 void ArClient::_handleGetPath(ArNetPacket *packet)
 {
     int numPoints = packet->bufToByte2();
-    list<Point> points;
+    _path.data.clear();
 
     Point point;
     for (int i = 0; i < numPoints; i++)
     {
         point.x = packet->bufToByte4();
         point.y = packet->bufToByte4();
-        points.push_back(point);
+        _path.data.push_back(point);
     }
 
-    getPathReceived(points);
+    getPathReceived(&_path);
 }

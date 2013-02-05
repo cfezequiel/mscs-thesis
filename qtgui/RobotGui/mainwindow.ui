@@ -56,6 +56,7 @@
    </attribute>
    <addaction name="actionStop"/>
    <addaction name="actionGoto"/>
+   <addaction name="actionResetToHome"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="mapEditToolBar">
@@ -109,6 +110,18 @@
    </property>
    <property name="toolTip">
     <string>Add rectangular obstacle</string>
+   </property>
+  </action>
+  <action name="actionResetToHome">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/home.png</normaloff>:/images/home.png</iconset>
+   </property>
+   <property name="text">
+    <string>ResetToHome</string>
+   </property>
+   <property name="toolTip">
+    <string>Reset to Home</string>
    </property>
   </action>
  </widget>

@@ -33,7 +33,7 @@ signals:
     
 public slots:
     void updateRobotPose(ArRobotInfo * robotInfo);
-    void updateRobotPath(list<Point> points);
+    void updateRobotPath(Points *path);
 
 private:
     RobotObject *_robot;
