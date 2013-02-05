@@ -101,6 +101,9 @@
    </property>
   </action>
   <action name="actionAddObstacleRect">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
    <property name="icon">
     <iconset resource="images.qrc">
      <normaloff>:/images/obstacle_rect.png</normaloff>:/images/obstacle_rect.png</iconset>

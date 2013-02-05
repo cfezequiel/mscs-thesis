@@ -17,7 +17,8 @@ SOURCES += main.cpp\
            ArClient.cpp \
     qarclient.cpp \
     robotobject.cpp \
-    pathobject.cpp
+    pathobject.cpp \
+    obstacle.cpp
 
 HEADERS  += mainwindow.h\
             mapscene.h\
@@ -26,7 +27,8 @@ HEADERS  += mainwindow.h\
     qarclient.h \
     robotobject.h \
     mapdata.h \
-    pathobject.h
+    pathobject.h \
+    obstacle.h
 
 FORMS    += mainwindow.ui
 

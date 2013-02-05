@@ -27,6 +27,8 @@ private slots:
 
     void on_actionResetToHome_triggered();
 
+    void on_actionAddObstacleRect_triggered(bool checked);
+
 private:
     Ui::MainWindow *ui;
 

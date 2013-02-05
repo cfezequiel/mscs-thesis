@@ -42,6 +42,7 @@ void MainWindow::on_actionConnect_triggered()
     if (!client->ArClient::connect(host, port))
     {
         cerr << "Failed to connect to " << host;
+        // TODO: popup a message dialog box instead of printing
         return;
     }
 
@@ -59,6 +60,9 @@ void MainWindow::on_actionConnect_triggered()
 
     // Get periodic updates
     client->getUpdates(100);
+
+    // Display connected status
+    statusBar()->showMessage(QString("Connected."), 0);
 }
 
 void MainWindow::on_actionGoto_triggered()
@@ -74,8 +78,6 @@ void MainWindow::on_actionGoto_triggered()
     _client->lock();
     _client->request("getPath", 1000);
     _client->unlock();
-
-    cout << "Goto" << endl;
 }
 
 void MainWindow::on_actionStop_triggered()
@@ -84,8 +86,6 @@ void MainWindow::on_actionStop_triggered()
     _client->lock();
     _client->requestOnce("stop");
     _client->unlock();
-
-    cout << "Stop" << endl;
 }
 
 void MainWindow::on_actionResetToHome_triggered()
@@ -94,6 +94,18 @@ void MainWindow::on_actionResetToHome_triggered()
     _client->lock();
     _client->requestOnce("resetToHome");
     _client->unlock();
+}
 
-    cout << "ResetToHome" << endl;
+void MainWindow::on_actionAddObstacleRect_triggered(bool checked)
+{
+    MapScene *scene = _mapScene;
+
+    if (checked)
+    {
+        scene->setMode(MapScene::ModeAddObstacle);
+    }
+    else
+    {
+        scene->setMode(MapScene::ModeView);
+    }
 }

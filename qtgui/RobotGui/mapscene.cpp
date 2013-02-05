@@ -6,20 +6,24 @@
 #include <sstream>
 #include <vector>
 #include <list>
+
 #include <QCursor>
 #include <QPoint>
 #include <QSize>
 #include <QPen>
 #include <QGraphicsRectItem>
 #include <QPointF>
+#include <QGraphicsSceneHoverEvent>
 
 #include "mapscene.h"
 
 using namespace std;
 
 MapScene::MapScene(QObject *parent) :
-    QGraphicsScene(parent)
+    QGraphicsScene(parent),
+    _mode(ModeView)
 {
+    // Do nothing
 }
 
 void MapScene::renderMap(ArMap *map)
@@ -113,9 +117,31 @@ void MapScene::renderMap(ArMap *map)
     addItem(_path);
 }
 
+void MapScene::_modeAddObstacleRect(QPointF pos)
+{
+    // Add a rectangle centered at 'pos'
+    // FIXME: hardcoded rect dimensions
+    QGraphicsRectItem *rect = addRect(-393.0/2, -237.0/2, 393, 237);
+    rect->setPos(pos);
+}
+
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 {
-    // Do nothing (yet)
+    QPointF pos = mouseEvent->scenePos();
+
+    // Do something depending on the mode
+    switch (_mode)
+    {
+    case ModeView:
+        // Do nothing
+        break;
+    case ModeAddObstacle:
+        _modeAddObstacleRect(pos);
+        break;
+    default:
+        // Do nothing, same as ModeView
+        break;
+    }
 }
 
 // FIXME: this should connect to RobotObject not the scene
@@ -130,12 +156,9 @@ void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
     qreal th = robotInfo->theta;
     _robot->setPos(x, -y);
 
-    //FIXME: term below only considers th > 0,
-    // consider also when th < 0
+    // Set initial rotation
     _robot->setRotation(-th + 90);
     advance();
-
-    cout << "MapScene::updateRobotPose" << endl;
 }
 
 void MapScene::updateRobotPath(Points *path)
@@ -156,4 +179,14 @@ void printRobotInfo(ArRobotInfo *robotInfo)
          << "Forward velocity: " << r->forwardVel << endl
          << "Rotation velocity: " << r->rotationVel << endl
          ;
+}
+
+void MapScene::setMode(Mode mode)
+{
+    _mode = mode;
+}
+
+MapScene::Mode MapScene::mode() const
+{
+    return _mode;
 }

@@ -23,8 +23,11 @@ class MapScene : public QGraphicsScene
     Q_OBJECT
 
 public:
+    enum Mode { ModeView = 0, ModeAddObstacle };
     explicit MapScene(QObject *parent = 0);
     void renderMap(ArMap *map);
+    void setMode(Mode mode);
+    Mode mode() const;
     
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
@@ -36,6 +39,8 @@ public slots:
     void updateRobotPath(Points *path);
 
 private:
+    void _modeAddObstacleRect(QPointF pos);
+    Mode _mode;
     RobotObject *_robot;
     PathObject *_path;
 };
