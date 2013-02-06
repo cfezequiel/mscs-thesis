@@ -2,8 +2,10 @@
  * Qt Wrapper for ArClient
  */
 
+#include <cassert>
 #include <iostream>
 
+#include <QLineF>
 #include "ArClient.h"
 #include "qarclient.h"
 
@@ -31,5 +33,28 @@ void QArClient::getPathReceived(Points *path)
         i->y = -i->y;
     }
     emit updatePath(path);
+}
+
+// Slots
+void QArClient::addObstacle(Obstacle *obs)
+{
+    ArMap *map = getMap();
+    assert(map != NULL);
+
+    // Edit the map with 'obs'
+    list<QLineF> *lines = obs->sceneLines();
+
+    // Add each line to the map
+    vector<ArLineSegment> *mapLines = map->getLines();
+    for (list<QLineF>::iterator i = lines->begin(); i != lines->end(); i++)
+    {
+        // Don't forget to negate y due to change in coordinate system
+        ArLineSegment line(i->x1(), -i->y1(), i->x2(), -i->y2());
+        mapLines->push_back(line);
+    }
+    map->setLines(mapLines);
+
+    // Send map updates
+    sendMap(map);
 }
 

@@ -3,8 +3,8 @@
 RobotObject::RobotObject(QGraphicsItem *parent) :
     QGraphicsItem(parent)
 {
-    height = 393;
-    width = 237;
+    _width = 393;
+    _length = 445;
     lineColor = QColor(Qt::black);
     fillColor = QColor(Qt::red);
 }
@@ -12,7 +12,7 @@ RobotObject::RobotObject(QGraphicsItem *parent) :
 QRectF RobotObject::boundingRect() const
 {
     // Assuming that (0,0) is the center of the object
-    return QRectF(-width/2, -height/2, width, height);
+    return QRectF(-_width/2, -_length/2, _width, _length);
 }
 
 void RobotObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -21,10 +21,15 @@ void RobotObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->setBrush(QBrush(fillColor));
     painter->drawEllipse(boundingRect());
     painter->setPen(QPen(lineColor));
-    painter->drawLine(0,0, 0, -height/2);
+    painter->drawLine(0,0, 0, -_length/2);
 }
 
-void RobotObject::advance(int phase)
+qreal RobotObject::width() const
 {
-    //FIXME: do nothing?
+    return _width;
+}
+
+qreal RobotObject::length() const
+{
+    return _length;
 }

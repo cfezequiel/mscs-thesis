@@ -15,6 +15,7 @@
 #include "mapobject.h"
 #include "mapdata.h"
 #include "pathobject.h"
+#include "obstacle.h"
 
 using namespace std;
 
@@ -33,9 +34,10 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
 signals:
+    void addObstacle(Obstacle *obs);
     
 public slots:
-    void updateRobotPose(ArRobotInfo * robotInfo);
+    void updateRobotPose(ArRobotInfo *robotInfo);
     void updateRobotPath(Points *path);
 
 private:

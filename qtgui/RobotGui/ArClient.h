@@ -18,12 +18,14 @@ public:
     ~ArClient();
     bool connect(char *host, int port, char *username=NULL, char *password=NULL);
     bool mapReceived() { return _mapReceived; }
-    ArMap * getMap();
+    ArMap * getMapFromServer();
     void getDrawings();
     list<string> * listCommands();
     ArConfig * getConfig();
     void sendMap(ArMap *map);
     void getUpdates(int frequency);
+    ArMap * getMap() { return _map; }
+    void setMapFileOnServer(char *filename);
 
 protected:
     virtual void updateNumbersReceived(ArRobotInfo *robotInfo) {}
@@ -39,6 +41,7 @@ private:
     ArFunctor1C<ArClient, ArNetPacket *> *_getMapCB;
     bool _mapReceived;
     stringstream _strbuf;
+    ArMap *_map;
 
     // List commands handler
     void _handleListCommands(ArNetPacket *packet);

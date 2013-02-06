@@ -12,21 +12,19 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget);
     QRectF boundingRect() const;
+    qreal width() const;
+    qreal length() const;
 
 protected:
-    void advance(int phase);
-
-    qreal width;
-    qreal height;
     QColor lineColor;
     QColor fillColor;
 
 private:
+    qreal _length;
+    qreal _width;
     qreal _th;
     qreal _x;
     qreal _y;
-
-
 };
 
 #endif // ROBOTOBJECT_H

@@ -6,8 +6,7 @@
 #include <QMetaType>
 #include "ArClient.h"
 #include "mapdata.h"
-
-
+#include "obstacle.h"
 
 class QArClient : public QObject, public ArClient
 {
@@ -26,6 +25,7 @@ protected:
     void getPathReceived(Points *path);
 
 public slots:
+    void addObstacle(Obstacle *obs);
 
 private:
 

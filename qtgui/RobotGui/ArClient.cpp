@@ -1,5 +1,7 @@
+#include <unistd.h>
 #include <cassert>
 #include <cstdio>
+#include <sstream>
 #include <fstream>
 #include <iostream>
 #include "ArClient.h"
@@ -46,6 +48,7 @@ bool ArClient::connect(char *host, int port, char *username, char *password)
 
     // Add robot config handler
     _configHandler = new ArClientHandlerConfig(this);
+    _configHandler->requestConfigFromServer();
 
     // Add file transfer handler
     _clientFileFromClient = new ArClientFileFromClient(this);
@@ -103,8 +106,14 @@ list<string> * ArClient::listCommands()
     return &_strListBuf;
 }
 
-ArMap * ArClient::getMap()
+// Get map from robot server
+ArMap * ArClient::getMapFromServer()
 {
+    if (_map != NULL && _mapReceived == true)
+    {
+        return _map;
+    }
+
     if (!request("getMap", -1))
     {
         cerr << "Error: Map request failed." << endl;
@@ -126,11 +135,11 @@ ArMap * ArClient::getMap()
     outFile.close();
 
     // Load map
-    ArMap *map = new ArMap();
-    if (!map->readFile(filename))
+    _map = new ArMap();
+    if (!_map->readFile(filename))
     {
         cerr << "Error: Unable to load map file." << endl;
-        delete map;
+        delete _map;
         return NULL;
     }
 
@@ -140,7 +149,7 @@ ArMap * ArClient::getMap()
         cerr << "Error: Unable to remove temporary map file." << endl;
     }
 
-    return map;
+    return _map;
 }
 
 void ArClient::_handleGetMap(ArNetPacket *packet)
@@ -178,15 +187,25 @@ void ArClient::sendMap(ArMap *map)
     assert(map != NULL);
 
     // Write map to file
+    // FIXME: hardcoded directory string
+    char *baseDir = get_current_dir_name();
+    map->setBaseDirectory(baseDir);
     map->writeFile(map->getFileName());
+    delete baseDir;
 
     // Send map file to server
-    // NOTE: map file should be stored where the original map file was taken
-    _clientFileFromClient->putFileToDirectory(map->getBaseDirectory(), 
-        map->getFileName(), map->getFileName());
+    stringstream ss;
+    char mapFile[STRLEN];
+    ss << map->getBaseDirectory() << '/' << map->getFileName();
+    ss >> mapFile;
+    _clientFileFromClient->putFileToDirectory(map->getBaseDirectory(),
+        map->getFileName(), mapFile);
+
+    // Update location of map file in config
+    setMapFileOnServer(mapFile);
 
     // Reload the config
-    _configHandler->reloadConfigOnServer();
+    //_configHandler->reloadConfigOnServer();
 }
 
 void ArClient::getUpdates(int frequency)
@@ -233,4 +252,35 @@ void ArClient::_handleGetPath(ArNetPacket *packet)
     }
 
     getPathReceived(&_path);
+}
+
+void ArClient::setMapFileOnServer(char *filename)
+{
+    assert(filename != NULL);
+
+    // Get configuration
+    ArConfig *config = _configHandler->getConfig();
+    ArConfigSection *section = config->findSection("Files");
+
+    // Debug
+    if (section)
+    {
+        ArConfigArg *arg = section->findParam("Map");
+        if (arg)
+        {
+            // Modify configuration
+            bool result = arg->setString(filename);
+            if (!result)
+            {
+                printf("Error updating server config file with new map.\n");
+            }
+        }
+    }
+    else
+    {
+        cerr << "Error: Could not find Files section." << endl;
+    }
+
+    // Save configuration on server
+    _configHandler->saveConfigToServer();
 }

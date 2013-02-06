@@ -33,11 +33,13 @@ void MainWindow::on_actionConnect_triggered()
     char host[] = "localhost";
     int port = 7272;
 
-    // Connect client signals to mapscene slots
+    // Connect signals and slots
     QObject::connect((QObject *) client, SIGNAL(updateNumbers(ArRobotInfo *)),
                      _mapScene, SLOT(updateRobotPose(ArRobotInfo *)));
     QObject::connect((QObject *) client, SIGNAL(updatePath(Points *)),
                      _mapScene, SLOT(updateRobotPath(Points *)));
+    QObject::connect((QObject *) _mapScene, SIGNAL(addObstacle(Obstacle *)),
+                     client, SLOT(addObstacle(Obstacle *)));
 
     if (!client->ArClient::connect(host, port))
     {
@@ -51,7 +53,9 @@ void MainWindow::on_actionConnect_triggered()
     _client = client;
 
     // Get map
-    ArMap *map = client->getMap();
+    client->lock();
+    ArMap *map = client->getMapFromServer();
+    client->unlock();
 
     // Render map
     _mapScene->renderMap(map);

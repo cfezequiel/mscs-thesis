@@ -119,10 +119,17 @@ void MapScene::renderMap(ArMap *map)
 
 void MapScene::_modeAddObstacleRect(QPointF pos)
 {
+    // Set initial dimensions to robot dimensions
+    qreal width = _robot->width();
+    qreal length = _robot->length();
+
     // Add a rectangle centered at 'pos'
-    // FIXME: hardcoded rect dimensions
-    QGraphicsRectItem *rect = addRect(-393.0/2, -237.0/2, 393, 237);
-    rect->setPos(pos);
+    Obstacle *obs = new Obstacle(width, length);
+    addItem(obs);
+    obs->setPos(pos);
+
+    // Send signal that obstacle was generated
+    emit addObstacle(obs);
 }
 
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
