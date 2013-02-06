@@ -28,6 +28,7 @@ ArClient::ArClient() : ArClientBase()
     _mapReceived = false;
     _nCommands = 0;
     _commandsReceived = false;
+    _moving = false;
 }
 
 ArClient::~ArClient()
@@ -198,14 +199,14 @@ void ArClient::sendMap(ArMap *map)
     char mapFile[STRLEN];
     ss << map->getBaseDirectory() << '/' << map->getFileName();
     ss >> mapFile;
+    lock();
     _clientFileFromClient->putFileToDirectory(map->getBaseDirectory(),
         map->getFileName(), mapFile);
+    unlock();
 
     // Update location of map file in config
+    // NOTE: This automatically reloads the configuration
     setMapFileOnServer(mapFile);
-
-    // Reload the config
-    //_configHandler->reloadConfigOnServer();
 }
 
 void ArClient::getUpdates(int frequency)
@@ -283,4 +284,28 @@ void ArClient::setMapFileOnServer(char *filename)
 
     // Save configuration on server
     _configHandler->saveConfigToServer();
+}
+
+void ArClient::stop()
+{
+    lock();
+    requestOnce("stop");
+    unlock();
+}
+
+void ArClient::goToGoal(const char *goalName)
+{
+    assert(goalName != NULL);
+
+    lock();
+    requestOnceWithString("gotoGoal", goalName);
+    unlock();
+
+    _currentGoal = goalName;
+    _moving = true;
+}
+
+void ArClient::resume()
+{
+    goToGoal(_currentGoal.c_str());
 }

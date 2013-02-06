@@ -26,6 +26,9 @@ public:
     void getUpdates(int frequency);
     ArMap * getMap() { return _map; }
     void setMapFileOnServer(char *filename);
+    void stop();
+    void goToGoal(const char *goalName);
+    void resume();
 
 protected:
     virtual void updateNumbersReceived(ArRobotInfo *robotInfo) {}
@@ -61,6 +64,10 @@ private:
     ArFunctor1C<ArClient, ArNetPacket *> *_getPathCB;
     void _handleGetPath(ArNetPacket *packet);
     Points _path;
+
+    // Goal
+    bool _moving;
+    string _currentGoal;
 };
 
 #endif // ARCLIENT_H

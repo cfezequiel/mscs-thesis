@@ -72,11 +72,7 @@ void MainWindow::on_actionConnect_triggered()
 void MainWindow::on_actionGoto_triggered()
 {
     // FIXME: hardcoded goal value
-    _client->lock();
-    _client->requestOnceWithString("gotoGoal", "G");
-    _client->unlock();
-
-    ArUtil::sleep(100);
+    _client->goToGoal("G");
 
     // Request planned path
     _client->lock();
@@ -87,9 +83,7 @@ void MainWindow::on_actionGoto_triggered()
 void MainWindow::on_actionStop_triggered()
 {
     // Stop the robot
-    _client->lock();
-    _client->requestOnce("stop");
-    _client->unlock();
+    _client->stop();
 }
 
 void MainWindow::on_actionResetToHome_triggered()
