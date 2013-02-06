@@ -56,7 +56,7 @@ void QArClient::addObstacle(Obstacle *obs)
 
     // Send map updates
     stop();
-    ArUtil::sleep(100);
+    //ArUtil::sleep(100);
     sendMap(map);
     ArUtil::sleep(100);
     resume();
