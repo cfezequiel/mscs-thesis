@@ -38,8 +38,8 @@ void MainWindow::on_actionConnect_triggered()
                      _mapScene, SLOT(updateRobotPose(ArRobotInfo *)));
     QObject::connect((QObject *) client, SIGNAL(updatePath(Points *)),
                      _mapScene, SLOT(updateRobotPath(Points *)));
-    QObject::connect((QObject *) _mapScene, SIGNAL(addObstacle(ForbiddenRegion *)),
-                     client, SLOT(addObstacle(ForbiddenRegion *)));
+    QObject::connect((QObject *) _mapScene, SIGNAL(mapChanged(ArMap *)),
+                     client, SLOT(mapChanged(ArMap *)));
 
     if (!client->ArClient::connect(host, port))
     {

@@ -36,30 +36,11 @@ void QArClient::getPathReceived(Points *path)
 }
 
 // Slots
-void QArClient::addObstacle(ForbiddenRegion *fr)
+void QArClient::mapChanged(ArMap *map)
 {
-    ArMap *map = getMap();
-    assert(map != NULL);
-
-    // Get points
-    QRectF rect = fr->boundingRect();
-    QPointF center = fr->scenePos();
-    qreal rotation = fr->rotation();
-    ArPose pose(0, 0, rotation);
-    ArPose fromPose(center.x() - rect.width()/2, -(center.y() - rect.height()/2), 0);
-    ArPose toPose(center.x() + rect.width()/2, -(center.y() + rect.height()/2), 0);
-
-    // Add obstacle to map
-    ArMapObject *frObject = new ArMapObject("ForbiddenArea", pose, "", "ICON", "", true, fromPose, toPose);
-    list<ArMapObject *> *mapObjects = map->getMapObjects();
-    mapObjects->push_back(frObject);
-    map->setMapObjects(mapObjects);
-
-    // Send map updates
     stop();
-    //ArUtil::sleep(100);
     sendMap(map);
     ArUtil::sleep(100);
-    resume();
+    resume(); //FIXME: resume hardcoded as 'gotoGoal' operation
 }
 

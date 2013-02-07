@@ -147,8 +147,23 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
     addItem(fr);
     fr->setPos(pos);
 
-    // Send signal that obstacle was generated
-    emit addObstacle(fr);
+    // Get poses
+    QRectF rect = fr->boundingRect();
+    QPointF center = fr->scenePos();
+    qreal rotation = fr->rotation();
+    ArPose pose(0, 0, rotation);
+    ArPose fromPose(center.x() - rect.width()/2, -(center.y() - rect.height()/2), 0);
+    ArPose toPose(center.x() + rect.width()/2, -(center.y() + rect.height()/2), 0);
+
+    // Add obstacle to ArMap
+    ArMapObject *frObject = new ArMapObject("ForbiddenArea", pose,
+                                            "", "ICON", "", true, fromPose, toPose);
+    list<ArMapObject *> *mapObjects = _map->getMapObjects();
+    mapObjects->push_back(frObject);
+    _map->setMapObjects(mapObjects);
+
+    // Send signal that map was changed
+    emit mapChanged(_map);
 }
 
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)

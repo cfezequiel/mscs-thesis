@@ -35,7 +35,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
 signals:
-    void addObstacle(ForbiddenRegion *fr);
+    void mapChanged(ArMap *map);
     
 public slots:
     void updateRobotPose(ArRobotInfo *robotInfo);

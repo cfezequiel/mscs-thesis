@@ -26,9 +26,7 @@ protected:
     void getPathReceived(Points *path);
 
 public slots:
-    void addObstacle(ForbiddenRegion *fr);
-
-private:
+    void mapChanged(ArMap *map);
 
 };
 
