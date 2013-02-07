@@ -31,6 +31,8 @@ private slots:
     void on_actionAddObstacleRect_triggered(bool checked);
     void on__mapEditActionGroup_triggered(QAction *action);
 
+    void on_actionDeleteMapObject_triggered(bool checked);
+
 private:
     Ui::MainWindow *ui;
     QActionGroup *_mapEditActionGroup;
