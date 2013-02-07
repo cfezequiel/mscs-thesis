@@ -51,8 +51,9 @@ bool ArClient::connect(char *host, int port, char *username, char *password)
     _configHandler = new ArClientHandlerConfig(this);
     _configHandler->requestConfigFromServer();
 
-    // Add file transfer handler
+    // Add file handlers
     _clientFileFromClient = new ArClientFileFromClient(this);
+    _clientFileLister = new ArClientFileLister(this);
 
     // Add map handler
     addHandler("getMap", _getMapCB);
@@ -188,7 +189,6 @@ void ArClient::sendMap(ArMap *map)
     assert(map != NULL);
 
     // Write map to file
-    // FIXME: hardcoded directory string
     char *baseDir = get_current_dir_name();
     map->setBaseDirectory(baseDir);
     map->writeFile(map->getFileName());
@@ -200,13 +200,15 @@ void ArClient::sendMap(ArMap *map)
     ss << map->getBaseDirectory() << '/' << map->getFileName();
     ss >> mapFile;
     lock();
+    //FIXME: target directory is the same as source directory
+    // This may not be the case always
     _clientFileFromClient->putFileToDirectory(map->getBaseDirectory(),
-        map->getFileName(), mapFile);
+                                              map->getFileName(), mapFile);
     unlock();
 
     // Update location of map file in config
     // NOTE: This automatically reloads the configuration
-    setMapFileOnServer(mapFile);
+    setMapFileConfigOnServer(mapFile);
 }
 
 void ArClient::getUpdates(int frequency)
@@ -255,7 +257,7 @@ void ArClient::_handleGetPath(ArNetPacket *packet)
     getPathReceived(&_path);
 }
 
-void ArClient::setMapFileOnServer(char *filename)
+void ArClient::setMapFileConfigOnServer(const char *filename)
 {
     assert(filename != NULL);
 

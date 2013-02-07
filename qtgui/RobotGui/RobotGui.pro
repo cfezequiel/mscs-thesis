@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     qarclient.cpp \
     robotobject.cpp \
     pathobject.cpp \
-    obstacle.cpp
+    obstacle.cpp \
+    forbiddenregion.cpp
 
 HEADERS  += mainwindow.h\
             mapscene.h\
@@ -28,7 +29,8 @@ HEADERS  += mainwindow.h\
     robotobject.h \
     mapdata.h \
     pathobject.h \
-    obstacle.h
+    obstacle.h \
+    forbiddenregion.h
 
 FORMS    += mainwindow.ui
 

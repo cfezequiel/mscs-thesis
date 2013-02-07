@@ -25,7 +25,7 @@ public:
     void sendMap(ArMap *map);
     void getUpdates(int frequency);
     ArMap * getMap() { return _map; }
-    void setMapFileOnServer(char *filename);
+    void setMapFileConfigOnServer(const char *filename);
     void stop();
     void goToGoal(const char *goalName);
     void resume();
@@ -36,8 +36,12 @@ protected:
     virtual void getPathReceived(Points *path) {}
 
 private:
+    // Config handler
     ArClientHandlerConfig *_configHandler;
+
+    // File handlers
     ArClientFileFromClient *_clientFileFromClient;
+    ArClientFileLister *_clientFileLister;
 
     // Map handler
     void _handleGetMap(ArNetPacket *packet);

@@ -44,7 +44,7 @@ void MapScene::renderMap(ArMap *map)
                         fabs(x2-x1) + 2*pad, fabs(y2-y1) + 2*pad);
     setSceneRect(boundingRect);
 
-    // Render obstacles
+    // Render lines
     vector< ArLineSegment > *lines = map->getLines();
     for (vector< ArLineSegment >::iterator i = lines->begin();
          i != lines->end(); i++)
@@ -57,27 +57,44 @@ void MapScene::renderMap(ArMap *map)
     }
 
     // Render map objects
-    ArPose fromPose, toPose;
     MapObject *obj;
+    string type;
     list< ArMapObject *> *objects = map->getMapObjects();
     for (list< ArMapObject *>::iterator i = objects->begin();
          i != objects->end(); i++)
     {
+        type = (*i)->getType();
+        ArPose pose = (*i)->getPose();
+        th = pose.getTh();
+
         // If object is a region
         if ((*i)->hasFromTo())
         {
-            fromPose = (*i)->getFromPose();
-            toPose = (*i)->getToPose();
-            fromPose.getPose(&x1, &y1, &th);
-            toPose.getPose(&x2, &y2, &th);
-            addRect(x1, -y1, fabs(x2-x1), fabs(y2-y1));
+            ArPose fromPose, toPose;
+            fromPose = (*i)->getFromPose(); // Top-left
+            toPose = (*i)->getToPose(); // Bottom-right
+            ArPose center = (*i)->findCenter();
+
+            if (type == "ForbiddenArea")
+            {
+                qreal width = fabs(toPose.getX() - fromPose.getX());
+                qreal height = fabs(toPose.getY() - fromPose.getY());
+
+                ForbiddenRegion *fr = new ForbiddenRegion(width, height);
+                fr->setPos(center.getX(), -center.getY());
+                fr->setRotation(-th);
+                addItem(fr);
+            }
+            else
+            {
+                cerr << "Unknown MapObject type = " << type << endl;
+            }
         }
         // If object is a point
         else
         {
-            fromPose = (*i)->getPose();
-            fromPose.getPose(&x1, &y1, &th);
-            printf("fromPose(%f, %f)\n", x1, y1);
+            x1 = pose.getX();
+            y1 = pose.getY();
             obj = new MapObject;
 
             // Set position
@@ -85,7 +102,7 @@ void MapScene::renderMap(ArMap *map)
             obj->setRotation(-th);
 
             // Set colors
-            string type((*i)->getType());
+            type = (*i)->getType();
             if (type == "GoalWithHeading")
             {
                 obj->setLineColor(Qt::cyan);
@@ -98,17 +115,19 @@ void MapScene::renderMap(ArMap *map)
             }
             else
             {
-                // do nothing; default settings
+                cerr << "Unknown MapObject type = " << type << endl;
             }
 
             addItem(obj);
         }
     } // end render map objects
 
+    // Store map
+    _map = map;
+
     // Render robot
     _robot = new RobotObject;
     _robot->setZValue(2);
-    //_robot->setRotation(90);
     addItem(_robot);
 
     // Render path (should be invisible initially)
@@ -123,13 +142,13 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
     qreal width = _robot->width();
     qreal length = _robot->length();
 
-    // Add a rectangle centered at 'pos'
-    Obstacle *obs = new Obstacle(width, length);
-    addItem(obs);
-    obs->setPos(pos);
+    // Add a forbidden region centered at 'pos'
+    ForbiddenRegion *fr = new ForbiddenRegion(width, length);
+    addItem(fr);
+    fr->setPos(pos);
 
     // Send signal that obstacle was generated
-    emit addObstacle(obs);
+    emit addObstacle(fr);
 }
 
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -163,7 +182,7 @@ void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
     qreal th = robotInfo->theta;
     _robot->setPos(x, -y);
 
-    // Set initial rotation
+    // Set rotation
     _robot->setRotation(-th + 90);
     advance();
 }

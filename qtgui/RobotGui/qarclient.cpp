@@ -36,23 +36,24 @@ void QArClient::getPathReceived(Points *path)
 }
 
 // Slots
-void QArClient::addObstacle(Obstacle *obs)
+void QArClient::addObstacle(ForbiddenRegion *fr)
 {
     ArMap *map = getMap();
     assert(map != NULL);
 
-    // Edit the map with 'obs'
-    list<QLineF> *lines = obs->sceneLines();
+    // Get points
+    QRectF rect = fr->boundingRect();
+    QPointF center = fr->scenePos();
+    qreal rotation = fr->rotation();
+    ArPose pose(0, 0, rotation);
+    ArPose fromPose(center.x() - rect.width()/2, -(center.y() - rect.height()/2), 0);
+    ArPose toPose(center.x() + rect.width()/2, -(center.y() + rect.height()/2), 0);
 
-    // Add each line to the map
-    vector<ArLineSegment> *mapLines = map->getLines();
-    for (list<QLineF>::iterator i = lines->begin(); i != lines->end(); i++)
-    {
-        // Don't forget to negate y due to change in coordinate system
-        ArLineSegment line(i->x1(), -i->y1(), i->x2(), -i->y2());
-        mapLines->push_back(line);
-    }
-    map->setLines(mapLines);
+    // Add obstacle to map
+    ArMapObject *frObject = new ArMapObject("ForbiddenArea", pose, "", "ICON", "", true, fromPose, toPose);
+    list<ArMapObject *> *mapObjects = map->getMapObjects();
+    mapObjects->push_back(frObject);
+    map->setMapObjects(mapObjects);
 
     // Send map updates
     stop();

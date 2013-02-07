@@ -1,6 +1,8 @@
 #ifndef OBSTACLE_H
 #define OBSTACLE_H
 
+//FIXME: this is no longer used. Deprecate?
+
 #include <vector>
 #include <list>
 #include <QAbstractGraphicsShapeItem>

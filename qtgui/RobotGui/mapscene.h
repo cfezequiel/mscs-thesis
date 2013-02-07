@@ -16,6 +16,7 @@
 #include "mapdata.h"
 #include "pathobject.h"
 #include "obstacle.h"
+#include "forbiddenregion.h"
 
 using namespace std;
 
@@ -34,7 +35,7 @@ protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
 
 signals:
-    void addObstacle(Obstacle *obs);
+    void addObstacle(ForbiddenRegion *fr);
     
 public slots:
     void updateRobotPose(ArRobotInfo *robotInfo);
@@ -45,6 +46,7 @@ private:
     Mode _mode;
     RobotObject *_robot;
     PathObject *_path;
+    ArMap *_map;
 };
 
 #endif // MAPSCENE_H
