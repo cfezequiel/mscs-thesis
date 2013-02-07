@@ -136,6 +136,7 @@ void MainWindow::on_actionAddObstacleRect_triggered(bool checked)
 
 void MainWindow::on_actionDeleteMapObject_triggered(bool checked)
 {
+    MapScene *scene = _mapScene;
     if (checked)
     {
         scene->setMode(MapScene::ModeDelete);
