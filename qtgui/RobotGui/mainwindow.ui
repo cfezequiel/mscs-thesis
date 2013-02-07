@@ -70,6 +70,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionAddObstacleRect"/>
+   <addaction name="actionDeleteMapObject"/>
   </widget>
   <action name="actionConnect">
    <property name="text">
@@ -125,6 +126,21 @@
    </property>
    <property name="toolTip">
     <string>Reset to Home</string>
+   </property>
+  </action>
+  <action name="actionDeleteMapObject">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/delete.png</normaloff>:/images/delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>DeleteMapObject</string>
+   </property>
+   <property name="toolTip">
+    <string>Delete an object from the map</string>
    </property>
   </action>
  </widget>

@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "mapobject.h"
@@ -15,6 +16,13 @@ MainWindow::MainWindow(QWidget *parent) :
     // Set map scene
     _mapScene = new MapScene(this);
     ui->mapView->setScene(_mapScene);
+
+    // Action group for map editing actions
+    _mapEditActionGroup = new QActionGroup(this);
+    ui->actionAddObstacleRect->setActionGroup(_mapEditActionGroup);
+    ui->actionDeleteMapObject->setActionGroup(_mapEditActionGroup);
+    QObject::connect((QObject *) _mapEditActionGroup, SIGNAL(triggered(QAction *)),
+                     (QObject *) this, SLOT(on__mapEditActionGroup_triggered(QAction *)));
 }
 
 MainWindow::~MainWindow()
@@ -22,10 +30,26 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::on__mapEditActionGroup_triggered(QAction *action)
+{
+    //FIXME: This is not an efficient solution, but I could not find
+    // any other way to make the actions exclusive
+
+    // Uncheck actions
+    QList<QAction *> actions = _mapEditActionGroup->actions();
+    for (QList<QAction *>::iterator i = actions.begin();
+         i != actions.end(); i++)
+    {
+        (*i)->setChecked(false);
+    }
+
+    // Check only the triggered action
+    action->setChecked(true);
+}
+
 void MainWindow::on_actionConnect_triggered()
 {
     // TODO: Open dialog window
-
     // FIXME: temporary (refactor later)
 
     // Connect client
@@ -34,10 +58,12 @@ void MainWindow::on_actionConnect_triggered()
     int port = 7272;
 
     // Connect signals and slots
+    // -- Client to MapScene --
     QObject::connect((QObject *) client, SIGNAL(updateNumbers(ArRobotInfo *)),
                      _mapScene, SLOT(updateRobotPose(ArRobotInfo *)));
     QObject::connect((QObject *) client, SIGNAL(updatePath(Points *)),
                      _mapScene, SLOT(updateRobotPath(Points *)));
+    // -- MapScene to Client --
     QObject::connect((QObject *) _mapScene, SIGNAL(mapChanged(ArMap *)),
                      client, SLOT(mapChanged(ArMap *)));
 
@@ -101,6 +127,18 @@ void MainWindow::on_actionAddObstacleRect_triggered(bool checked)
     if (checked)
     {
         scene->setMode(MapScene::ModeAddObstacle);
+    }
+    else
+    {
+        scene->setMode(MapScene::ModeView);
+    }
+}
+
+void MainWindow::on_actionDeleteMapObject_triggered(bool checked)
+{
+    if (checked)
+    {
+        scene->setMode(MapScene::ModeDelete);
     }
     else
     {

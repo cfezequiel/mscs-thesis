@@ -4,5 +4,6 @@
         <file>images/goto.png</file>
         <file>images/obstacle_rect.png</file>
         <file>images/home.png</file>
+        <file>images/delete.png</file>
     </qresource>
 </RCC>

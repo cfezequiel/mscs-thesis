@@ -1,6 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QActionGroup>
 #include <QMainWindow>
 #include <QObject>
 
@@ -28,9 +29,11 @@ private slots:
     void on_actionResetToHome_triggered();
 
     void on_actionAddObstacleRect_triggered(bool checked);
+    void on__mapEditActionGroup_triggered(QAction *action);
 
 private:
     Ui::MainWindow *ui;
+    QActionGroup *_mapEditActionGroup;
 
     MapScene *_mapScene;
     ArClient *_client;

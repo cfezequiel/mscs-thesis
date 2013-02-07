@@ -111,11 +111,6 @@ list<string> * ArClient::listCommands()
 // Get map from robot server
 ArMap * ArClient::getMapFromServer()
 {
-    if (_map != NULL && _mapReceived == true)
-    {
-        return _map;
-    }
-
     if (!request("getMap", -1))
     {
         cerr << "Error: Map request failed." << endl;
@@ -137,11 +132,11 @@ ArMap * ArClient::getMapFromServer()
     outFile.close();
 
     // Load map
-    _map = new ArMap();
-    if (!_map->readFile(filename))
+    ArMap *map = new ArMap();
+    if (!map->readFile(filename))
     {
         cerr << "Error: Unable to load map file." << endl;
-        delete _map;
+        delete map;
         return NULL;
     }
 
@@ -151,7 +146,7 @@ ArMap * ArClient::getMapFromServer()
         cerr << "Error: Unable to remove temporary map file." << endl;
     }
 
-    return _map;
+    return map;
 }
 
 void ArClient::_handleGetMap(ArNetPacket *packet)

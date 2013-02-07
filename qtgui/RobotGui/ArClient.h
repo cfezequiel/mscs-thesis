@@ -24,7 +24,6 @@ public:
     ArConfig * getConfig();
     void sendMap(ArMap *map);
     void getUpdates(int frequency);
-    ArMap * getMap() { return _map; }
     void setMapFileConfigOnServer(const char *filename);
     void stop();
     void goToGoal(const char *goalName);
@@ -48,7 +47,6 @@ private:
     ArFunctor1C<ArClient, ArNetPacket *> *_getMapCB;
     bool _mapReceived;
     stringstream _strbuf;
-    ArMap *_map;
 
     // List commands handler
     void _handleListCommands(ArNetPacket *packet);
