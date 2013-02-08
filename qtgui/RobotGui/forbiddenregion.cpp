@@ -1,4 +1,7 @@
+#include <iostream>
 #include "forbiddenregion.h"
+
+using namespace std;
 
 ForbiddenRegion::ForbiddenRegion(qreal width, qreal height, QGraphicsItem *parent):
     QGraphicsItem(parent), _width(width), _height(height)
@@ -19,4 +22,10 @@ void ForbiddenRegion::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     painter->setPen(QPen(_lineColor));
     painter->setBrush(QBrush(_fillColor));
     painter->drawRect(boundingRect());
+}
+
+void ForbiddenRegion::mousePressEvent(QGraphicsSceneMouseEvent *event)
+{
+    cout << "ForbiddenRegion::mousePressEvent" << endl;
+
 }

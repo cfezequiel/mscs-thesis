@@ -21,8 +21,11 @@ MainWindow::MainWindow(QWidget *parent) :
     _mapEditActionGroup = new QActionGroup(this);
     ui->actionAddObstacleRect->setActionGroup(_mapEditActionGroup);
     ui->actionDeleteMapObject->setActionGroup(_mapEditActionGroup);
-    QObject::connect((QObject *) _mapEditActionGroup, SIGNAL(triggered(QAction *)),
-                     (QObject *) this, SLOT(on__mapEditActionGroup_triggered(QAction *)));
+//NOTE: This code not needed because meta-compiler automatically
+// connects signals to slots that have a particular naming convention,
+// like the one below
+//    QObject::connect(_mapEditActionGroup, SIGNAL(triggered(QAction *)),
+//                    this, SLOT(on__mapEditActionGroup_triggered(QAction *)));
 }
 
 MainWindow::~MainWindow()
@@ -137,6 +140,7 @@ void MainWindow::on_actionAddObstacleRect_triggered(bool checked)
 void MainWindow::on_actionDeleteMapObject_triggered(bool checked)
 {
     MapScene *scene = _mapScene;
+
     if (checked)
     {
         scene->setMode(MapScene::ModeDelete);

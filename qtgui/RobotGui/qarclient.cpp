@@ -38,9 +38,9 @@ void QArClient::getPathReceived(Points *path)
 // Slots
 void QArClient::mapChanged(ArMap *map)
 {
-    stop();
+    //stop();
     sendMap(map);
-    ArUtil::sleep(100);
-    resume(); //FIXME: resume hardcoded as 'gotoGoal' operation
+    //ArUtil::sleep(100);
+    //resume(); //FIXME: resume hardcoded as 'gotoGoal' operation
 }
 

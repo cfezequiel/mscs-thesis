@@ -204,6 +204,9 @@ void ArClient::sendMap(ArMap *map)
     // Update location of map file in config
     // NOTE: This automatically reloads the configuration
     setMapFileConfigOnServer(mapFile);
+
+    // Try reloading the configuration manually
+    _configHandler->reloadConfigOnServer();
 }
 
 void ArClient::getUpdates(int frequency)
