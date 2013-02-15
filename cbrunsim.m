@@ -3,7 +3,7 @@ function out = cbrunsim(map)
 %   Detailed explanation goes here
      
     % === Start of simulation parameters ===
-    wObstacle = 2;
+    wObstacle = 1;
     % === End of simulation parameters ===
     
     % Get search points

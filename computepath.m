@@ -3,6 +3,7 @@ function out = computepath(start, goal, obstacleCircles, obstacleLines, ...
 %COMPUTEPATH Summary of this function goes here
 %   Detailed explanation goes here
 
+    tic
     % === start: Simulation Parameters ===
     % Set weights
     wGoal = 1.0000e-04;
@@ -74,7 +75,9 @@ function out = computepath(start, goal, obstacleCircles, obstacleLines, ...
                          path(2, j) + lambda * sin(theta(bestOne, 1))];
 
     end
-    
+
+    elapsedTime = toc;
+    fprintf('Elapsed time for computing path to goal: %f\n', elapsedTime);
     out = path;
    
 end

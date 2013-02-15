@@ -25,6 +25,9 @@ function cbaddstartpoint(map, eventdata, handles)
     % Add delete callback, which is activated when 'delete' tool selected
     set(h, 'ButtonDownFcn', {@cbdeletestartpoint, map, handles.tbppSetStartPoint});  
   
+    % Set start point name
+    setString(h, 'start');
+    
     % Update map data
     mapInfo = get(map, 'UserData');
     mapInfo.startpoint = h;

@@ -20,7 +20,6 @@ function out = obstaclefunction(point, obstacleCircles, obstacleLines, weight)
         Xp = point(1);
         Yp = point(2);
         JC = exp(-C .* ((Xp - X).^2 .* (Yp - Y).^2));
-        disp(JC);
     else
         JC = 0;
     end
