@@ -41,6 +41,14 @@ void QArClient::mapChanged(ArMap *map)
     //stop();
     sendMap(map);
     //ArUtil::sleep(100);
-    //resume(); //FIXME: resume hardcoded as 'gotoGoal' operation
+    resume(); //FIXME: resume hardcoded as 'gotoGoal' operation
+}
+
+bool QArClient::connect(QString host, int port, QString username, QString password)
+{
+    return ArClient::connect(host.toStdString().c_str(),
+                             port,
+                             username.toStdString().c_str(),
+                             password.toStdString().c_str());
 }
 

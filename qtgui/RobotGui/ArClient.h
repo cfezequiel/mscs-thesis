@@ -16,7 +16,7 @@ class ArClient : public ArClientBase
 public:
     ArClient();
     ~ArClient();
-    bool connect(char *host, int port, char *username=NULL, char *password=NULL);
+    bool connect(const char *host, int port, const char *username=NULL, const char *password=NULL);
     bool mapReceived() { return _mapReceived; }
     ArMap * getMapFromServer();
     void getDrawings();

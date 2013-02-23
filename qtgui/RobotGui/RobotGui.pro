@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui xml
 
 TARGET = RobotGui
 TEMPLATE = app
@@ -19,7 +19,8 @@ SOURCES += main.cpp\
     robotobject.cpp \
     pathobject.cpp \
     obstacle.cpp \
-    forbiddenregion.cpp
+    forbiddenregion.cpp \
+    connectdialog.cpp
 
 HEADERS  += mainwindow.h\
             mapscene.h\
@@ -30,9 +31,11 @@ HEADERS  += mainwindow.h\
     mapdata.h \
     pathobject.h \
     obstacle.h \
-    forbiddenregion.h
+    forbiddenregion.h \
+    connectdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    connectdialog.ui
 
 RESOURCES += \
     images.qrc

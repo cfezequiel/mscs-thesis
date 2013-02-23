@@ -37,7 +37,7 @@ ArClient::~ArClient()
     delete _clientFileFromClient;
 }
 
-bool ArClient::connect(char *host, int port, char *username, char *password)
+bool ArClient::connect(const char *host, int port, const char *username, const char *password)
 {
     // Connect to server
     bool result = blockingConnect(host, port, true, username, password);

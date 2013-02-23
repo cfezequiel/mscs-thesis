@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -13,6 +14,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     setCentralWidget(ui->mapView);
 
+    // Set 'connect to server' dialog
+    _connectDialog = new ConnectDialog(this);
+    connect(_connectDialog, SIGNAL(connect(QString, int, QString, QString)),
+            this, SLOT(connectToServer(QString, int, QString, QString)));
+
     // Set map scene
     _mapScene = new MapScene(this);
     ui->mapView->setScene(_mapScene);
@@ -21,11 +27,8 @@ MainWindow::MainWindow(QWidget *parent) :
     _mapEditActionGroup = new QActionGroup(this);
     ui->actionAddObstacleRect->setActionGroup(_mapEditActionGroup);
     ui->actionDeleteMapObject->setActionGroup(_mapEditActionGroup);
-//NOTE: This code not needed because meta-compiler automatically
-// connects signals to slots that have a particular naming convention,
-// like the one below
-//    QObject::connect(_mapEditActionGroup, SIGNAL(triggered(QAction *)),
-//                    this, SLOT(on__mapEditActionGroup_triggered(QAction *)));
+    QObject::connect(_mapEditActionGroup, SIGNAL(triggered(QAction *)),
+                    this, SLOT(mapEditActionGroup_triggered(QAction *)));
 }
 
 MainWindow::~MainWindow()
@@ -33,7 +36,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on__mapEditActionGroup_triggered(QAction *action)
+void MainWindow::mapEditActionGroup_triggered(QAction *action)
 {
     //FIXME: This is not an efficient solution, but I could not find
     // any other way to make the actions exclusive
@@ -43,22 +46,20 @@ void MainWindow::on__mapEditActionGroup_triggered(QAction *action)
     for (QList<QAction *>::iterator i = actions.begin();
          i != actions.end(); i++)
     {
-        (*i)->setChecked(false);
+        if (*i != action)
+        {
+            (*i)->setChecked(false);
+        }
     }
 
     // Check only the triggered action
     action->setChecked(true);
 }
 
-void MainWindow::on_actionConnect_triggered()
+void MainWindow::connectToServer(QString host, int port, QString username, QString password)
 {
-    // TODO: Open dialog window
-    // FIXME: temporary (refactor later)
-
     // Connect client
     QArClient *client = new QArClient;
-    char host[] = "localhost";
-    int port = 7272;
 
     // Connect signals and slots
     // -- Client to MapScene --
@@ -70,9 +71,9 @@ void MainWindow::on_actionConnect_triggered()
     QObject::connect((QObject *) _mapScene, SIGNAL(mapChanged(ArMap *)),
                      client, SLOT(mapChanged(ArMap *)));
 
-    if (!client->ArClient::connect(host, port))
+    if (!client->connect(host, port, username, password))
     {
-        cerr << "Failed to connect to " << host;
+        cerr << "Failed to connect to " << host.toStdString();
         // TODO: popup a message dialog box instead of printing
         return;
     }
@@ -96,6 +97,14 @@ void MainWindow::on_actionConnect_triggered()
 
     // Display connected status
     statusBar()->showMessage(QString("Connected."), 0);
+}
+
+void MainWindow::on_actionConnect_triggered()
+{
+    // TODO: Open dialog window
+    _connectDialog->show();
+    return;
+
 }
 
 void MainWindow::on_actionGoto_triggered()

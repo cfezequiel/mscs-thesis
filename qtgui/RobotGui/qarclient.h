@@ -14,6 +14,7 @@ class QArClient : public QObject, public ArClient
     Q_OBJECT
 public:
     explicit QArClient(QObject *parent = 0);
+    bool connect(QString host, int port, QString username, QString password);
 
 signals:
     void updateNumbers(ArRobotInfo *robotInfo);
