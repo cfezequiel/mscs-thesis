@@ -9,7 +9,7 @@ public:
     explicit MapItem(QGraphicsItem *parent = 0);
 
 protected:
-    void mousePressEvent (QGraphicsSceneMouseEvent * event);
+    void mousePressEvent(QGraphicsSceneMouseEvent * event);
 
 signals:
     void deleteItem(QGraphicsItem *item);
