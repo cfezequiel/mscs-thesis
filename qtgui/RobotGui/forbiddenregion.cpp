@@ -4,9 +4,8 @@
 using namespace std;
 
 ForbiddenRegion::ForbiddenRegion(qreal width, qreal height, QGraphicsItem *parent):
-    QGraphicsItem(parent), _width(width), _height(height)
+    MapItem(parent), _width(width), _height(height)
 {
-    // FIXME: change to appropriate colors
     _lineColor = QColor(Qt::gray);
     _fillColor = QColor(Qt::gray);
 }
@@ -22,10 +21,4 @@ void ForbiddenRegion::paint(QPainter *painter, const QStyleOptionGraphicsItem *o
     painter->setPen(QPen(_lineColor));
     painter->setBrush(QBrush(_fillColor));
     painter->drawRect(boundingRect());
-}
-
-void ForbiddenRegion::mousePressEvent(QGraphicsSceneMouseEvent *event)
-{
-    cout << "ForbiddenRegion::mousePressEvent" << endl;
-
 }

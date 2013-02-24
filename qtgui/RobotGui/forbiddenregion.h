@@ -5,9 +5,9 @@
 #include <QBrush>
 #include <QPainter>
 
-#include "mapobject.h"
+#include "mapitem.h"
 
-class ForbiddenRegion : public QGraphicsItem
+class ForbiddenRegion : public MapItem
 {
 public:
     ForbiddenRegion(qreal width, qreal height, QGraphicsItem *parent = 0);

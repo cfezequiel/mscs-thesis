@@ -6,7 +6,6 @@
 #include <QMetaType>
 #include "ArClient.h"
 #include "mapdata.h"
-#include "obstacle.h"
 #include "forbiddenregion.h"
 
 class QArClient : public QObject, public ArClient

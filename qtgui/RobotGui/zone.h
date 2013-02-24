@@ -1,17 +1,18 @@
-#ifndef MAPOBJECT_H
-#define MAPOBJECT_H
+#ifndef ZONE_H
+#define ZONE_H
 
-#include <QGraphicsItem>
 #include <QPainter>
 #include <QRectF>
 #include <QColor>
 
+#include "mapitem.h"
+
 class QPen;
 
-class MapObject : public QGraphicsItem
+class Zone : public MapItem
 {
 public:
-    explicit MapObject(QGraphicsItem *parent = 0);
+    explicit Zone(QGraphicsItem *parent = 0);
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget);
@@ -31,4 +32,4 @@ protected:
 
 };
 
-#endif // MAPOBJECT_H
+#endif // ZONE_H

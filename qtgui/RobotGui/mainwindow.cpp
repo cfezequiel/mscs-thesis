@@ -3,7 +3,7 @@
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "mapobject.h"
+#include "zone.h"
 
 using namespace std;
 

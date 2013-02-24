@@ -1,7 +1,7 @@
-#include "mapobject.h"
+#include "zone.h"
 
-MapObject::MapObject(QGraphicsItem *parent) :
-    QGraphicsItem(parent)
+Zone::Zone(QGraphicsItem *parent) :
+    MapItem(parent)
 {
     // Set parameters
     width = 501;
@@ -10,27 +10,27 @@ MapObject::MapObject(QGraphicsItem *parent) :
     setFillColor(QColor(Qt::white));
 }
 
-void MapObject::setLineColor(QColor color)
+void Zone::setLineColor(QColor color)
 {
     lineColor = color;
 }
 
-void MapObject::setFillColor(QColor color)
+void Zone::setFillColor(QColor color)
 {
     fillColor = color;
 }
 
-void MapObject::setLineColor(Qt::GlobalColor color)
+void Zone::setLineColor(Qt::GlobalColor color)
 {
     lineColor = QColor(color);
 }
 
-void MapObject::setFillColor(Qt::GlobalColor color)
+void Zone::setFillColor(Qt::GlobalColor color)
 {
     fillColor = QColor(color);
 }
 
-QRectF MapObject::boundingRect() const
+QRectF Zone::boundingRect() const
 {
     // Assuming that (0,0) is the center of the object
     QRectF rectF(-width/2, -height/2, width, height);
@@ -38,7 +38,7 @@ QRectF MapObject::boundingRect() const
     return rectF;
 }
 
-void MapObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+void Zone::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
            QWidget *widget)
 {
     //FIXME: Draws only goals and robot homes

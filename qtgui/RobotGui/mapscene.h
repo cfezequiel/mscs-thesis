@@ -12,10 +12,9 @@
 #include "Aria.h"
 #include "ArNetworking.h"
 #include "robotobject.h"
-#include "mapobject.h"
+#include "zone.h"
 #include "mapdata.h"
 #include "pathobject.h"
-#include "obstacle.h"
 #include "forbiddenregion.h"
 
 using namespace std;
@@ -31,15 +30,13 @@ public:
     void setMode(Mode mode);
     Mode mode() const;
     
-protected:
-    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
-
 signals:
     void mapChanged(ArMap *map);
     
 public slots:
     void updateRobotPose(ArRobotInfo *robotInfo);
     void updateRobotPath(Points *path);
+    void deleteItem(MapItem *item);
 
 private:
     void _modeAddObstacleRect(QPointF pos);

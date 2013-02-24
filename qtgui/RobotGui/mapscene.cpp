@@ -57,7 +57,7 @@ void MapScene::renderMap(ArMap *map)
     }
 
     // Render map objects
-    MapObject *obj;
+    Zone *obj;
     string type;
     list< ArMapObject *> *objects = map->getMapObjects();
     for (list< ArMapObject *>::iterator i = objects->begin();
@@ -95,7 +95,7 @@ void MapScene::renderMap(ArMap *map)
         {
             x1 = pose.getX();
             y1 = pose.getY();
-            obj = new MapObject;
+            obj = new Zone;
 
             // Set position
             obj->setPos(x1,-y1);
