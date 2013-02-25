@@ -185,6 +185,13 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     }
 }
 
+void MapScene::keyPressEvent(QKeyEvent *keyEvent)
+{
+    cout << keyEvent->text().toStdString() << endl;
+
+    // If delete key pressed, delete all selected items
+}
+
 // FIXME: this should connect to RobotObject not the scene
 void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
 {

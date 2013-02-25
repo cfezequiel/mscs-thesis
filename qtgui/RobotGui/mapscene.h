@@ -8,6 +8,7 @@
 #include <QRectF>
 #include <QPoint>
 #include <QCursor>
+#include <QKeyEvent>
 
 #include "Aria.h"
 #include "ArNetworking.h"
@@ -36,7 +37,10 @@ signals:
 public slots:
     void updateRobotPose(ArRobotInfo *robotInfo);
     void updateRobotPath(Points *path);
-    void deleteItem(MapItem *item);
+
+protected:
+    void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
+    void keyPressEvent(QKeyEvent *keyEvent);
 
 private:
     void _modeAddObstacleRect(QPointF pos);

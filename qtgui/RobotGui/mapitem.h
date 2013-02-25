@@ -10,9 +10,6 @@ public:
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent * event);
-
-signals:
-    void deleteItem(QGraphicsItem *item);
 };
 
 #endif // MAPITEM_H
