@@ -33,6 +33,7 @@ public:
     
 signals:
     void mapChanged(ArMap *map);
+    void sendData(ArRobotInfo pose, QPointF obstaclePos);
     
 public slots:
     void updateRobotPose(ArRobotInfo *robotInfo);

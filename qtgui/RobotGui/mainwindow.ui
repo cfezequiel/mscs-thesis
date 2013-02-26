@@ -51,6 +51,9 @@
    <addaction name="menuRobot"/>
   </widget>
   <widget class="QToolBar" name="navToolBar">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -63,6 +66,9 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="mapEditToolBar">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>

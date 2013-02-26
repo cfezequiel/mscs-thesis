@@ -33,3 +33,13 @@ qreal RobotObject::length() const
 {
     return _length;
 }
+
+void RobotObject::setPose(ArRobotInfo *pose)
+{
+    _pose = pose;
+}
+
+ArRobotInfo* RobotObject::getPose()
+{
+    return _pose;
+}

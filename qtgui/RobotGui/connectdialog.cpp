@@ -4,9 +4,11 @@
 #include <sstream>
 #include <iostream>
 
+#include <QMessageBox>
 #include <QTextStream>
 #include <QFile>
 #include <QDomElement>
+#include <QDialogButtonBox>
 
 ConnectDialog::ConnectDialog(QWidget *parent) :
     QDialog(parent),
@@ -40,11 +42,24 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
         ui->hostComboBox->addItem(host);
         ui->portComboBox->addItem(port);
     }
+
+    // Disable OK button until user inputs necessary information
+    _okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
+    _okButton->setEnabled(false);
+
+    QObject::connect(ui->usernameLineEdit, SIGNAL(textEdited(const QString &)),
+                    this, SLOT(checkText(const QString &)));
+    QObject::connect(ui->hostComboBox, SIGNAL(editTextChanged(const QString &)),
+                    this, SLOT(checkText(const QString &)));
+    QObject::connect(ui->portComboBox, SIGNAL(editTextChanged(const QString &)),
+                    this, SLOT(checkText(const QString &)));
 }
 
 ConnectDialog::~ConnectDialog()
 {
     delete ui;
+    delete _loginInfo;
+    delete _okButton;
 }
 
 void ConnectDialog::on_buttonBox_accepted()
@@ -85,4 +100,18 @@ void ConnectDialog::on_buttonBox_accepted()
     // Add login info to comboboxes
     ui->hostComboBox->addItem(host);
     ui->portComboBox->addItem(port);
+}
+
+void ConnectDialog::checkText(const QString & text)
+{
+    if (!ui->usernameLineEdit->text().isEmpty() &&
+        !ui->hostComboBox->currentText().isEmpty() &&
+        !ui->portComboBox->currentText().isEmpty())
+    {
+        _okButton->setEnabled(true);
+    }
+    else
+    {
+        _okButton->setEnabled(false);
+    }
 }

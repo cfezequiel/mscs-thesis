@@ -164,6 +164,9 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
 
     // Send signal that map was changed
     emit mapChanged(_map);
+
+    // Log data
+    sendData(*_robot->getPose(), pos);
 }
 
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -207,6 +210,12 @@ void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
     // Set rotation
     _robot->setRotation(-th + 90);
     advance();
+
+    // Store pose info
+    if (_robot->getPose() == NULL)
+    {
+        _robot->setPose(robotInfo);
+    }
 }
 
 void MapScene::updateRobotPath(Points *path)
@@ -216,6 +225,7 @@ void MapScene::updateRobotPath(Points *path)
     advance();
 }
 
+//FIXME: is this still useful?
 void printRobotInfo(ArRobotInfo *robotInfo)
 {
     // Temp

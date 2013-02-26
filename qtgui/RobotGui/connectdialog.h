@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include <QPushButton>
 #include <QDialog>
 #include <QDomDocument>
 
@@ -25,11 +26,13 @@ signals:
 
 private slots:
     void on_buttonBox_accepted();
+    void checkText(const QString & text);
 
 private:
     Ui::ConnectDialog *ui;
     QString _loginInfoFileName;
     QDomDocument *_loginInfo;
+    QPushButton *_okButton;
 };
 
 #endif // CONNECTDIALOG_H

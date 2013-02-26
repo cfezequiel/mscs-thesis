@@ -12,7 +12,8 @@ MapItem::MapItem(QGraphicsItem *parent) :
 
 void MapItem::mousePressEvent(QGraphicsSceneMouseEvent * event)
 {
-    cout << "ForbiddenRegion::mousePressEvent" << endl;
+    // TODO: how to get the parent scene?
+
 }
 
 

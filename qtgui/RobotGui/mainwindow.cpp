@@ -1,5 +1,9 @@
+#include <assert.h>
 #include <iostream>
 #include <sstream>
+
+#include <QTextStream>
+#include <QDateTime>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
@@ -29,6 +33,11 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actionDeleteMapObject->setActionGroup(_mapEditActionGroup);
     QObject::connect(_mapEditActionGroup, SIGNAL(triggered(QAction *)),
                     this, SLOT(mapEditActionGroup_triggered(QAction *)));
+
+    // Configure data logging
+    _dataFile = new QFile("data.csv");
+    QObject::connect(_mapScene, SIGNAL(sendData(ArRobotInfo, QPointF)),
+                     this, SLOT(logData(ArRobotInfo, QPointF)));
 }
 
 MainWindow::~MainWindow()
@@ -97,6 +106,14 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
 
     // Display connected status
     statusBar()->showMessage(QString("Connected."), 0);
+
+    // Record user name
+    //FIXME: convert this into a non-pointer object
+    _user.append(username);
+
+    // Enable toolbars
+    ui->navToolBar->setEnabled(true);
+    ui->mapEditToolBar->setEnabled(true);
 }
 
 void MainWindow::on_actionConnect_triggered()
@@ -158,4 +175,25 @@ void MainWindow::on_actionDeleteMapObject_triggered(bool checked)
     {
         scene->setMode(MapScene::ModeView);
     }
+}
+
+void MainWindow::logData(ArRobotInfo pose, QPointF obstaclePos)
+{
+    assert(_dataFile != NULL);
+    assert(_user != NULL);
+
+    // Log data to file
+    if (_dataFile->open(QIODevice::Append| QIODevice::Text))
+    {
+        QDateTime dateTime = QDateTime::currentDateTime();
+        QTextStream out(_dataFile);
+        out << _user << ','
+            << dateTime.toString() << ','
+            << pose.xpos << ','
+            << pose.ypos << ','
+            << pose.forwardVel << ','
+            << obstaclePos.x() << ','
+            << obstaclePos.y() << '\n';
+    }
+    _dataFile->close();
 }
