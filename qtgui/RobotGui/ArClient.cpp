@@ -224,9 +224,8 @@ void ArClient::_handleUpdateNumbers(ArNetPacket *packet)
     _robotInfo.theta = packet->bufToByte2();
     _robotInfo.forwardVel = packet->bufToByte2();
     _robotInfo.rotationVel = packet->bufToByte2();
+    updateNumbersReceived(_robotInfo);
     unlock();
-
-    updateNumbersReceived(&_robotInfo);
 }
 
 void ArClient::_handleUpdateStrings(ArNetPacket *packet)
@@ -234,9 +233,8 @@ void ArClient::_handleUpdateStrings(ArNetPacket *packet)
     lock();
     packet->bufToStr(_robotInfo.status, STRLEN);
     packet->bufToStr(_robotInfo.mode, STRLEN);
+    updateStringsReceived(_robotInfo);
     unlock();
-
-    updateStringsReceived(&_robotInfo);
 }
 
 void ArClient::_handleGetPath(ArNetPacket *packet)

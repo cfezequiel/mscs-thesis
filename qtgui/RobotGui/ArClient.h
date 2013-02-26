@@ -30,8 +30,8 @@ public:
     void resume();
 
 protected:
-    virtual void updateNumbersReceived(ArRobotInfo *robotInfo) {}
-    virtual void updateStringsReceived(ArRobotInfo *robotInfo) {}
+    virtual void updateNumbersReceived(ArRobotInfo robotInfo) {}
+    virtual void updateStringsReceived(ArRobotInfo robotInfo) {}
     virtual void getPathReceived(Points *path) {}
 
 private:

@@ -16,13 +16,13 @@ public:
     bool connect(QString host, int port, QString username, QString password);
 
 signals:
-    void updateNumbers(ArRobotInfo *robotInfo);
-    void updateStrings(ArRobotInfo *robotInfo);
+    void updateNumbers(ArRobotInfo robotInfo);
+    void updateStrings(ArRobotInfo robotInfo);
     void updatePath(Points *path);
 
 protected:
-    void updateNumbersReceived(ArRobotInfo *robotInfo);
-    void updateStringsReceived(ArRobotInfo *robotInfo);
+    void updateNumbersReceived(ArRobotInfo robotInfo);
+    void updateStringsReceived(ArRobotInfo robotInfo);
     void getPathReceived(Points *path);
 
 public slots:

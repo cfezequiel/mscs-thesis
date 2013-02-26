@@ -166,7 +166,7 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
     emit mapChanged(_map);
 
     // Log data
-    sendData(*_robot->getPose(), pos);
+    sendData(_robot->getPose(), pos);
 }
 
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -196,15 +196,14 @@ void MapScene::keyPressEvent(QKeyEvent *keyEvent)
 }
 
 // FIXME: this should connect to RobotObject not the scene
-void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
+void MapScene::updateRobotPose(ArRobotInfo robotInfo)
 {
-    assert(robotInfo != NULL);
     assert(_robot != NULL);
 
     // Redraw the robot on the map based on robot telemetry info
-    qreal x = robotInfo->xpos;
-    qreal y = robotInfo->ypos;
-    qreal th = robotInfo->theta;
+    qreal x = robotInfo.xpos;
+    qreal y = robotInfo.ypos;
+    qreal th = robotInfo.theta;
     _robot->setPos(x, -y);
 
     // Set rotation
@@ -212,10 +211,7 @@ void MapScene::updateRobotPose(ArRobotInfo *robotInfo)
     advance();
 
     // Store pose info
-    if (_robot->getPose() == NULL)
-    {
-        _robot->setPose(robotInfo);
-    }
+    _robot->setPose(robotInfo);
 }
 
 void MapScene::updateRobotPath(Points *path)

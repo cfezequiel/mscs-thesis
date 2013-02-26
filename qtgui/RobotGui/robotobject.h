@@ -15,8 +15,8 @@ public:
     QRectF boundingRect() const;
     qreal width() const;
     qreal length() const;
-    void setPose(ArRobotInfo *pose);
-    ArRobotInfo* getPose();
+    void setPose(ArRobotInfo pose);
+    ArRobotInfo getPose();
 
 protected:
     QColor lineColor;
@@ -29,7 +29,7 @@ private:
     qreal _x;
     qreal _y;
 
-    ArRobotInfo *_pose;
+    ArRobotInfo _pose;
 };
 
 #endif // ROBOTOBJECT_H

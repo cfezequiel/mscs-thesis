@@ -2,14 +2,18 @@
 #include <iostream>
 #include <sstream>
 
+#include <QMessageBox>
 #include <QTextStream>
 #include <QDateTime>
 
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "zone.h"
+#include "mapdata.h"
 
 using namespace std;
+
+// Register metatype
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -38,6 +42,19 @@ MainWindow::MainWindow(QWidget *parent) :
     _dataFile = new QFile("data.csv");
     QObject::connect(_mapScene, SIGNAL(sendData(ArRobotInfo, QPointF)),
                      this, SLOT(logData(ArRobotInfo, QPointF)));
+    cout << _dataFile->fileName().toStdString() << endl;
+    if (!_dataFile->exists())
+    {
+        if (_dataFile->open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            QTextStream ts(_dataFile);
+            ts << "Username,DateTime,RobotStatus,RobotMode,RobotXPos,RobotYpos,"
+               << "RobotForwardVel,RobotRotationVel,ObstacleXPos,ObstacleYPos"
+               << '\n'
+                  ;
+        }
+        _dataFile->close();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -72,8 +89,11 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
 
     // Connect signals and slots
     // -- Client to MapScene --
-    QObject::connect((QObject *) client, SIGNAL(updateNumbers(ArRobotInfo *)),
-                     _mapScene, SLOT(updateRobotPose(ArRobotInfo *)));
+    qRegisterMetaType<ArRobotInfo>("ArRobotInfo");
+    QObject::connect((QObject *) client, SIGNAL(updateNumbers(ArRobotInfo)),
+                     _mapScene, SLOT(updateRobotPose(ArRobotInfo)));
+    QObject::connect((QObject *) client, SIGNAL(updateStrings(ArRobotInfo)),
+                     _mapScene, SLOT(updateRobotPose(ArRobotInfo)));
     QObject::connect((QObject *) client, SIGNAL(updatePath(Points *)),
                      _mapScene, SLOT(updateRobotPath(Points *)));
     // -- MapScene to Client --
@@ -82,8 +102,12 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
 
     if (!client->connect(host, port, username, password))
     {
-        cerr << "Failed to connect to " << host.toStdString();
-        // TODO: popup a message dialog box instead of printing
+        QString msg;
+        QTextStream ts(&msg);
+        ts << "Error: Unable to connect to " << host;
+        QMessageBox msgBox;
+        msgBox.setText(msg);
+        msgBox.exec();
         return;
     }
 
@@ -189,9 +213,12 @@ void MainWindow::logData(ArRobotInfo pose, QPointF obstaclePos)
         QTextStream out(_dataFile);
         out << _user << ','
             << dateTime.toString() << ','
+            << pose.status << ','
+            << pose.mode << ','
             << pose.xpos << ','
             << pose.ypos << ','
             << pose.forwardVel << ','
+            << pose.rotationVel << ','
             << obstaclePos.x() << ','
             << obstaclePos.y() << '\n';
     }

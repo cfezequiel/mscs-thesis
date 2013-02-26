@@ -10,7 +10,7 @@ static const int STRLEN = 256;
 
 //FIXME: refactor ArRobotInfo to use native C++ types
 // Also rename it without the Ar
-struct ArRobotInfo
+typedef struct
 {
     int batVoltage;
     int xpos;
@@ -20,7 +20,8 @@ struct ArRobotInfo
     int rotationVel;
     char status[STRLEN];
     char mode[STRLEN];
-};
+}
+    ArRobotInfo;
 
 struct Point
 {
@@ -32,5 +33,7 @@ struct Points
 {
     list<Point> data;
 };
+
+Q_DECLARE_METATYPE(ArRobotInfo)
 
 #endif // MAPDATA_H

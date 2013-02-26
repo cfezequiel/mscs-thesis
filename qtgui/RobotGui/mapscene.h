@@ -36,7 +36,7 @@ signals:
     void sendData(ArRobotInfo pose, QPointF obstaclePos);
     
 public slots:
-    void updateRobotPose(ArRobotInfo *robotInfo);
+    void updateRobotPose(ArRobotInfo robotInfo);
     void updateRobotPath(Points *path);
 
 protected:
