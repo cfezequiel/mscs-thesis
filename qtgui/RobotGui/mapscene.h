@@ -11,7 +11,6 @@
 #include <QKeyEvent>
 
 #include "Aria.h"
-#include "ArNetworking.h"
 #include "robotobject.h"
 #include "zone.h"
 #include "mapdata.h"
@@ -29,6 +28,7 @@ public:
     explicit MapScene(QObject *parent = 0);
     void renderMap(ArMap *map);
     void setMode(Mode mode);
+    QList<QString> goalList();
     Mode mode() const;
     
 signals:
@@ -52,6 +52,7 @@ private:
     RobotObject *_robot;
     PathObject *_path;
     ArMap *_map;
+    QList<QString> _goalNames;
 };
 
 #endif // MAPSCENE_H

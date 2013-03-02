@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // Action group for map editing actions
     _mapEditActionGroup = new QActionGroup(this);
+    _mapEditActionGroup->setExclusive(false);
     ui->actionAddObstacleRect->setActionGroup(_mapEditActionGroup);
     ui->actionDeleteMapObject->setActionGroup(_mapEditActionGroup);
     QObject::connect(_mapEditActionGroup, SIGNAL(triggered(QAction *)),
@@ -77,9 +78,6 @@ void MainWindow::mapEditActionGroup_triggered(QAction *action)
             (*i)->setChecked(false);
         }
     }
-
-    // Check only the triggered action
-    action->setChecked(true);
 }
 
 void MainWindow::connectToServer(QString host, int port, QString username, QString password)
@@ -133,12 +131,14 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     statusBar()->showMessage(QString("Connected."), 0);
 
     // Record user name
-    //FIXME: convert this into a non-pointer object
     _user.append(username);
 
     // Enable toolbars
     ui->navToolBar->setEnabled(true);
     ui->mapEditToolBar->setEnabled(true);
+
+    // Enable graphics view
+    ui->mapView->setEnabled(true);
 }
 
 void MainWindow::on_actionConnect_triggered()
@@ -151,8 +151,9 @@ void MainWindow::on_actionConnect_triggered()
 
 void MainWindow::on_actionGoto_triggered()
 {
-    // FIXME: hardcoded goal value
-    _client->goToGoal("G");
+    // Go to the first goal on the list
+    // FIXME: go to the nearest goal instead
+    _client->goToGoal(_mapScene->goalList().first().toStdString().c_str());
 
     // Request planned path
     _client->lock();

@@ -6,7 +6,7 @@ Zone::Zone(QGraphicsItem *parent) :
     // Set parameters
     width = 501;
     height = 512;
-    setLineColor(QColor(Qt::black));
+    setLineColor(QColor(Qt::white));
     setFillColor(QColor(Qt::white));
 }
 

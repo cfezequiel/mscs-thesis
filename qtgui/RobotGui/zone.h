@@ -29,7 +29,6 @@ protected:
     qreal th;
     QColor lineColor;
     QColor fillColor;
-
 };
 
 #endif // ZONE_H

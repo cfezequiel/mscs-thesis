@@ -29,6 +29,9 @@
     <layout class="QVBoxLayout" name="mainLayout">
      <item>
       <widget class="QGraphicsView" name="mapView">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="dragMode">
         <enum>QGraphicsView::NoDrag</enum>
        </property>
@@ -154,6 +157,9 @@
    </property>
    <property name="toolTip">
     <string>Delete an object from the map</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>

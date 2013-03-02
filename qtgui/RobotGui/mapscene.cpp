@@ -68,7 +68,7 @@ void MapScene::renderMap(ArMap *map)
         ArPose pose = (*i)->getPose();
         th = pose.getTh();
 
-        // If object is a region
+        // If object is a region/line
         if ((*i)->hasFromTo())
         {
             ArPose fromPose, toPose;
@@ -86,9 +86,13 @@ void MapScene::renderMap(ArMap *map)
                 fr->setRotation(-th);
                 addItem(fr);
             }
+            if (type == "ForbiddenLine")
+            {
+                // Ignore (make invisible)
+            }
             else
             {
-                cerr << "Unknown MapObject type = " << type << endl;
+                cerr << "Unsupported MapObject region = " << type << endl;
             }
         }
         // If object is a point
@@ -108,6 +112,9 @@ void MapScene::renderMap(ArMap *map)
             {
                 obj->setLineColor(Qt::cyan);
                 obj->setFillColor(Qt::darkCyan);
+
+                // Store goal name
+                _goalNames.push_back(QString((*i)->getName()));
             }
             else if (type == "RobotHome")
             {
@@ -116,7 +123,7 @@ void MapScene::renderMap(ArMap *map)
             }
             else
             {
-                cerr << "Unknown MapObject type = " << type << endl;
+                cerr << "Unsupported MapObject point = " << type << endl;
             }
 
             addItem(obj);
@@ -229,20 +236,6 @@ void MapScene::updateRobotPath(Points *path)
     advance();
 }
 
-//FIXME: is this still useful?
-void printRobotInfo(ArRobotInfo *robotInfo)
-{
-    // Temp
-    ArRobotInfo *r = robotInfo;
-    cout << "Battery voltage: " << r->batVoltage << endl
-         << "X-pos: " << r->xpos << endl
-         << "Y-pos: " << r->ypos << endl
-         << "theta: " << r->theta << endl
-         << "Forward velocity: " << r->forwardVel << endl
-         << "Rotation velocity: " << r->rotationVel << endl
-         ;
-}
-
 void MapScene::setMode(Mode mode)
 {
     _mode = mode;
@@ -282,3 +275,9 @@ void MapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
         view->setDragMode(QGraphicsView::NoDrag);
     }
 }
+
+QList<QString> MapScene::goalList()
+{
+    return _goalNames;
+}
+
