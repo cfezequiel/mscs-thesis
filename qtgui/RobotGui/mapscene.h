@@ -42,9 +42,12 @@ public slots:
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
     void keyPressEvent(QKeyEvent *keyEvent);
+    void wheelEvent(QGraphicsSceneWheelEvent* wheelEvent);
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent);
 
 private:
     void _modeAddObstacleRect(QPointF pos);
+    QGraphicsView * viewFirst();
     Mode _mode;
     RobotObject *_robot;
     PathObject *_path;

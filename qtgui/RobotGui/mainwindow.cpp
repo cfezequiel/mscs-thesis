@@ -122,7 +122,8 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
 
     // Render map
     _mapScene->renderMap(map);
-    //FIXME: correct the view dimensions
+
+    // Set map view
     ui->mapView->fitInView(_mapScene->sceneRect(), Qt::KeepAspectRatio);
 
     // Get periodic updates

@@ -28,7 +28,11 @@
     </property>
     <layout class="QVBoxLayout" name="mainLayout">
      <item>
-      <widget class="QGraphicsView" name="mapView"/>
+      <widget class="QGraphicsView" name="mapView">
+       <property name="dragMode">
+        <enum>QGraphicsView::NoDrag</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>

@@ -14,6 +14,7 @@
 #include <QGraphicsRectItem>
 #include <QPointF>
 #include <QGraphicsSceneHoverEvent>
+#include <QGraphicsView>
 
 #include "mapscene.h"
 
@@ -174,16 +175,22 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     QPointF pos = mouseEvent->scenePos();
 
     // Do something depending on the mode
+    QGraphicsView *view = viewFirst();
     switch (_mode)
     {
     case ModeView:
-        // Do nothing
+        if (view->dragMode() != QGraphicsView::ScrollHandDrag)
+        {
+            view->setDragMode(QGraphicsView::ScrollHandDrag);
+        }
         break;
+
     case ModeAddObstacle:
         _modeAddObstacleRect(pos);
         break;
+
     default:
-        // Do nothing, same as ModeView
+        // Do nothing
         break;
     }
 }
@@ -193,6 +200,7 @@ void MapScene::keyPressEvent(QKeyEvent *keyEvent)
     cout << keyEvent->text().toStdString() << endl;
 
     // If delete key pressed, delete all selected items
+    //TODO
 }
 
 // FIXME: this should connect to RobotObject not the scene
@@ -243,4 +251,34 @@ void MapScene::setMode(Mode mode)
 MapScene::Mode MapScene::mode() const
 {
     return _mode;
+}
+
+QGraphicsView * MapScene::viewFirst()
+{
+    return views().first();
+}
+
+void MapScene::wheelEvent(QGraphicsSceneWheelEvent* wheelEvent)
+{
+    qreal zoomFactor = 2.0;
+
+    // Zoom in and out depending on wheel scroll direction
+    QGraphicsView *view = viewFirst();
+    if (wheelEvent->delta() > 0) //mousewheel up
+    {
+        view->scale(zoomFactor, zoomFactor);
+    }
+    else // mousewheel down
+    {
+        view->scale(1/zoomFactor, 1/zoomFactor);
+    }
+}
+
+void MapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
+{
+    QGraphicsView *view = viewFirst();
+    if (view->dragMode() == QGraphicsView::ScrollHandDrag)
+    {
+        view->setDragMode(QGraphicsView::NoDrag);
+    }
 }
