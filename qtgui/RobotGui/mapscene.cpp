@@ -231,7 +231,7 @@ void MapScene::updateRobotPose(ArRobotInfo robotInfo)
 
 void MapScene::updateRobotPath(Points *path)
 {
-    _path->update(path);
+    _path->setPath(path);
     _path->setPos(_path->getPos());
     advance();
 }
@@ -265,6 +265,8 @@ void MapScene::wheelEvent(QGraphicsSceneWheelEvent* wheelEvent)
     {
         view->scale(1/zoomFactor, 1/zoomFactor);
     }
+
+    advance();
 }
 
 void MapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
@@ -280,4 +282,3 @@ QList<QString> MapScene::goalList()
 {
     return _goalNames;
 }
-

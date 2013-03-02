@@ -17,12 +17,12 @@ QArClient::QArClient(QObject *parent) :
 
 void QArClient::updateNumbersReceived(ArRobotInfo robotInfo)
 {
-    emit updateNumbers(robotInfo);
+    emit updatePose(robotInfo);
 }
 
 void QArClient::updateStringsReceived(ArRobotInfo robotInfo)
 {
-    emit updateStrings(robotInfo);
+    emit updatePose(robotInfo);
 }
 
 void QArClient::getPathReceived(Points *path)

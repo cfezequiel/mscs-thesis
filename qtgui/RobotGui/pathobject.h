@@ -14,7 +14,8 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget);
-    void update(Points *path);
+    //void update(Points *path);
+    void setPath(Points *path);
     QPointF getPos();
 
 private:

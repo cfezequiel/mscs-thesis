@@ -88,12 +88,12 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     // Connect signals and slots
     // -- Client to MapScene --
     qRegisterMetaType<ArRobotInfo>("ArRobotInfo");
-    QObject::connect((QObject *) client, SIGNAL(updateNumbers(ArRobotInfo)),
-                     _mapScene, SLOT(updateRobotPose(ArRobotInfo)));
-    QObject::connect((QObject *) client, SIGNAL(updateStrings(ArRobotInfo)),
+    QObject::connect((QObject *) client, SIGNAL(updatePose(ArRobotInfo)),
                      _mapScene, SLOT(updateRobotPose(ArRobotInfo)));
     QObject::connect((QObject *) client, SIGNAL(updatePath(Points *)),
                      _mapScene, SLOT(updateRobotPath(Points *)));
+    QObject::connect((QObject *) client, SIGNAL(updatePose(ArRobotInfo)),
+                     this, SLOT(updateStatus(ArRobotInfo)));
     // -- MapScene to Client --
     QObject::connect((QObject *) _mapScene, SIGNAL(mapChanged(ArMap *)),
                      client, SLOT(mapChanged(ArMap *)));
@@ -225,4 +225,47 @@ void MainWindow::logData(ArRobotInfo pose, QPointF obstaclePos)
             << obstaclePos.y() << '\n';
     }
     _dataFile->close();
+}
+
+void MainWindow::on_actionGotoHome_triggered()
+{
+    // Go to home position at startup
+    _client->requestOnce("home");
+
+    // Request planned path
+    _client->lock();
+    _client->request("getPath", 1000);
+    _client->unlock();
+}
+
+void MainWindow::updateStatus(ArRobotInfo pose)
+{
+    QString msg;
+    QTextStream ts(&msg);
+    ts << "x = " << pose.xpos << ", y = " << pose.ypos
+       << "\t lvel (mm/s) = " << pose.forwardVel
+       << "\t rvel (deg/s) = " << pose.rotationVel
+       << "\t status: " << pose.status
+       << "\t mode: " << pose.mode;
+
+    ui->statusBar->showMessage(msg);
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+    // Exit the program cleanly
+    close();
+}
+
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+    if (_client)
+    {
+        if (_client->isConnected())
+        {
+            _client->stop();
+            _client->disconnect();
+        }
+        delete _client;
+    }
 }

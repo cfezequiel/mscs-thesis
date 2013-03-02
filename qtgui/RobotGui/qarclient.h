@@ -16,6 +16,7 @@ public:
     bool connect(QString host, int port, QString username, QString password);
 
 signals:
+    void updatePose(ArRobotInfo robotInfo);
     void updateNumbers(ArRobotInfo robotInfo);
     void updateStrings(ArRobotInfo robotInfo);
     void updatePath(Points *path);

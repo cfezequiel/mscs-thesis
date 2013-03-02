@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <climits>
 #include <cmath>
 #include <QPainter>
@@ -44,10 +45,12 @@ QRectF PathObject::boundingRect() const
     }
 
     // Get the width and height (add some padding)
-    qreal width = abs(right - left) + 1;
-    qreal height = abs(top - bottom) + 1;
+    qreal pad = 50;
+    qreal width = abs(right - left) + pad;
+    qreal height = abs(top - bottom) + pad;
 
-    return QRectF(-width/2, -height/2, width, height);
+    return QRectF(-width/2 - pad, -height/2 - pad,
+                  width + 2 * pad, height + 2 * pad);
 }
 
 void PathObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
@@ -83,12 +86,6 @@ void PathObject::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     }
 }
 
-void PathObject::update(Points *path)
-{
-    _points = *path;
-    QGraphicsItem::update(boundingRect());
-}
-
 QPointF PathObject::getPos()
 {
     qreal sumX = 0;
@@ -106,4 +103,10 @@ QPointF PathObject::getPos()
     qreal cy = sumY / n;
 
     return QPointF(cx, cy);
+}
+
+void PathObject::setPath(Points *path)
+{
+    assert(path != NULL);
+    _points = *path;
 }

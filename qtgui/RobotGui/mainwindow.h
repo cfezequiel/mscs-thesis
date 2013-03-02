@@ -21,17 +21,24 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    
+
+protected:
+    void closeEvent(QCloseEvent * event);
+
 private slots:
     void connectToServer(QString host, int port, QString username, QString password);
     void on_actionConnect_triggered();
     void on_actionGoto_triggered();
     void on_actionStop_triggered();
     void on_actionResetToHome_triggered();
+    void on_actionGotoHome_triggered();
     void on_actionAddObstacleRect_triggered(bool checked);
     void mapEditActionGroup_triggered(QAction *action);
     void on_actionDeleteMapObject_triggered(bool checked);
     void logData(ArRobotInfo pose, QPointF obstaclePos);
+    void updateStatus(ArRobotInfo pose);
+
+    void on_actionExit_triggered();
 
 private:
     Ui::MainWindow *ui;

@@ -54,6 +54,8 @@
      <string>Robot</string>
     </property>
     <addaction name="actionConnect"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
    </widget>
    <addaction name="menuRobot"/>
   </widget>
@@ -69,6 +71,7 @@
    </attribute>
    <addaction name="actionStop"/>
    <addaction name="actionGoto"/>
+   <addaction name="actionGotoHome"/>
    <addaction name="actionResetToHome"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
@@ -160,6 +163,23 @@
    </property>
    <property name="visible">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionGotoHome">
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/gohome.png</normaloff>:/images/gohome.png</iconset>
+   </property>
+   <property name="text">
+    <string>Go to Home</string>
+   </property>
+   <property name="toolTip">
+    <string>Go to Home</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
    </property>
   </action>
  </widget>
