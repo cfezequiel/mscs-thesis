@@ -478,7 +478,16 @@ int main(int argc, char **argv)
   // /*
   ArServerFileLister fileLister(&server, fileDir);
   ArServerFileToClient fileToClient(&server, fileDir);
-  ArServerFileFromClient fileFromClient(&server, fileDir, "/tmp");
+  // The last two arguments of ArServerFileFromClient indicate 'topdir' and
+  // 'targetDir' respectively:
+  // 'topdir' - base path where all other directory paths will originate from
+  // (i.e. root dir for this server)
+  // 'targetDir' - the directory where the file will be stored
+  // Example:
+  //  topdir = '/store/it/here'
+  //  targetDir = 'maps'
+  //  File will be stored in '/store/it/here/maps'
+  ArServerFileFromClient fileFromClient(&server, fileDir, "tmp");
   ArServerDeleteFileOnServer deleteFileOnServer(&server, fileDir);
   // */
 #endif
