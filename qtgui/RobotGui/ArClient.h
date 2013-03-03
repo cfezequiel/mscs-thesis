@@ -27,6 +27,7 @@ public:
     void setMapFileConfigOnServer(const char *filename);
     void stop();
     void goToGoal(const char *goalName);
+    void goHome();
     void resume();
 
 protected:
@@ -61,6 +62,7 @@ private:
     void _handleUpdateNumbers(ArNetPacket *packet);
     void _handleUpdateStrings(ArNetPacket *packet);
     ArRobotInfo _robotInfo;
+    string _lastMode; // for resuming prevous action after stop()
 
     // Robot path handler
     ArFunctor1C<ArClient, ArNetPacket *> *_getPathCB;

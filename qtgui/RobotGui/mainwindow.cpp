@@ -20,7 +20,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    setCentralWidget(ui->mapView);
+
+    QWidget *mainWidget = new QWidget;
+    mainWidget->setLayout(ui->mainLayout);
+    setCentralWidget(mainWidget);
+
+    _goalsComboBox = new QComboBox;
+    ui->navToolBar->insertWidget(ui->actionGoto, _goalsComboBox);
 
     // Set 'connect to server' dialog
     _connectDialog = new ConnectDialog(this);
@@ -121,6 +127,10 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     // Render map
     _mapScene->renderMap(map);
 
+    // Fill goals combobox with goal names
+    QStringList goalList(_mapScene->goalList());
+    _goalsComboBox->addItems(goalList);
+
     // Set map view
     ui->mapView->fitInView(_mapScene->sceneRect(), Qt::KeepAspectRatio);
 
@@ -151,9 +161,9 @@ void MainWindow::on_actionConnect_triggered()
 
 void MainWindow::on_actionGoto_triggered()
 {
-    // Go to the first goal on the list
-    // FIXME: go to the nearest goal instead
-    _client->goToGoal(_mapScene->goalList().first().toStdString().c_str());
+    // Go to goal whose name is selected in goals combo box
+    QString goal = _goalsComboBox->currentText();
+    _client->goToGoal(goal.toLocal8Bit().data());
 
     // Request planned path
     _client->lock();
@@ -230,7 +240,7 @@ void MainWindow::logData(ArRobotInfo pose, QPointF obstaclePos)
 void MainWindow::on_actionGotoHome_triggered()
 {
     // Go to home position at startup
-    _client->requestOnce("home");
+    _client->goHome();
 
     // Request planned path
     _client->lock();

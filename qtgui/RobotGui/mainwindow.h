@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QActionGroup>
+#include <QComboBox>
 #include <QMainWindow>
 #include <QObject>
 #include <QFile>
@@ -48,6 +49,7 @@ private:
     ArClient *_client;
     QFile *_dataFile;
     QString _user;
+    QComboBox *_goalsComboBox;
 };
 
 #endif // MAINWINDOW_H

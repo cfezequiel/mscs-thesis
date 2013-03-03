@@ -9,24 +9,24 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>960</width>
-    <height>682</height>
+    <width>961</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Robot Navigation Interface</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QWidget" name="verticalLayoutWidget">
+   <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>10</y>
+      <y>0</y>
       <width>941</width>
-      <height>601</height>
+      <height>581</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="mainLayout">
+    <layout class="QHBoxLayout" name="mainLayout">
      <item>
       <widget class="QGraphicsView" name="mapView">
        <property name="enabled">
@@ -45,7 +45,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>960</width>
+     <width>961</width>
      <height>25</height>
     </rect>
    </property>

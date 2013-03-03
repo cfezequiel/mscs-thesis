@@ -35,6 +35,12 @@ ArClient::~ArClient()
 {
     delete _configHandler;
     delete _clientFileFromClient;
+    delete _clientFileLister;
+    delete _getMapCB;
+    delete _listCommandsCB;
+    delete _updateNumbersCB;
+    delete _updateStringsCB;
+    delete _getPathCB;
 }
 
 bool ArClient::connect(const char *host, int port, const char *username, const char *password)
@@ -183,30 +189,47 @@ void ArClient::sendMap(ArMap *map)
 {
     assert(map != NULL);
 
+    // Store last mode (for resuming later after config update)
+    _lastMode = _robotInfo.mode;
+
     // Write map to file
     char *baseDir = get_current_dir_name();
     map->setBaseDirectory(baseDir);
     map->writeFile(map->getFileName());
     delete baseDir;
 
-    // Send map file to server
+    // Get full path of map file in local directory
     stringstream ss;
     char mapFile[STRLEN];
     ss << map->getBaseDirectory() << '/' << map->getFileName();
     ss >> mapFile;
+
+    // Send map file to robot server
     lock();
-    //FIXME: target directory is the same as source directory
-    // This may not be the case always
-    _clientFileFromClient->putFileToDirectory(map->getBaseDirectory(),
-                                              map->getFileName(), mapFile);
+    // FIXME: hardcoded directory string
+    char serverDir[STRLEN] = "tmp";
+    _clientFileFromClient->putFileToDirectory(serverDir, map->getFileName(),
+                                              mapFile);
     unlock();
 
     // Update location of map file in config
     // NOTE: This automatically reloads the configuration
+    stringstream ss2;
+    ss2 << serverDir << '/' << map->getFileName();
+    ss2 >> mapFile;
+    lock();
     setMapFileConfigOnServer(mapFile);
+    unlock();
 
+    // FIXME: not needed?
     // Try reloading the configuration manually
-    _configHandler->reloadConfigOnServer();
+    //_configHandler->reloadConfigOnServer();
+
+    // Give some time for robot to path plan (FIXME: needed?)
+    ArUtil::sleep(100);
+
+    // Resume robot from previous action
+    resume();
 }
 
 void ArClient::getUpdates(int frequency)
@@ -257,6 +280,8 @@ void ArClient::setMapFileConfigOnServer(const char *filename)
 {
     assert(filename != NULL);
 
+    cout << "Map filename to send to server: " << filename << endl;
+
     // Get configuration
     ArConfig *config = _configHandler->getConfig();
     ArConfigSection *section = config->findSection("Files");
@@ -303,7 +328,26 @@ void ArClient::goToGoal(const char *goalName)
     _moving = true;
 }
 
+void ArClient::goHome()
+{
+    lock();
+    requestOnce("home");
+    unlock();
+}
+
 void ArClient::resume()
 {
-    goToGoal(_currentGoal.c_str());
+    if (_lastMode == "Goto goal" &&
+            string(_robotInfo.status).find("Going to") == 0)
+    {
+        goToGoal(_currentGoal.c_str());
+    }
+    else if (_lastMode == "Go home")
+    {
+        goHome();
+    }
+    else
+    {
+        // do nothing (stopped?)
+    }
 }

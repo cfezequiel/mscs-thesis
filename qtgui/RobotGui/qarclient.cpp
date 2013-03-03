@@ -38,10 +38,7 @@ void QArClient::getPathReceived(Points *path)
 // Slots
 void QArClient::mapChanged(ArMap *map)
 {
-    //stop();
     sendMap(map);
-    //ArUtil::sleep(100);
-    resume(); //FIXME: resume hardcoded as 'gotoGoal' operation
 }
 
 bool QArClient::connect(QString host, int port, QString username, QString password)

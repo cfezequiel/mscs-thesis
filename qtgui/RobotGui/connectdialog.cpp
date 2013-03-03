@@ -32,7 +32,7 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
         return;
     }
 
-    // File combo boxes with login info
+    // Fill combo boxes with login info
     QDomNode root = _loginInfo->firstChild();
     for (QDomNode node = root.firstChild(); !node.isNull(); node = node.nextSibling())
     {
@@ -42,6 +42,12 @@ ConnectDialog::ConnectDialog(QWidget *parent) :
         ui->hostComboBox->addItem(host);
         ui->portComboBox->addItem(port);
     }
+    // Set the host/port items in the comboboxes to the last one generated
+    // in the file
+    int lastIndex = ui->hostComboBox->count() - 1;
+    ui->hostComboBox->setCurrentIndex(lastIndex);
+    ui->portComboBox->setCurrentIndex(lastIndex);
+
 
     // Disable OK button until user inputs necessary information
     _okButton = ui->buttonBox->button(QDialogButtonBox::Ok);

@@ -86,7 +86,7 @@ void MapScene::renderMap(ArMap *map)
                 fr->setRotation(-th);
                 addItem(fr);
             }
-            if (type == "ForbiddenLine")
+            else if (type == "ForbiddenLine")
             {
                 // Ignore (make invisible)
             }
