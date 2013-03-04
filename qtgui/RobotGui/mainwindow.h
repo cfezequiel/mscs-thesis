@@ -33,13 +33,13 @@ private slots:
     void on_actionStop_triggered();
     void on_actionResetToHome_triggered();
     void on_actionGotoHome_triggered();
+    void on_actionExit_triggered();
     void on_actionAddObstacleRect_triggered(bool checked);
     void mapEditActionGroup_triggered(QAction *action);
     void on_actionDeleteMapObject_triggered(bool checked);
     void logData(ArRobotInfo pose, QPointF obstaclePos);
     void updateStatus(ArRobotInfo pose);
-
-    void on_actionExit_triggered();
+    void keyPressEvent(QKeyEvent * event);
 
 private:
     Ui::MainWindow *ui;

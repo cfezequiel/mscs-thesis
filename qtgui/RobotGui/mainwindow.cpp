@@ -279,3 +279,15 @@ void MainWindow::closeEvent(QCloseEvent * event)
         delete _client;
     }
 }
+
+void MainWindow::keyPressEvent(QKeyEvent * event)
+{
+    if (event->key() == Qt::Key_Space)
+    {
+        cout << "Key pressed: spacebar" << endl;
+        if (_client != NULL && _client->isConnected())
+        {
+            _client->stop();
+        }
+    }
+}
