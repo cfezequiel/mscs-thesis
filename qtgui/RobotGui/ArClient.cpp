@@ -166,7 +166,9 @@ void ArClient::_handleGetMap(ArNetPacket *packet)
     int length = packet->getDataLength();
     packet->bufToData(data, length);
 
+#if 0
     cout << "RCVD: " << data << endl;
+#endif
 
     _strbuf << data << '\n';
 
@@ -280,7 +282,9 @@ void ArClient::setMapFileConfigOnServer(const char *filename)
 {
     assert(filename != NULL);
 
+#if 0
     cout << "Map filename to send to server: " << filename << endl;
+#endif
 
     // Get configuration
     ArConfig *config = _configHandler->getConfig();
