@@ -204,10 +204,11 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void MapScene::keyPressEvent(QKeyEvent *keyEvent)
 {
-    cout << keyEvent->text().toStdString() << endl;
-
-    // If delete key pressed, delete all selected items
-    //TODO
+    // If spacebar pressed, stop the robot
+    if (keyEvent->key() == Qt::Key_Space)
+    {
+        stop();
+    }
 }
 
 // FIXME: this should connect to RobotObject not the scene

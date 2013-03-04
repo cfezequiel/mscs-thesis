@@ -103,6 +103,8 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     // -- MapScene to Client --
     QObject::connect((QObject *) _mapScene, SIGNAL(mapChanged(ArMap *)),
                      client, SLOT(mapChanged(ArMap *)));
+    QObject::connect((QObject *) _mapScene, SIGNAL(stop()),
+                     client, SLOT(stop()));
 
     if (!client->connect(host, port, username, password))
     {
@@ -282,12 +284,14 @@ void MainWindow::closeEvent(QCloseEvent * event)
 
 void MainWindow::keyPressEvent(QKeyEvent * event)
 {
+    // If spacebar pressed, stop the robot if it is moving
     if (event->key() == Qt::Key_Space)
     {
-        cout << "Key pressed: spacebar" << endl;
         if (_client != NULL && _client->isConnected())
         {
             _client->stop();
         }
     }
+
+    QMainWindow::keyPressEvent(event);
 }

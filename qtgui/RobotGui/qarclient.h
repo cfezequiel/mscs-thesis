@@ -28,6 +28,7 @@ protected:
 
 public slots:
     void mapChanged(ArMap *map);
+    void stop();
 
 };
 

@@ -49,3 +49,7 @@ bool QArClient::connect(QString host, int port, QString username, QString passwo
                              password.toStdString().c_str());
 }
 
+void QArClient::stop()
+{
+    ArClient::stop();
+}
