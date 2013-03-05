@@ -33,6 +33,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(_connectDialog, SIGNAL(connect(QString, int, QString, QString)),
             this, SLOT(connectToServer(QString, int, QString, QString)));
 
+    // Enable antialiasing
+    ui->mapView->setRenderHints(QPainter::Antialiasing);
+
     // Set map scene
     _mapScene = new MapScene(this);
     ui->mapView->setScene(_mapScene);
@@ -62,6 +65,11 @@ MainWindow::MainWindow(QWidget *parent) :
         }
         _dataFile->close();
     }
+
+    // Connect untoggle signal for unchecking add obstacle rect action
+    // after obstacle was placed successfully
+    // FIXME: this is a hack
+    QObject::connect(_mapScene, SIGNAL(untoggle()), this, SLOT(untoggle()));
 }
 
 MainWindow::~MainWindow()
@@ -294,4 +302,13 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
     }
 
     QMainWindow::keyPressEvent(event);
+}
+
+// Untoggle the "add obstacle" button
+void MainWindow::untoggle()
+{
+    if (ui->actionAddObstacleRect->isChecked())
+    {
+        ui->actionAddObstacleRect->setChecked(false);
+    }
 }

@@ -225,7 +225,7 @@ void ArClient::sendMap(ArMap *map)
 
     // FIXME: not needed?
     // Try reloading the configuration manually
-    //_configHandler->reloadConfigOnServer();
+    _configHandler->reloadConfigOnServer();
 
     // Give some time for robot to path plan (FIXME: needed?)
     ArUtil::sleep(100);

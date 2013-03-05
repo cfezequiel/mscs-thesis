@@ -152,6 +152,7 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
 
     // Add a forbidden region centered at 'pos'
     ForbiddenRegion *fr = new ForbiddenRegion(width, length);
+    fr->setScale(2);
     addItem(fr);
     fr->setPos(pos);
 
@@ -193,7 +194,13 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
         break;
 
     case ModeAddObstacle:
-        _modeAddObstacleRect(pos);
+        if (mouseEvent->button() == Qt::LeftButton)
+        {
+            _modeAddObstacleRect(pos);
+        }
+        // Untoggle the add obstacle button
+        untoggle();
+        _mode = ModeView;
         break;
 
     default:

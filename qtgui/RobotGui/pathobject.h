@@ -11,6 +11,7 @@ class PathObject : public QGraphicsItem
 {
 public:
     explicit PathObject(QGraphicsItem *parent = 0);
+    ~PathObject();
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget);
@@ -21,6 +22,9 @@ public:
 private:
     Points _points;
     QColor _lineColor;
+    QRectF *_boundingRect;
+    QPointF *_center;
+    void updateBoundingRect();
 
 };
 

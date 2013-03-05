@@ -40,6 +40,7 @@ private slots:
     void logData(ArRobotInfo pose, QPointF obstaclePos);
     void updateStatus(ArRobotInfo pose);
     void keyPressEvent(QKeyEvent * event);
+    void untoggle();
 
 private:
     Ui::MainWindow *ui;
