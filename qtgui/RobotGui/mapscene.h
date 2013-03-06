@@ -30,6 +30,7 @@ public:
     void setMode(Mode mode);
     QList<QString> goalList();
     Mode mode() const;
+    ForbiddenRegion *getMappedObstacle();
     
 signals:
     void mapChanged(ArMap *map);
@@ -40,6 +41,7 @@ signals:
 public slots:
     void updateRobotPose(ArRobotInfo robotInfo);
     void updateRobotPath(Points *path);
+    void clear();
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent);
@@ -55,6 +57,7 @@ private:
     PathObject *_path;
     ArMap *_map;
     QList<QString> _goalNames;
+    ForbiddenRegion *_mappedObstacle;
 };
 
 #endif // MAPSCENE_H

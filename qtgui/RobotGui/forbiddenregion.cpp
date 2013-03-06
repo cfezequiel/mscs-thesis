@@ -6,8 +6,11 @@ using namespace std;
 ForbiddenRegion::ForbiddenRegion(qreal width, qreal height, QGraphicsItem *parent):
     MapItem(parent), _width(width), _height(height)
 {
-    _lineColor = QColor(Qt::gray);
-    _fillColor = QColor(Qt::gray);
+    // Set default colors
+    setLineColor(QColor(Qt::gray));
+    QColor fillColor(Qt::gray);
+    fillColor.setAlpha(127);
+    setFillColor(fillColor);
 }
 
 QRectF ForbiddenRegion::boundingRect() const
@@ -18,7 +21,7 @@ QRectF ForbiddenRegion::boundingRect() const
 void ForbiddenRegion::paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
             QWidget *widget)
 {
-    painter->setPen(QPen(_lineColor));
-    painter->setBrush(QBrush(_fillColor));
+    painter->setPen(QPen(getLineColor()));
+    painter->setBrush(QBrush(getFillColor()));
     painter->drawRect(boundingRect());
 }

@@ -25,10 +25,16 @@ ArClient::ArClient() : ArClientBase()
                       &ArClient::_handleUpdateStrings);
     _getPathCB = new ArFunctor1C<ArClient, ArNetPacket *>(this,
                       &ArClient::_handleGetPath);
+    _disconnectOnErrorCB = new ArFunctorC<ArClient>(this,
+                            &ArClient::connectionError);
+    _serverShutdownCB = new ArFunctorC<ArClient>(this,
+                            &ArClient::serverShutdown);
+
+    // Initialize housekeeping variables
     _mapReceived = false;
     _nCommands = 0;
     _commandsReceived = false;
-    _moving = false;
+    //_moving = false;
 }
 
 ArClient::~ArClient()
@@ -73,6 +79,10 @@ bool ArClient::connect(const char *host, int port, const char *username, const c
 
     // Add path handler
     addHandler("getPath", _getPathCB);
+
+    // Add disconnect handler
+    addDisconnectOnErrorCB(_disconnectOnErrorCB);
+    addServerShutdownCB(_serverShutdownCB);
 
     // Run client
     runAsync();
@@ -329,7 +339,7 @@ void ArClient::goToGoal(const char *goalName)
     unlock();
 
     _currentGoal = goalName;
-    _moving = true;
+    //_moving = true;
 }
 
 void ArClient::goHome()

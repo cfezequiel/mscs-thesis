@@ -16,4 +16,22 @@ void MapItem::mousePressEvent(QGraphicsSceneMouseEvent * event)
 
 }
 
+void MapItem::setLineColor(QColor color)
+{
+    _lineColor = color;
+}
 
+void MapItem::setFillColor(QColor color)
+{
+    _fillColor = color;
+}
+
+QColor MapItem::getLineColor()
+{
+    return _lineColor;
+}
+
+QColor MapItem::getFillColor()
+{
+    return _fillColor;
+}

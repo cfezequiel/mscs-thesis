@@ -13,6 +13,7 @@ using namespace std;
 
 class ArClient : public ArClientBase
 {
+
 public:
     ArClient();
     ~ArClient();
@@ -34,6 +35,8 @@ protected:
     virtual void updateNumbersReceived(ArRobotInfo robotInfo) {}
     virtual void updateStringsReceived(ArRobotInfo robotInfo) {}
     virtual void getPathReceived(Points *path) {}
+    virtual void serverShutdown() {}
+    virtual void connectionError() {}
 
 private:
     // Config handler
@@ -70,8 +73,11 @@ private:
     Points _path;
 
     // Goal
-    bool _moving;
     string _currentGoal;
+
+    // Disconnect handler
+    ArFunctorC<ArClient> *_disconnectOnErrorCB;
+    ArFunctorC<ArClient> *_serverShutdownCB;
 };
 
 #endif // ARCLIENT_H

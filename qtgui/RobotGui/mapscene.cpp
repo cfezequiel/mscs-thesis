@@ -22,7 +22,8 @@ using namespace std;
 
 MapScene::MapScene(QObject *parent) :
     QGraphicsScene(parent),
-    _mode(ModeView)
+    _mode(ModeView),
+    _mappedObstacle(NULL)
 {
     // Do nothing
 }
@@ -56,6 +57,11 @@ void MapScene::renderMap(ArMap *map)
         y2 = i->getY2();
         addLine(x1, -y1, x2, -y2);
     }
+
+    // Render robot
+    _robot = new RobotObject;
+    _robot->setZValue(2);
+    addItem(_robot);
 
     // Render map objects
     Zone *obj;
@@ -100,43 +106,59 @@ void MapScene::renderMap(ArMap *map)
         {
             x1 = pose.getX();
             y1 = pose.getY();
-            obj = new Zone;
 
-            // Set position
-            obj->setPos(x1,-y1);
-            obj->setRotation(-th);
-
-            // Set colors
             type = (*i)->getType();
             if (type == "GoalWithHeading")
             {
+                obj = new Zone;
+
+                // Set pos
+                obj->setPos(x1,-y1);
+                obj->setRotation(-th);
                 obj->setLineColor(Qt::cyan);
                 obj->setFillColor(Qt::darkCyan);
+                addItem(obj);
 
                 // Store goal name
                 _goalNames.push_back(QString((*i)->getName()));
             }
             else if (type == "RobotHome")
             {
+                obj = new Zone;
+
+                // Set pose
+                obj->setPos(x1,-y1);
+                obj->setRotation(-th);
                 obj->setLineColor(Qt::black);
                 obj->setFillColor(QColor(0xbbeebb));
+                addItem(obj);
+            }
+            else if (type == "Goal")
+            {
+                // This represents a mapped obstacle
+                // Only get the first one found
+                if (_mappedObstacle == NULL)
+                {
+                    qreal width = _robot->width();
+                    qreal height = _robot->length();
+                    _mappedObstacle = new ForbiddenRegion(width, height);
+                    _mappedObstacle->setScale(2);
+                    QColor color(Qt::black);
+                    color.setAlpha(127);
+                    _mappedObstacle->setFillColor(color);
+                    _mappedObstacle->setPos(x1, -y1);
+                }
             }
             else
             {
                 cerr << "Unsupported MapObject point = " << type << endl;
             }
 
-            addItem(obj);
         }
     } // end render map objects
 
     // Store map
     _map = map;
-
-    // Render robot
-    _robot = new RobotObject;
-    _robot->setZValue(2);
-    addItem(_robot);
 
     // Render path (should be invisible initially)
     _path = new PathObject;
@@ -289,4 +311,19 @@ void MapScene::mouseReleaseEvent(QGraphicsSceneMouseEvent * mouseEvent)
 QList<QString> MapScene::goalList()
 {
     return _goalNames;
+}
+
+void MapScene::clear()
+{
+    // Clear all map items on the scene and restart the map
+    QGraphicsScene::clear();
+
+#if 1 // FIXME: this causes a segfault for some reason
+    delete[] _map;
+#endif
+}
+
+ForbiddenRegion * MapScene::getMappedObstacle()
+{
+    return _mappedObstacle;
 }

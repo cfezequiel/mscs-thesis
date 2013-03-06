@@ -18,8 +18,6 @@ public:
 private:
     qreal _width;
     qreal _height;
-    QColor _lineColor;
-    QColor _fillColor;
 };
 
 #endif // FORBIDDENREGION_H

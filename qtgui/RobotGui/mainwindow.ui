@@ -60,7 +60,14 @@
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
+   <widget class="QMenu" name="menuMap">
+    <property name="title">
+     <string>Map</string>
+    </property>
+    <addaction name="actionShowMappedObstacles"/>
+   </widget>
    <addaction name="menuRobot"/>
+   <addaction name="menuMap"/>
   </widget>
   <widget class="QToolBar" name="navToolBar">
    <property name="enabled">
@@ -183,6 +190,17 @@
   <action name="actionExit">
    <property name="text">
     <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionShowMappedObstacles">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Show mapped obstacles</string>
    </property>
   </action>
  </widget>

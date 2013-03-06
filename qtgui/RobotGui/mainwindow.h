@@ -41,6 +41,9 @@ private slots:
     void updateStatus(ArRobotInfo pose);
     void keyPressEvent(QKeyEvent * event);
     void untoggle();
+    void lostConnection(QString reason);
+
+    void on_actionShowMappedObstacles_triggered(bool checked);
 
 private:
     Ui::MainWindow *ui;

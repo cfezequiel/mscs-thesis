@@ -52,7 +52,6 @@ MainWindow::MainWindow(QWidget *parent) :
     _dataFile = new QFile("data.csv");
     QObject::connect(_mapScene, SIGNAL(sendData(ArRobotInfo, QPointF)),
                      this, SLOT(logData(ArRobotInfo, QPointF)));
-    cout << _dataFile->fileName().toStdString() << endl;
     if (!_dataFile->exists())
     {
         if (_dataFile->open(QIODevice::WriteOnly | QIODevice::Text))
@@ -70,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // after obstacle was placed successfully
     // FIXME: this is a hack
     QObject::connect(_mapScene, SIGNAL(untoggle()), this, SLOT(untoggle()));
+
 }
 
 MainWindow::~MainWindow()
@@ -113,6 +113,10 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
                      client, SLOT(mapChanged(ArMap *)));
     QObject::connect((QObject *) _mapScene, SIGNAL(stop()),
                      client, SLOT(stop()));
+
+    // Connect signal-slot for handling client disconnection
+    QObject::connect(client, SIGNAL(disconnected(QString)),
+                      this, SLOT(lostConnection(QString)));
 
     if (!client->connect(host, port, username, password))
     {
@@ -159,6 +163,9 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
 
     // Enable graphics view
     ui->mapView->setEnabled(true);
+
+    // Enable show mapped obstacles
+    ui->actionShowMappedObstacles->setEnabled(true);
 }
 
 void MainWindow::on_actionConnect_triggered()
@@ -279,14 +286,13 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
-    if (_client)
+    if (_client != NULL)
     {
         if (_client->isConnected())
         {
             _client->stop();
             _client->disconnect();
         }
-        delete _client;
     }
 }
 
@@ -300,8 +306,6 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
             _client->stop();
         }
     }
-
-    QMainWindow::keyPressEvent(event);
 }
 
 // Untoggle the "add obstacle" button
@@ -310,5 +314,46 @@ void MainWindow::untoggle()
     if (ui->actionAddObstacleRect->isChecked())
     {
         ui->actionAddObstacleRect->setChecked(false);
+    }
+}
+
+void MainWindow::lostConnection(QString reason)
+{
+    // Show dialog box indicating client disconnect reason
+    QMessageBox msgBox;
+    QString msg;
+    QTextStream ts(&msg);
+    ts << "Lost connection to server: " << reason << endl;
+    msgBox.setText(msg);
+    msgBox.exec();
+
+    // Clear map scene
+    _mapScene->clear();
+
+    // Disable toolbars
+    ui->navToolBar->setEnabled(false);
+    ui->mapEditToolBar->setEnabled(false);
+
+    // Try to reconnect client
+    // TODO
+}
+
+void MainWindow::on_actionShowMappedObstacles_triggered(bool checked)
+{
+    assert(_mapScene != NULL);
+
+    ForbiddenRegion *mappedObstacle = _mapScene->getMappedObstacle();
+    if (mappedObstacle != NULL)
+    {
+        if (checked)
+        {
+            // Add mapped obstacle to scene
+            _mapScene->addItem(mappedObstacle);
+        }
+        else
+        {
+            // Removed mapped obstacle from scene
+            _mapScene->removeItem(mappedObstacle);
+        }
     }
 }

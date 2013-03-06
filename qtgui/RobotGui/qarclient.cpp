@@ -10,7 +10,7 @@
 #include "qarclient.h"
 
 QArClient::QArClient(QObject *parent) :
-    QObject(parent), ArClient()
+    QObject(parent), ArClient(), _disconnected(false)
 {
 
 }
@@ -43,13 +43,33 @@ void QArClient::mapChanged(ArMap *map)
 
 bool QArClient::connect(QString host, int port, QString username, QString password)
 {
-    return ArClient::connect(host.toStdString().c_str(),
+    bool result = ArClient::connect(host.toStdString().c_str(),
                              port,
                              username.toStdString().c_str(),
                              password.toStdString().c_str());
+    if (result)
+    {
+        _disconnected = false;
+    }
+
+    return result;
 }
 
 void QArClient::stop()
 {
     ArClient::stop();
+}
+
+void QArClient::serverShutdown()
+{
+    if (!_disconnected)
+    {
+        disconnected("Server shutdown.");
+        _disconnected = true;
+    }
+}
+
+void QArClient::connectionError()
+{
+    // FIXME: do nothing?
 }

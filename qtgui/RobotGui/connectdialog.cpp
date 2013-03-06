@@ -78,14 +78,16 @@ void ConnectDialog::on_buttonBox_accepted()
     // Send signal to connect passing the login info
     connect(host, port.toInt(), username, password);
 
-    // Check for duplicates
+    // Remove older duplicate, if any
+    // This is to ensure that the latest login info is displayed in the
+    // comboboxes
     QDomNode root = _loginInfo->firstChild();
     for (QDomNode node = root.firstChild(); !node.isNull(); node = node.nextSibling())
     {
         QDomElement e = node.toElement();
         if (host == e.attribute("host") && port == e.attribute("port"))
         {
-            return;
+            root.removeChild(node);
         }
     }
 
