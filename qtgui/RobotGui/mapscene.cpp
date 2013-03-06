@@ -318,7 +318,7 @@ void MapScene::clear()
     // Clear all map items on the scene and restart the map
     QGraphicsScene::clear();
 
-#if 1 // FIXME: this causes a segfault for some reason
+#if 0 // FIXME: this causes a segfault for some reason
     delete[] _map;
 #endif
 }
