@@ -2,10 +2,10 @@
 #include <cmath>
 #include <cstdlib>
 #include <iostream>
-
 #include <sstream>
 #include <vector>
 #include <list>
+#include <string>
 
 #include <QCursor>
 #include <QPoint>
@@ -70,6 +70,7 @@ void MapScene::renderMap(ArMap *map)
     for (list< ArMapObject *>::iterator i = objects->begin();
          i != objects->end(); i++)
     {
+        string name((*i)->getName());
         type = (*i)->getType();
         ArPose pose = (*i)->getPose();
         th = pose.getTh();
@@ -136,8 +137,8 @@ void MapScene::renderMap(ArMap *map)
             else if (type == "Goal")
             {
                 // This represents a mapped obstacle
-                // Only get the first one found
-                if (_mappedObstacle == NULL)
+                // Only get the first one with an "O" as starting letter
+                if (_mappedObstacle == NULL && name[0] == 'O')
                 {
                     qreal width = _robot->width();
                     qreal height = _robot->length();
