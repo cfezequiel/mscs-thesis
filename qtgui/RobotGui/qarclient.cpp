@@ -15,6 +15,11 @@ QArClient::QArClient(QObject *parent) :
 
 }
 
+QArClient::QArClient(QString &sessionName, QObject *parent):
+    QObject(parent), ArClient(sessionName.toStdString()), _disconnected(false)
+{
+}
+
 void QArClient::updateNumbersReceived(ArRobotInfo robotInfo)
 {
     emit updatePose(robotInfo);

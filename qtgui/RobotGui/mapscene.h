@@ -31,6 +31,7 @@ public:
     QList<QString> goalList();
     Mode mode() const;
     ForbiddenRegion *getMappedObstacle();
+    ArMap * getMap();
     
 signals:
     void mapChanged(ArMap *map);

@@ -14,14 +14,38 @@ using namespace std;
 
 ArClient::ArClient() : ArClientBase()
 {
+    initialize();
+    _sessionName = "tmp";
+}
+
+ArClient::ArClient(string sessionName): ArClientBase()
+{
+    initialize();
+    _sessionName = sessionName;
+}
+
+ArClient::~ArClient()
+{
+    delete _configHandler;
+    delete _clientFileFromClient;
+    delete _clientFileLister;
+    delete _getMapCB;
+    delete _listCommandsCB;
+    delete _updateNumbersCB;
+    delete _updateStringsCB;
+    delete _getPathCB;
+}
+
+void ArClient::initialize()
+{
     // Initialize callbacks
     _getMapCB = new ArFunctor1C<ArClient, ArNetPacket *>(this,
                     &ArClient::_handleGetMap);
-    _listCommandsCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
+    _listCommandsCB = new ArFunctor1C<ArClient, ArNetPacket *>(this,
                       &ArClient::_handleListCommands);
-    _updateNumbersCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
+    _updateNumbersCB = new ArFunctor1C<ArClient, ArNetPacket *>(this,
                       &ArClient::_handleUpdateNumbers);
-    _updateStringsCB = new ArFunctor1C<ArClient, ArNetPacket *>(this, 
+    _updateStringsCB = new ArFunctor1C<ArClient, ArNetPacket *>(this,
                       &ArClient::_handleUpdateStrings);
     _getPathCB = new ArFunctor1C<ArClient, ArNetPacket *>(this,
                       &ArClient::_handleGetPath);
@@ -35,18 +59,6 @@ ArClient::ArClient() : ArClientBase()
     _nCommands = 0;
     _commandsReceived = false;
     //_moving = false;
-}
-
-ArClient::~ArClient()
-{
-    delete _configHandler;
-    delete _clientFileFromClient;
-    delete _clientFileLister;
-    delete _getMapCB;
-    delete _listCommandsCB;
-    delete _updateNumbersCB;
-    delete _updateStringsCB;
-    delete _getPathCB;
 }
 
 bool ArClient::connect(const char *host, int port, const char *username, const char *password)
@@ -142,7 +154,10 @@ ArMap * ArClient::getMapFromServer()
     }
 
     // Save map strings to a file
-    char filename[] = "tmp.map";
+    stringstream ss;
+    ss << _sessionName << ".map";
+    char filename[256];
+    ss >> filename;
     ofstream outFile(filename, ios::out);
     outFile << _strbuf.rdbuf();
     outFile.close();
@@ -364,4 +379,9 @@ void ArClient::resume()
     {
         // do nothing (stopped?)
     }
+}
+
+string ArClient::getSessionName()
+{
+    return _sessionName;
 }

@@ -97,7 +97,11 @@ void MainWindow::mapEditActionGroup_triggered(QAction *action)
 void MainWindow::connectToServer(QString host, int port, QString username, QString password)
 {
     // Connect client
-    QArClient *client = new QArClient;
+    QDateTime dateTime = QDateTime::currentDateTime();
+    QString session;
+    QTextStream ts(&session);
+    ts << username << '_' << dateTime.toString(QString("yyyy_MM_dd_hhmm"));
+    QArClient *client = new QArClient(session);
 
     // Connect signals and slots
     // -- Client to MapScene --
@@ -286,6 +290,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
+    // Disconnect client
     if (_client != NULL)
     {
         if (_client->isConnected())
@@ -294,6 +299,13 @@ void MainWindow::closeEvent(QCloseEvent * event)
             _client->disconnect();
         }
     }
+
+    // Save map
+    stringstream ss;
+    string filename;
+    ss << _client->getSessionName() << ".map";
+    ss >> filename;
+    _mapScene->getMap()->writeFile(filename.c_str());
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event)

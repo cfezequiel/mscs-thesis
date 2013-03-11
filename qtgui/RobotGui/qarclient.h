@@ -16,6 +16,7 @@ class QArClient : public QObject, public ArClient
 public:
     enum DisconnectReason {ServerShutdown=0, ConnectionError};
     explicit QArClient(QObject *parent = 0);
+    QArClient(QString &sessionName, QObject *parent = 0);
     bool connect(QString host, int port, QString username, QString password);
 
 signals:

@@ -324,7 +324,13 @@ void MapScene::clear()
 #endif
 }
 
+// FIXME: hack
 ForbiddenRegion * MapScene::getMappedObstacle()
 {
     return _mappedObstacle;
+}
+
+ArMap * MapScene::getMap()
+{
+    return _map;
 }

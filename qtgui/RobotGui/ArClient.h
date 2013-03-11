@@ -16,7 +16,9 @@ class ArClient : public ArClientBase
 
 public:
     ArClient();
+    ArClient(string sessionName);
     ~ArClient();
+    void initialize();
     bool connect(const char *host, int port, const char *username=NULL, const char *password=NULL);
     bool mapReceived() { return _mapReceived; }
     ArMap * getMapFromServer();
@@ -30,6 +32,7 @@ public:
     void goToGoal(const char *goalName);
     void goHome();
     void resume();
+    string getSessionName();
 
 protected:
     virtual void updateNumbersReceived(ArRobotInfo robotInfo) {}
@@ -78,6 +81,9 @@ private:
     // Disconnect handler
     ArFunctorC<ArClient> *_disconnectOnErrorCB;
     ArFunctorC<ArClient> *_serverShutdownCB;
+
+    // Session
+    string _sessionName;
 };
 
 #endif // ARCLIENT_H
