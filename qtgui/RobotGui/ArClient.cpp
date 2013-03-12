@@ -378,18 +378,7 @@ void ArClient::resume()
             (status.find("Going to") == 0 ||
              status.find("Failed to") == 0))
     {
-        cout << "resume():: going to goal." << endl;
-
-        // Resend "go to goal" command if robot does not move
-        float forwardVel;
-        lock();
-        forwardVel = _robotInfo.forwardVel;
-        unlock();
-        do
-        {
-            goToGoal(_currentGoal.c_str());
-            ArUtil::sleep(1000);
-        } while (forwardVel == 0);
+        goToGoal(_currentGoal.c_str());
     }
     else if (_lastMode == "Go home")
     {

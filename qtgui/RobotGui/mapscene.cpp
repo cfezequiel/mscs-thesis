@@ -26,7 +26,8 @@ MapScene::MapScene(QObject *parent) :
     _mappedObstacle(NULL),
     _map(NULL)
 {
-    // Do nothing
+    QObject::connect(&_timer, SIGNAL(timeout()), this, SLOT(updateMap()));
+    _timer.setSingleShot(true);
 }
 
 void MapScene::renderMap(ArMap *map)
@@ -176,8 +177,9 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
 
     // Add a forbidden region centered at 'pos'
     ForbiddenRegion *fr = new ForbiddenRegion(width, length);
-    addItem(fr);
     fr->setPos(pos);
+    fr->setLineColor(QColor(Qt::cyan));
+    addItem(fr);
 
     // Get poses
     QRectF rect = fr->boundingRect();
@@ -194,11 +196,11 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
     mapObjects->push_back(frObject);
     _map->setMapObjects(mapObjects);
 
-    // Send signal that map was changed
-    emit mapChanged(_map);
-
     // Log data
     sendData(_robot->getPose(), pos);
+
+    // Add obstacle to list of new obstacles
+    _newObstacles.push_back(fr);
 }
 
 void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
@@ -219,11 +221,30 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     case ModeAddObstacle:
         if (mouseEvent->button() == Qt::LeftButton)
         {
-            _modeAddObstacleRect(pos);
+            if (!_timer.isActive())
+            {
+                // Note: on timeout, the 'mapChanged' signal will be sent
+                _timer.start(250);
+                _modeAddObstacleRect(pos);
+            }
         }
-        // Untoggle the add obstacle button
-        untoggle();
-        _mode = ModeView;
+        else if (mouseEvent->button() == Qt::RightButton)
+        {
+            // Map changed
+            emit mapChanged(_map);
+
+            //Untoggle the add obstacle button
+            untoggle();
+            _mode = ModeView;
+
+            // Change obstacle colors to indicated 'sent'
+            for (QList<ForbiddenRegion *>::iterator i = _newObstacles.begin();
+                 i != _newObstacles.end(); i++)
+            {
+                (*i)->setLineColor(QColor(Qt::gray));
+            }
+            update();
+        }
         break;
 
     default:
@@ -338,4 +359,12 @@ ArMap * MapScene::getMap()
 bool MapScene::hasMap()
 {
     return (bool) _map != NULL;
+}
+
+void MapScene::updateMap()
+{
+    if (_map != NULL)
+    {
+        //emit mapChanged(_map);
+    }
 }

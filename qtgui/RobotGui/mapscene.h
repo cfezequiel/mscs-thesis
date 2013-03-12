@@ -9,6 +9,7 @@
 #include <QPoint>
 #include <QCursor>
 #include <QKeyEvent>
+#include <QTimer>
 
 #include "Aria.h"
 #include "robotobject.h"
@@ -43,6 +44,7 @@ signals:
 public slots:
     void updateRobotPose(ArRobotInfo robotInfo);
     void updateRobotPath(Points *path);
+    void updateMap();
     void clear();
 
 protected:
@@ -60,6 +62,8 @@ private:
     ArMap *_map;
     QList<QString> _goalNames;
     ForbiddenRegion *_mappedObstacle;
+    QTimer _timer;
+    QList<ForbiddenRegion *> _newObstacles;
 };
 
 #endif // MAPSCENE_H
