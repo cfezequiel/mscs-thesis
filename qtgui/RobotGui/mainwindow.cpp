@@ -48,23 +48,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(_mapEditActionGroup, SIGNAL(triggered(QAction *)),
                     this, SLOT(mapEditActionGroup_triggered(QAction *)));
 
-    // Configure data logging
-    _dataFile = new QFile("data.csv");
-    QObject::connect(_mapScene, SIGNAL(sendData(ArRobotInfo, QPointF)),
-                     this, SLOT(logData(ArRobotInfo, QPointF)));
-    if (!_dataFile->exists())
-    {
-        if (_dataFile->open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            QTextStream ts(_dataFile);
-            ts << "Username,DateTime,RobotStatus,RobotMode,RobotXPos,RobotYpos,"
-               << "RobotForwardVel,RobotRotationVel,ObstacleXPos,ObstacleYPos"
-               << '\n'
-                  ;
-        }
-        _dataFile->close();
-    }
-
     // Connect untoggle signal for unchecking add obstacle rect action
     // after obstacle was placed successfully
     // FIXME: this is a hack
@@ -170,6 +153,26 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
 
     // Enable show mapped obstacles
     ui->actionShowMappedObstacles->setEnabled(true);
+
+    // Configure data logging
+    QString dataFilename;
+    QTextStream ts2(&dataFilename);
+    ts2 << client->getSessionName().c_str() << ".csv";
+    _dataFile = new QFile(dataFilename);
+    QObject::connect(_mapScene, SIGNAL(sendData(ArRobotInfo, QPointF)),
+                     this, SLOT(logData(ArRobotInfo, QPointF)));
+    if (!_dataFile->exists())
+    {
+        if (_dataFile->open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            QTextStream ts(_dataFile);
+            ts << "Username,DateTime,RobotStatus,RobotMode,RobotXPos,RobotYpos,"
+               << "RobotForwardVel,RobotRotationVel,ObstacleXPos,ObstacleYPos"
+               << '\n'
+                  ;
+        }
+        _dataFile->close();
+    }
 }
 
 void MainWindow::on_actionConnect_triggered()
@@ -300,12 +303,15 @@ void MainWindow::closeEvent(QCloseEvent * event)
         }
     }
 
-    // Save map
-    stringstream ss;
-    string filename;
-    ss << _client->getSessionName() << ".map";
-    ss >> filename;
-    _mapScene->getMap()->writeFile(filename.c_str());
+    // Save map if it was loaded
+    if (_mapScene->hasMap())
+    {
+        stringstream ss;
+        string filename;
+        ss << _client->getSessionName() << ".map";
+        ss >> filename;
+        _mapScene->getMap()->writeFile(filename.c_str());
+    }
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event)

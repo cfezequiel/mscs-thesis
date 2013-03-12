@@ -23,7 +23,8 @@ using namespace std;
 MapScene::MapScene(QObject *parent) :
     QGraphicsScene(parent),
     _mode(ModeView),
-    _mappedObstacle(NULL)
+    _mappedObstacle(NULL),
+    _map(NULL)
 {
     // Do nothing
 }
@@ -169,13 +170,12 @@ void MapScene::renderMap(ArMap *map)
 
 void MapScene::_modeAddObstacleRect(QPointF pos)
 {
-    // Set initial dimensions to robot dimensions
-    qreal width = _robot->width();
-    qreal length = _robot->length();
+    // Set obstacle dimensions (1 pixel:1 mm)
+    qreal width = 460;
+    qreal length = 500;
 
     // Add a forbidden region centered at 'pos'
     ForbiddenRegion *fr = new ForbiddenRegion(width, length);
-    fr->setScale(2);
     addItem(fr);
     fr->setPos(pos);
 
@@ -333,4 +333,9 @@ ForbiddenRegion * MapScene::getMappedObstacle()
 ArMap * MapScene::getMap()
 {
     return _map;
+}
+
+bool MapScene::hasMap()
+{
+    return (bool) _map != NULL;
 }

@@ -154,10 +154,14 @@ ArMap * ArClient::getMapFromServer()
     }
 
     // Save map strings to a file
+#if 1
     stringstream ss;
     ss << _sessionName << ".map";
     char filename[256];
     ss >> filename;
+#else
+    char filename[] = "tmp.map";
+#endif
     ofstream outFile(filename, ios::out);
     outFile << _strbuf.rdbuf();
     outFile.close();
@@ -235,8 +239,10 @@ void ArClient::sendMap(ArMap *map)
     lock();
     // FIXME: hardcoded directory string
     char serverDir[STRLEN] = "tmp";
-    _clientFileFromClient->putFileToDirectory(serverDir, map->getFileName(),
-                                              mapFile);
+    _clientFileFromClient->putFileToDirectory(
+                serverDir, map->getFileName(),
+                mapFile,
+                ArClientFileFromClient::SPEED_FAST);
     unlock();
 
     // Update location of map file in config
@@ -366,10 +372,24 @@ void ArClient::goHome()
 
 void ArClient::resume()
 {
+    string status = _robotInfo.status;
+
     if (_lastMode == "Goto goal" &&
-            string(_robotInfo.status).find("Going to") == 0)
+            (status.find("Going to") == 0 ||
+             status.find("Failed to") == 0))
     {
-        goToGoal(_currentGoal.c_str());
+        cout << "resume():: going to goal." << endl;
+
+        // Resend "go to goal" command if robot does not move
+        float forwardVel;
+        lock();
+        forwardVel = _robotInfo.forwardVel;
+        unlock();
+        do
+        {
+            goToGoal(_currentGoal.c_str());
+            ArUtil::sleep(1000);
+        } while (forwardVel == 0);
     }
     else if (_lastMode == "Go home")
     {

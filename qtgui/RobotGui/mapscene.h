@@ -32,6 +32,7 @@ public:
     Mode mode() const;
     ForbiddenRegion *getMappedObstacle();
     ArMap * getMap();
+    bool hasMap();
     
 signals:
     void mapChanged(ArMap *map);
