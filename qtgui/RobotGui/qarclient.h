@@ -18,6 +18,7 @@ public:
     explicit QArClient(QObject *parent = 0);
     QArClient(QString &sessionName, QObject *parent = 0);
     bool connect(QString host, int port, QString username, QString password);
+    void disconnect();
 
 signals:
     void updatePose(ArRobotInfo robotInfo);

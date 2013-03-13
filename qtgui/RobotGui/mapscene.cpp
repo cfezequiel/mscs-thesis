@@ -26,8 +26,29 @@ MapScene::MapScene(QObject *parent) :
     _mappedObstacle(NULL),
     _map(NULL)
 {
-    QObject::connect(&_timer, SIGNAL(timeout()), this, SLOT(updateMap()));
-    _timer.setSingleShot(true);
+}
+
+void MapScene::loadMapFromFile(QString filename)
+{
+    // Read map file
+    if (_map != NULL)
+    {
+        delete _map;
+    }
+    _map = new ArMap();
+    _map->readFile(filename.toLocal8Bit().data());
+
+    // Clear map scene
+    clear();
+
+    // Clear goal list
+    _goalNames.clear();
+
+    // Render new map items
+    renderMap(_map);
+
+    // Send map updated signal
+    emit mapChanged(_map);
 }
 
 void MapScene::renderMap(ArMap *map)
@@ -221,23 +242,20 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
     case ModeAddObstacle:
         if (mouseEvent->button() == Qt::LeftButton)
         {
-            if (!_timer.isActive())
-            {
-                // Note: on timeout, the 'mapChanged' signal will be sent
-                _timer.start(250);
-                _modeAddObstacleRect(pos);
-            }
+            // Add obstacle to the map
+            // Map updates are not sent to the client yet
+            _modeAddObstacleRect(pos);
         }
         else if (mouseEvent->button() == Qt::RightButton)
         {
-            // Map changed
+            // Send map changes to the client
             emit mapChanged(_map);
 
             //Untoggle the add obstacle button
             untoggle();
             _mode = ModeView;
 
-            // Change obstacle colors to indicated 'sent'
+            // Change obstacle colors to indicate 'sent' status
             for (QList<ForbiddenRegion *>::iterator i = _newObstacles.begin();
                  i != _newObstacles.end(); i++)
             {
@@ -365,6 +383,7 @@ void MapScene::updateMap()
 {
     if (_map != NULL)
     {
-        //emit mapChanged(_map);
+        emit mapChanged(_map);
     }
 }
+

@@ -54,9 +54,10 @@
    </property>
    <widget class="QMenu" name="menuRobot">
     <property name="title">
-     <string>Robot</string>
+     <string>Session</string>
     </property>
     <addaction name="actionConnect"/>
+    <addaction name="actionDisconnect"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -64,6 +65,8 @@
     <property name="title">
      <string>Map</string>
     </property>
+    <addaction name="actionLoadMap"/>
+    <addaction name="separator"/>
     <addaction name="actionShowMappedObstacles"/>
    </widget>
    <addaction name="menuRobot"/>
@@ -201,6 +204,28 @@
    </property>
    <property name="text">
     <string>Show mapped obstacles</string>
+   </property>
+  </action>
+  <action name="actionDisconnect">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Disconnect...</string>
+   </property>
+   <property name="iconText">
+    <string>Disconnect...</string>
+   </property>
+   <property name="toolTip">
+    <string>Disconnect client</string>
+   </property>
+  </action>
+  <action name="actionLoadMap">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Load ...</string>
    </property>
   </action>
  </widget>

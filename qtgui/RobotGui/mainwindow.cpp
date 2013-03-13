@@ -2,10 +2,12 @@
 #include <iostream>
 #include <sstream>
 
+#include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
 #include <QDateTime>
 
+#include "forbiddenregion.h"
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "zone.h"
@@ -17,7 +19,8 @@ using namespace std;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    _client(NULL)
 {
     ui->setupUi(this);
 
@@ -79,11 +82,13 @@ void MainWindow::mapEditActionGroup_triggered(QAction *action)
 
 void MainWindow::connectToServer(QString host, int port, QString username, QString password)
 {
-    // Connect client
+    // Create session name
     QDateTime dateTime = QDateTime::currentDateTime();
     QString session;
     QTextStream ts(&session);
-    ts << username << '_' << dateTime.toString(QString("yyyy_MM_dd_hhmm"));
+    ts << username << '_' << dateTime.toString(QString("yyyy_MM_dd_hh:mm:ss"));
+
+    // Create client
     QArClient *client = new QArClient(session);
 
     // Connect signals and slots
@@ -120,13 +125,20 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     // FIXME: support only one robot for now
     _client = client;
 
-    // Get map
-    client->lock();
-    ArMap *map = client->getMapFromServer();
-    client->unlock();
-
-    // Render map
-    _mapScene->renderMap(map);
+    // If no map exists
+    if (_mapScene->getMap() == NULL)
+    {
+        // Get map from server
+        client->lock();
+        ArMap *map = client->getMapFromServer();
+        client->unlock();
+        _mapScene->renderMap(map);
+    }
+    else
+    {
+        // Send map to server
+        _mapScene->updateMap();
+    }
 
     // Fill goals combobox with goal names
     QStringList goalList(_mapScene->goalList());
@@ -144,15 +156,9 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     // Record user name
     _user.append(username);
 
-    // Enable toolbars
-    ui->navToolBar->setEnabled(true);
-    ui->mapEditToolBar->setEnabled(true);
-
-    // Enable graphics view
-    ui->mapView->setEnabled(true);
-
-    // Enable show mapped obstacles
-    ui->actionShowMappedObstacles->setEnabled(true);
+    // Enable map and nav controls
+    toggleMapControls(true);
+    toggleNavControls(true);
 
     // Configure data logging
     QString dataFilename;
@@ -165,22 +171,50 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     {
         if (_dataFile->open(QIODevice::WriteOnly | QIODevice::Text))
         {
+            ForbiddenRegion *fr = _mapScene->getMappedObstacle();
             QTextStream ts(_dataFile);
-            ts << "Username,DateTime,RobotStatus,RobotMode,RobotXPos,RobotYpos,"
+            QPointF center = fr->scenePos();
+            ts << "MappedObstacle(x y)," << center.x() << ',' << center.y() << '\n'
+               << "Username,DateTime,RobotStatus,RobotMode,RobotXPos,RobotYpos,"
                << "RobotForwardVel,RobotRotationVel,ObstacleXPos,ObstacleYPos"
                << '\n'
                   ;
         }
         _dataFile->close();
     }
+
+}
+
+void MainWindow::disconnectFromServer()
+{
+    // Save map if it was loaded
+    if (_mapScene->hasMap())
+    {
+        stringstream ss;
+        string filename;
+        ss << _client->getSessionName() << ".map";
+        ss >> filename;
+        _mapScene->getMap()->writeFile(filename.c_str());
+    }
+
+    // Disconnect client
+    if (_client != NULL)
+    {
+        if (_client->isConnected())
+        {
+            _client->stop();
+            _client->disconnect();
+        }
+        delete _client;
+    }
+
+    // Clear map scene
+    _mapScene->clear();
 }
 
 void MainWindow::on_actionConnect_triggered()
 {
-    // TODO: Open dialog window
     _connectDialog->show();
-    return;
-
 }
 
 void MainWindow::on_actionGoto_triggered()
@@ -293,25 +327,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
-    // Disconnect client
-    if (_client != NULL)
-    {
-        if (_client->isConnected())
-        {
-            _client->stop();
-            _client->disconnect();
-        }
-    }
-
-    // Save map if it was loaded
-    if (_mapScene->hasMap())
-    {
-        stringstream ss;
-        string filename;
-        ss << _client->getSessionName() << ".map";
-        ss >> filename;
-        _mapScene->getMap()->writeFile(filename.c_str());
-    }
+    disconnectFromServer();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event)
@@ -345,12 +361,13 @@ void MainWindow::lostConnection(QString reason)
     msgBox.setText(msg);
     msgBox.exec();
 
-    // Clear map scene
-    _mapScene->clear();
+    // Disconnect client (officially)
+    // This also clears the map
+    disconnectFromServer();
 
     // Disable toolbars
-    ui->navToolBar->setEnabled(false);
-    ui->mapEditToolBar->setEnabled(false);
+    toggleMapControls(false);
+    toggleNavControls(false);
 
     // Try to reconnect client
     // TODO
@@ -374,4 +391,54 @@ void MainWindow::on_actionShowMappedObstacles_triggered(bool checked)
             _mapScene->removeItem(mappedObstacle);
         }
     }
+}
+
+void MainWindow::on_actionDisconnect_triggered()
+{
+    // Disconnect client
+    disconnectFromServer();
+
+    // Disable controls
+    toggleMapControls(false);
+    toggleNavControls(false);
+}
+
+void MainWindow::toggleNavControls(bool value)
+{
+    ui->navToolBar->setEnabled(value);
+    ui->actionDisconnect->setEnabled(value);
+    ui->actionConnect->setEnabled(!value);
+}
+
+void MainWindow::toggleMapControls(bool value)
+{
+    ui->mapEditToolBar->setEnabled(value);
+    ui->mapView->setEnabled(value);
+    ui->actionShowMappedObstacles->setEnabled(value);
+}
+
+void MainWindow::on_actionLoadMap_triggered()
+{
+    // Open file dialog box so user can select map file
+    QString filename;
+    filename = QFileDialog::getOpenFileName(this,
+                                            tr("Load a map"), "./",
+                                            tr("Map Files (*.map)"));
+
+    // Load the map from file
+    _mapScene->loadMapFromFile(filename);
+
+    // Fit map scene to the view
+    ui->mapView->fitInView(_mapScene->sceneRect(), Qt::KeepAspectRatio);
+
+    // Enable map controls
+    toggleMapControls(true);
+
+    // Erase and fill goals combobox with new goal names
+    QStringList goalList(_mapScene->goalList());
+    for (int i = 0; i < _goalsComboBox->count(); i++)
+    {
+        _goalsComboBox->removeItem(i);
+    }
+    _goalsComboBox->addItems(goalList);
 }

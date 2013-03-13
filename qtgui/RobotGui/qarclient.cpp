@@ -78,3 +78,9 @@ void QArClient::connectionError()
 {
     // FIXME: do nothing?
 }
+
+void QArClient::disconnect()
+{
+    ArClient::disconnect();
+    QObject::disconnect();
+}

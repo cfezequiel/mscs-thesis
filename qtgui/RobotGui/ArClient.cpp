@@ -1,3 +1,4 @@
+#include <libgen.h>
 #include <unistd.h>
 #include <cassert>
 #include <cstdio>
@@ -154,14 +155,7 @@ ArMap * ArClient::getMapFromServer()
     }
 
     // Save map strings to a file
-#if 1
-    stringstream ss;
-    ss << _sessionName << ".map";
-    char filename[256];
-    ss >> filename;
-#else
     char filename[] = "tmp.map";
-#endif
     ofstream outFile(filename, ios::out);
     outFile << _strbuf.rdbuf();
     outFile.close();
@@ -220,19 +214,27 @@ void ArClient::sendMap(ArMap *map)
 {
     assert(map != NULL);
 
+    cout << "sendMap()" << endl;
+
     // Store last mode (for resuming later after config update)
     _lastMode = _robotInfo.mode;
 
+    // Get basename
+#if 0
+    char *bname = basename((char *) map->getFileName());
+#else
+    const char *bname = "tmp.map";
+#endif
     // Write map to file
     char *baseDir = get_current_dir_name();
     map->setBaseDirectory(baseDir);
-    map->writeFile(map->getFileName());
+    map->writeFile(bname);
     delete baseDir;
 
     // Get full path of map file in local directory
     stringstream ss;
     char mapFile[STRLEN];
-    ss << map->getBaseDirectory() << '/' << map->getFileName();
+    ss << map->getBaseDirectory() << '/' << bname;
     ss >> mapFile;
 
     // Send map file to robot server
@@ -240,22 +242,20 @@ void ArClient::sendMap(ArMap *map)
     // FIXME: hardcoded directory string
     char serverDir[STRLEN] = "tmp";
     _clientFileFromClient->putFileToDirectory(
-                serverDir, map->getFileName(),
-                mapFile,
+                serverDir, bname, mapFile,
                 ArClientFileFromClient::SPEED_FAST);
     unlock();
 
     // Update location of map file in config
     // NOTE: This automatically reloads the configuration
     stringstream ss2;
-    ss2 << serverDir << '/' << map->getFileName();
+    ss2 << serverDir << '/' << bname;
     ss2 >> mapFile;
     lock();
     setMapFileConfigOnServer(mapFile);
     unlock();
 
-    // FIXME: not needed?
-    // Try reloading the configuration manually
+    // Try reloading the configuration manually, just to make sure
     _configHandler->reloadConfigOnServer();
 
     // Give some time for robot to path plan (FIXME: needed?)

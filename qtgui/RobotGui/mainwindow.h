@@ -42,10 +42,15 @@ private slots:
     void keyPressEvent(QKeyEvent * event);
     void untoggle();
     void lostConnection(QString reason);
-
     void on_actionShowMappedObstacles_triggered(bool checked);
+    void on_actionDisconnect_triggered();
+    void disconnectFromServer();
+    void on_actionLoadMap_triggered();
 
 private:
+    void toggleNavControls(bool value);
+    void toggleMapControls(bool value);
+
     Ui::MainWindow *ui;
     QActionGroup *_mapEditActionGroup;
     ConnectDialog *_connectDialog;
