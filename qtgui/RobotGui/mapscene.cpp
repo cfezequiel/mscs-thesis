@@ -24,8 +24,14 @@ MapScene::MapScene(QObject *parent) :
     QGraphicsScene(parent),
     _mode(ModeView),
     _mappedObstacle(NULL),
-    _map(NULL)
+    _map(NULL),
+    _robot(NULL)
 {
+}
+
+MapScene::~MapScene()
+{
+    clear();
 }
 
 void MapScene::loadMapFromFile(QString filename)
@@ -40,9 +46,6 @@ void MapScene::loadMapFromFile(QString filename)
 
     // Clear map scene
     clear();
-
-    // Clear goal list
-    _goalNames.clear();
 
     // Render new map items
     renderMap(_map);
@@ -161,14 +164,16 @@ void MapScene::renderMap(ArMap *map)
             {
                 // This represents a mapped obstacle
                 // Only get the first one with an "O" as starting letter
-                if (_mappedObstacle == NULL && name[0] == 'O')
+                if (name[0] == 'O')
                 {
-                    qreal width = _robot->width();
-                    qreal height = _robot->length();
-                    _mappedObstacle = new ForbiddenRegion(width, height);
-                    _mappedObstacle->setScale(2);
+                    if (_mappedObstacle != NULL)
+                    {
+                        delete _mappedObstacle;
+                    }
+                    _mappedObstacle = new ForbiddenRegion();
                     QColor color(Qt::black);
                     color.setAlpha(127);
+                    _mappedObstacle->setLineColor(QColor(Qt::black));
                     _mappedObstacle->setFillColor(color);
                     _mappedObstacle->setPos(x1, -y1);
                 }
@@ -182,6 +187,10 @@ void MapScene::renderMap(ArMap *map)
     } // end render map objects
 
     // Store map
+    if (_map != NULL)
+    {
+        delete _map;
+    }
     _map = map;
 
     // Render path (should be invisible initially)
@@ -192,12 +201,8 @@ void MapScene::renderMap(ArMap *map)
 
 void MapScene::_modeAddObstacleRect(QPointF pos)
 {
-    // Set obstacle dimensions (1 pixel:1 mm)
-    qreal width = 460;
-    qreal length = 500;
-
     // Add a forbidden region centered at 'pos'
-    ForbiddenRegion *fr = new ForbiddenRegion(width, length);
+    ForbiddenRegion *fr = new ForbiddenRegion();
     fr->setPos(pos);
     fr->setLineColor(QColor(Qt::cyan));
     addItem(fr);
@@ -259,7 +264,7 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
             for (QList<ForbiddenRegion *>::iterator i = _newObstacles.begin();
                  i != _newObstacles.end(); i++)
             {
-                (*i)->setLineColor(QColor(Qt::gray));
+                (*i)->setLineColor(QColor(Qt::black));
             }
             update();
         }
@@ -358,9 +363,12 @@ void MapScene::clear()
     // Clear all map items on the scene and restart the map
     QGraphicsScene::clear();
 
-#if 0 // FIXME: this causes a segfault for some reason
-    delete[] _map;
-#endif
+    // Clear all goals
+    _goalNames.clear();
+
+    // Delete map
+    delete _map;
+    _map = NULL;
 }
 
 // FIXME: hack

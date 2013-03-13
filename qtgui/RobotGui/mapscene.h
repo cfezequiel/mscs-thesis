@@ -26,6 +26,7 @@ class MapScene : public QGraphicsScene
 public:
     enum Mode { ModeView = 0, ModeAddObstacle, ModeDelete };
     explicit MapScene(QObject *parent = 0);
+    ~MapScene();
     void renderMap(ArMap *map);
     void setMode(Mode mode);
     QList<QString> goalList();

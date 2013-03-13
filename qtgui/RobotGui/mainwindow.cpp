@@ -122,7 +122,7 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     }
 
     // Set as main client
-    // FIXME: support only one robot for now
+    // TODO: support multiple robots
     _client = client;
 
     // If no map exists
@@ -133,16 +133,16 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
         ArMap *map = client->getMapFromServer();
         client->unlock();
         _mapScene->renderMap(map);
+
+        // Fill goals combobox with goal names
+        QStringList goalList(_mapScene->goalList());
+        _goalsComboBox->addItems(goalList);
     }
     else
     {
         // Send map to server
         _mapScene->updateMap();
     }
-
-    // Fill goals combobox with goal names
-    QStringList goalList(_mapScene->goalList());
-    _goalsComboBox->addItems(goalList);
 
     // Set map view
     ui->mapView->fitInView(_mapScene->sceneRect(), Qt::KeepAspectRatio);
@@ -210,6 +210,13 @@ void MainWindow::disconnectFromServer()
 
     // Clear map scene
     _mapScene->clear();
+
+    // Clear goals combobox
+    _goalsComboBox->clear();
+
+    // Disable map/nav controls
+    toggleMapControls(false);
+    toggleNavControls(false);
 }
 
 void MainWindow::on_actionConnect_triggered()
@@ -225,7 +232,7 @@ void MainWindow::on_actionGoto_triggered()
 
     // Request planned path
     _client->lock();
-    _client->request("getPath", 1000);
+    _client->request("getPath", 500);
     _client->unlock();
 }
 
@@ -365,10 +372,6 @@ void MainWindow::lostConnection(QString reason)
     // This also clears the map
     disconnectFromServer();
 
-    // Disable toolbars
-    toggleMapControls(false);
-    toggleNavControls(false);
-
     // Try to reconnect client
     // TODO
 }
@@ -397,10 +400,6 @@ void MainWindow::on_actionDisconnect_triggered()
 {
     // Disconnect client
     disconnectFromServer();
-
-    // Disable controls
-    toggleMapControls(false);
-    toggleNavControls(false);
 }
 
 void MainWindow::toggleNavControls(bool value)
@@ -435,10 +434,6 @@ void MainWindow::on_actionLoadMap_triggered()
     toggleMapControls(true);
 
     // Erase and fill goals combobox with new goal names
-    QStringList goalList(_mapScene->goalList());
-    for (int i = 0; i < _goalsComboBox->count(); i++)
-    {
-        _goalsComboBox->removeItem(i);
-    }
-    _goalsComboBox->addItems(goalList);
+    _goalsComboBox->clear();
+    _goalsComboBox->addItems(_mapScene->goalList());
 }

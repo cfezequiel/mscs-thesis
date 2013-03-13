@@ -130,7 +130,7 @@
     <string>Goto</string>
    </property>
    <property name="toolTip">
-    <string>Go to next goal</string>
+    <string>Go to goal</string>
    </property>
   </action>
   <action name="actionAddObstacleRect">
@@ -222,10 +222,13 @@
   </action>
   <action name="actionLoadMap">
    <property name="enabled">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
     <string>Load ...</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
    </property>
   </action>
  </widget>
