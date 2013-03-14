@@ -20,7 +20,8 @@ SOURCES += main.cpp\
     forbiddenregion.cpp \
     connectdialog.cpp \
     mapitem.cpp \
-    zone.cpp
+    zone.cpp \
+    teleop.cpp
 
 HEADERS  += mainwindow.h\
             mapscene.h\
@@ -32,7 +33,8 @@ HEADERS  += mainwindow.h\
     forbiddenregion.h \
     connectdialog.h \
     mapitem.h \
-    zone.h
+    zone.h \
+    teleop.h
 
 FORMS    += mainwindow.ui \
     connectdialog.ui

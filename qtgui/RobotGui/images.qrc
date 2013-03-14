@@ -6,5 +6,6 @@
         <file>images/home.png</file>
         <file>images/delete.png</file>
         <file>images/gohome.png</file>
+        <file>images/teleop.png</file>
     </qresource>
 </RCC>

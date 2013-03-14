@@ -7,6 +7,7 @@
 #include <list>
 #include <string>
 
+#include <QCoreApplication>
 #include <QCursor>
 #include <QPoint>
 #include <QSize>
@@ -278,11 +279,8 @@ void MapScene::mousePressEvent(QGraphicsSceneMouseEvent *mouseEvent)
 
 void MapScene::keyPressEvent(QKeyEvent *keyEvent)
 {
-    // If spacebar pressed, stop the robot
-    if (keyEvent->key() == Qt::Key_Space)
-    {
-        stop();
-    }
+    // Forward keyboard events to the parent object (i.e. mainwindow)
+    QCoreApplication::sendEvent(parent(), keyEvent);
 }
 
 // FIXME: this should connect to RobotObject not the scene

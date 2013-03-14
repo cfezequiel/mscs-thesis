@@ -86,6 +86,7 @@
    <addaction name="actionGoto"/>
    <addaction name="actionGotoHome"/>
    <addaction name="actionResetToHome"/>
+   <addaction name="actionTeleop"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="mapEditToolBar">
@@ -229,6 +230,21 @@
    </property>
    <property name="visible">
     <bool>false</bool>
+   </property>
+  </action>
+  <action name="actionTeleop">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="images.qrc">
+     <normaloff>:/images/teleop.png</normaloff>:/images/teleop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Teleop</string>
+   </property>
+   <property name="toolTip">
+    <string>Teleoperate robot</string>
    </property>
   </action>
  </widget>

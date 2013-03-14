@@ -32,6 +32,7 @@ public:
     void goToGoal(const char *goalName);
     void goHome();
     void resume();
+    void ratioDrive(double transRatio, double rotRatio, double scale);
     string getSessionName();
 
 protected:

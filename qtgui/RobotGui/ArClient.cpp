@@ -394,3 +394,23 @@ string ArClient::getSessionName()
 {
     return _sessionName;
 }
+
+// Manual teleop
+void ArClient::ratioDrive(double transRatio, double rotRatio, double scale)
+{
+    if (!dataExists("ratioDrive"))
+    {
+        return;
+    }
+
+    cout << "ArClient::ratioDrive(" << transRatio << "," << rotRatio
+         << "," << scale << ")" << endl;
+
+    ArNetPacket packet;
+    packet.doubleToBuf(transRatio);
+    packet.doubleToBuf(rotRatio);
+    packet.doubleToBuf(scale);
+
+    requestOnce("ratioDrive", &packet);
+}
+

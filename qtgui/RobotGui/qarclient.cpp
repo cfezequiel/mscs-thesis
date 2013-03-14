@@ -84,3 +84,8 @@ void QArClient::disconnect()
     ArClient::disconnect();
     QObject::disconnect();
 }
+
+void QArClient::ratioDrive(double transRatio, double rotRatio, double scale)
+{
+    ArClient::ratioDrive(transRatio, rotRatio, scale);
+}

@@ -7,6 +7,7 @@
 #include <QObject>
 #include <QFile>
 
+#include "teleop.h"
 #include "mapscene.h"
 #include "qarclient.h"
 #include "connectdialog.h"
@@ -25,6 +26,7 @@ public:
 
 protected:
     void closeEvent(QCloseEvent * event);
+    void keyPressEvent(QKeyEvent * event);
 
 private slots:
     void connectToServer(QString host, int port, QString username, QString password);
@@ -39,13 +41,13 @@ private slots:
     void on_actionDeleteMapObject_triggered(bool checked);
     void logData(ArRobotInfo pose, QPointF obstaclePos);
     void updateStatus(ArRobotInfo pose);
-    void keyPressEvent(QKeyEvent * event);
     void untoggle();
     void lostConnection(QString reason);
     void on_actionShowMappedObstacles_triggered(bool checked);
     void on_actionDisconnect_triggered();
     void disconnectFromServer();
     void on_actionLoadMap_triggered();
+    void on_actionTeleop_triggered(bool checked);
 
 private:
     void toggleNavControls(bool value);
@@ -59,6 +61,8 @@ private:
     QFile *_dataFile;
     QString _user;
     QComboBox *_goalsComboBox;
+    QTimer _teleopTimer;
+    Teleop _teleop;
 };
 
 #endif // MAINWINDOW_H

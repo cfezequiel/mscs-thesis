@@ -37,6 +37,7 @@ protected:
 public slots:
     void mapChanged(ArMap *map);
     void stop();
+    void ratioDrive(double transRatio, double rotRatio, double scale);
 
 private:
     bool _disconnected;

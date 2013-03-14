@@ -55,7 +55,6 @@ MainWindow::MainWindow(QWidget *parent) :
     // after obstacle was placed successfully
     // FIXME: this is a hack
     QObject::connect(_mapScene, SIGNAL(untoggle()), this, SLOT(untoggle()));
-
 }
 
 MainWindow::~MainWindow()
@@ -106,9 +105,15 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     QObject::connect((QObject *) _mapScene, SIGNAL(stop()),
                      client, SLOT(stop()));
 
-    // Connect signal-slot for handling client disconnection
+    // -- Client to main window --
     QObject::connect(client, SIGNAL(disconnected(QString)),
                       this, SLOT(lostConnection(QString)));
+
+    // -- Teleop to client --
+    QObject::connect((QObject *) &_teleop,
+                     SIGNAL(sendInputs(double, double, double)),
+                     client,
+                     SLOT(ratioDrive(double, double, double)));
 
     if (!client->connect(host, port, username, password))
     {
@@ -346,6 +351,30 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
         {
             _client->stop();
         }
+        return;
+    }
+
+    // Check teleop
+    if (ui->actionTeleop->isChecked())
+    {
+        switch (event->key())
+        {
+        case Qt::Key_W: case Qt::Key_Up: // forward
+            _teleop.setTransRatio(100);
+            break;
+        case Qt::Key_S: case Qt::Key_Down: // reverse
+            _teleop.setTransRatio(-100);
+            break;
+        case Qt::Key_A: case Qt::Key_Left: // left turn
+            _teleop.setRotRatio(100);
+            break;
+        case Qt::Key_D: case Qt::Key_Right: // right turn
+            _teleop.setRotRatio(-100);
+            break;
+        default:
+            // do nothing
+            break;
+        }
     }
 }
 
@@ -436,4 +465,16 @@ void MainWindow::on_actionLoadMap_triggered()
     // Erase and fill goals combobox with new goal names
     _goalsComboBox->clear();
     _goalsComboBox->addItems(_mapScene->goalList());
+}
+
+void MainWindow::on_actionTeleop_triggered(bool checked)
+{
+    if (checked)
+    {
+        _teleop.setEnabled(true);
+    }
+    else
+    {
+        _teleop.setEnabled(false);
+    }
 }
