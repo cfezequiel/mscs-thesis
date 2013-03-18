@@ -2,6 +2,7 @@
 #include <iostream>
 #include <sstream>
 
+#include <QDateTime>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QTextStream>
@@ -20,7 +21,8 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    _client(NULL)
+    _client(NULL),
+    _dataFile(NULL)
 {
     ui->setupUi(this);
 
@@ -81,14 +83,20 @@ void MainWindow::mapEditActionGroup_triggered(QAction *action)
 
 void MainWindow::connectToServer(QString host, int port, QString username, QString password)
 {
-    // Create session name
-    QDateTime dateTime = QDateTime::currentDateTime();
-    QString session;
-    QTextStream ts(&session);
-    ts << username << '_' << dateTime.toString(QString("yyyy_MM_dd_hh:mm:ss"));
-
     // Create client
-    QArClient *client = new QArClient(session);
+    QArClient *client = new QArClient(username);
+
+    // Connect client to server
+    if (!client->connect(host, port, username, password))
+    {
+        QString msg;
+        QTextStream ts(&msg);
+        ts << "Error: Unable to connect to " << host;
+        QMessageBox msgBox;
+        msgBox.setText(msg);
+        msgBox.exec();
+        return;
+    }
 
     // Connect signals and slots
     // -- Client to MapScene --
@@ -114,17 +122,6 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
                      SIGNAL(sendInputs(double, double, double)),
                      client,
                      SLOT(ratioDrive(double, double, double)));
-
-    if (!client->connect(host, port, username, password))
-    {
-        QString msg;
-        QTextStream ts(&msg);
-        ts << "Error: Unable to connect to " << host;
-        QMessageBox msgBox;
-        msgBox.setText(msg);
-        msgBox.exec();
-        return;
-    }
 
     // Set as main client
     // TODO: support multiple robots
@@ -165,29 +162,11 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     toggleMapControls(true);
     toggleNavControls(true);
 
-    // Configure data logging
-    QString dataFilename;
-    QTextStream ts2(&dataFilename);
-    ts2 << client->getSessionName().c_str() << ".csv";
-    _dataFile = new QFile(dataFilename);
-    QObject::connect(_mapScene, SIGNAL(sendData(ArRobotInfo, QPointF)),
-                     this, SLOT(logData(ArRobotInfo, QPointF)));
-    if (!_dataFile->exists())
-    {
-        if (_dataFile->open(QIODevice::WriteOnly | QIODevice::Text))
-        {
-            ForbiddenRegion *fr = _mapScene->getMappedObstacle();
-            QTextStream ts(_dataFile);
-            QPointF center = fr->scenePos();
-            ts << "MappedObstacle(x y)," << center.x() << ',' << center.y() << '\n'
-               << "Username,DateTime,RobotStatus,RobotMode,RobotXPos,RobotYpos,"
-               << "RobotForwardVel,RobotRotationVel,ObstacleXPos,ObstacleYPos"
-               << '\n'
-                  ;
-        }
-        _dataFile->close();
-    }
-
+    // Start logging
+    QTextStream ts2(&_sessionName);
+    ts2 << username << '_' << _mapScene->getMapName() << '_'
+        << QDateTime::currentDateTime().toString(QString("yyyy_MM_dd_hh:mm:ss"));
+    startDataLogging(_sessionName);
 }
 
 void MainWindow::disconnectFromServer()
@@ -197,7 +176,7 @@ void MainWindow::disconnectFromServer()
     {
         stringstream ss;
         string filename;
-        ss << _client->getSessionName() << ".map";
+        ss << _sessionName.toStdString() << ".map";
         ss >> filename;
         _mapScene->getMap()->writeFile(filename.c_str());
     }
@@ -210,7 +189,13 @@ void MainWindow::disconnectFromServer()
             _client->stop();
             _client->disconnect();
         }
+#if 0
+        // FIXME: this causes a segfault for some reason
+        // However, this is necessary to prevent a memory leak
+        // What to do?
         delete _client;
+#endif
+        _client = NULL;
     }
 
     // Clear map scene
@@ -339,7 +324,7 @@ void MainWindow::on_actionExit_triggered()
 
 void MainWindow::closeEvent(QCloseEvent * event)
 {
-    disconnectFromServer();
+   disconnectFromServer();
 }
 
 void MainWindow::keyPressEvent(QKeyEvent * event)
@@ -452,6 +437,14 @@ void MainWindow::on_actionLoadMap_triggered()
     filename = QFileDialog::getOpenFileName(this,
                                             tr("Load a map"), "./",
                                             tr("Map Files (*.map)"));
+    if (filename == "")
+    {
+        return;
+    }
+
+    // Set session name
+    QString username = SessionDialog::getSessionName();
+    _user = username;
 
     // Load the map from file
     _mapScene->loadMapFromFile(filename);
@@ -465,6 +458,11 @@ void MainWindow::on_actionLoadMap_triggered()
     // Erase and fill goals combobox with new goal names
     _goalsComboBox->clear();
     _goalsComboBox->addItems(_mapScene->goalList());
+
+    // Start data logging
+    QTextStream ts(&_sessionName);
+    ts << username << '_' << _mapScene->getMapName() << '_' << QDateTime::currentDateTime().toString(QString("yyyy_MM_dd_hh:mm:ss"));
+    startDataLogging(_sessionName);
 }
 
 void MainWindow::on_actionTeleop_triggered(bool checked)
@@ -478,3 +476,44 @@ void MainWindow::on_actionTeleop_triggered(bool checked)
         _teleop.setEnabled(false);
     }
 }
+
+void MainWindow::startDataLogging(QString sessionName)
+{
+    assert(_mapScene != NULL);
+
+    QDateTime dateTime = QDateTime::currentDateTime();
+    QString filename;
+    QTextStream ts(&filename);
+    ts << sessionName << ".csv";
+
+    // Delete old datafile
+    if (_dataFile != NULL)
+    {
+        delete _dataFile;
+    }
+
+    // Configure data logging
+    _dataFile = new QFile(filename);
+    QObject::connect(_mapScene, SIGNAL(sendData(ArRobotInfo, QPointF)),
+                     this, SLOT(logData(ArRobotInfo, QPointF)));
+    if (!_dataFile->exists())
+    {
+        if (_dataFile->open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            QTextStream ts(_dataFile);
+            ForbiddenRegion *fr = _mapScene->getMappedObstacle();
+            if (fr != NULL)
+            {
+                QPointF center = fr->scenePos();
+                ts << "MappedObstacle(x y)," << center.x() << ',' << center.y()
+                   << '\n';
+            }
+            ts << "Username,DateTime,RobotStatus,RobotMode,RobotXPos,RobotYpos,"
+               << "RobotForwardVel,RobotRotationVel,ObstacleXPos,ObstacleYPos"
+               << '\n'
+                  ;
+        }
+        _dataFile->close();
+    }
+}
+

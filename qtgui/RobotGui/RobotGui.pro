@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     connectdialog.cpp \
     mapitem.cpp \
     zone.cpp \
-    teleop.cpp
+    teleop.cpp \
+    sessiondialog.cpp
 
 HEADERS  += mainwindow.h\
             mapscene.h\
@@ -34,10 +35,12 @@ HEADERS  += mainwindow.h\
     connectdialog.h \
     mapitem.h \
     zone.h \
-    teleop.h
+    teleop.h \
+    sessiondialog.h
 
 FORMS    += mainwindow.ui \
-    connectdialog.ui
+    connectdialog.ui \
+    sessiondialog.ui
 
 RESOURCES += \
     images.qrc

@@ -7,6 +7,7 @@
 #include <list>
 #include <string>
 
+#include <QTextStream>
 #include <QCoreApplication>
 #include <QCursor>
 #include <QPoint>
@@ -37,16 +38,11 @@ MapScene::~MapScene()
 
 void MapScene::loadMapFromFile(QString filename)
 {
-    // Read map file
-    if (_map != NULL)
-    {
-        delete _map;
-    }
-    _map = new ArMap();
-    _map->readFile(filename.toLocal8Bit().data());
-
     // Clear map scene
     clear();
+
+    _map = new ArMap();
+    _map->readFile(filename.toLocal8Bit().data());
 
     // Render new map items
     renderMap(_map);
@@ -57,6 +53,8 @@ void MapScene::loadMapFromFile(QString filename)
 
 void MapScene::renderMap(ArMap *map)
 {
+    assert(map != NULL);
+
     double x1,y1,x2,y2,th;
     double pad = 100.0;
 
@@ -85,10 +83,12 @@ void MapScene::renderMap(ArMap *map)
         addLine(x1, -y1, x2, -y2);
     }
 
+#if 0 // FIXME: Remove
     // Render robot
     _robot = new RobotObject;
     _robot->setZValue(2);
     addItem(_robot);
+#endif
 
     // Render map objects
     Zone *obj;
@@ -177,7 +177,14 @@ void MapScene::renderMap(ArMap *map)
                     _mappedObstacle->setLineColor(QColor(Qt::black));
                     _mappedObstacle->setFillColor(color);
                     _mappedObstacle->setPos(x1, -y1);
+                    _mappedObstacle->setZValue(3);
                 }
+            }
+            else if (type == "Dock")
+            {
+                // Get the map name from this one
+                // FIXME: hack
+                _mapName = QString((*i)->getName());
             }
             else
             {
@@ -188,7 +195,7 @@ void MapScene::renderMap(ArMap *map)
     } // end render map objects
 
     // Store map
-    if (_map != NULL)
+    if (_map != NULL && map != _map)
     {
         delete _map;
     }
@@ -202,6 +209,8 @@ void MapScene::renderMap(ArMap *map)
 
 void MapScene::_modeAddObstacleRect(QPointF pos)
 {
+    assert(_map != NULL);
+
     // Add a forbidden region centered at 'pos'
     ForbiddenRegion *fr = new ForbiddenRegion();
     fr->setPos(pos);
@@ -224,7 +233,22 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
     _map->setMapObjects(mapObjects);
 
     // Log data
-    sendData(_robot->getPose(), pos);
+    // FIXME: hack
+    if (_robot != NULL)
+    {
+        sendData(_robot->getPose(), pos);
+    }
+    else
+    {
+        ArRobotInfo pose;
+        pose.status[0] = '\0';
+        pose.mode[0] = '\0';
+        pose.xpos = 0;
+        pose.ypos = 0;
+        pose.forwardVel = 0;
+        pose.rotationVel = 0;
+        sendData(pose, pos);
+    }
 
     // Add obstacle to list of new obstacles
     _newObstacles.push_back(fr);
@@ -286,7 +310,13 @@ void MapScene::keyPressEvent(QKeyEvent *keyEvent)
 // FIXME: this should connect to RobotObject not the scene
 void MapScene::updateRobotPose(ArRobotInfo robotInfo)
 {
-    assert(_robot != NULL);
+    // Render robot
+    if (_robot == NULL)
+    {
+        _robot = new RobotObject;
+        _robot->setZValue(2);
+        addItem(_robot);
+    }
 
     // Redraw the robot on the map based on robot telemetry info
     qreal x = robotInfo.xpos;
@@ -365,8 +395,11 @@ void MapScene::clear()
     _goalNames.clear();
 
     // Delete map
-    delete _map;
-    _map = NULL;
+    if (_map != NULL)
+    {
+        delete _map;
+        _map = NULL;
+    }
 }
 
 // FIXME: hack
@@ -392,4 +425,10 @@ void MapScene::updateMap()
         emit mapChanged(_map);
     }
 }
+
+QString MapScene::getMapName()
+{
+    return  _mapName;
+}
+
 

@@ -11,6 +11,7 @@
 #include "mapscene.h"
 #include "qarclient.h"
 #include "connectdialog.h"
+#include "sessiondialog.h"
 
 namespace Ui {
 class MainWindow;
@@ -48,6 +49,7 @@ private slots:
     void disconnectFromServer();
     void on_actionLoadMap_triggered();
     void on_actionTeleop_triggered(bool checked);
+    void startDataLogging(QString filename);
 
 private:
     void toggleNavControls(bool value);
@@ -63,6 +65,7 @@ private:
     QComboBox *_goalsComboBox;
     QTimer _teleopTimer;
     Teleop _teleop;
+    QString _sessionName;
 };
 
 #endif // MAINWINDOW_H

@@ -35,6 +35,7 @@ public:
     ArMap * getMap();
     bool hasMap();
     void updateMap();
+    QString getMapName();
     void loadMapFromFile(QString filename);
     
 signals:
@@ -61,6 +62,7 @@ private:
     RobotObject *_robot;
     PathObject *_path;
     ArMap *_map;
+    QString _mapName;
     QList<QString> _goalNames;
     ForbiddenRegion *_mappedObstacle;
     QList<ForbiddenRegion *> _newObstacles;
