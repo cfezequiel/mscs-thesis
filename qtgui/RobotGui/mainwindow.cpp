@@ -22,7 +22,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
     _client(NULL),
-    _dataFile(NULL)
+    _dataFile(NULL),
+    _user("")
 {
     ui->setupUi(this);
 
@@ -163,6 +164,7 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
     toggleNavControls(true);
 
     // Start logging
+    _sessionName.clear();
     QTextStream ts2(&_sessionName);
     ts2 << username << '_' << _mapScene->getMapName() << '_'
         << QDateTime::currentDateTime().toString(QString("yyyy_MM_dd_hh:mm:ss"));
@@ -172,14 +174,7 @@ void MainWindow::connectToServer(QString host, int port, QString username, QStri
 void MainWindow::disconnectFromServer()
 {
     // Save map if it was loaded
-    if (_mapScene->hasMap())
-    {
-        stringstream ss;
-        string filename;
-        ss << _sessionName.toStdString() << ".map";
-        ss >> filename;
-        _mapScene->getMap()->writeFile(filename.c_str());
-    }
+    _mapScene->saveMap(_sessionName.append(".map"));
 
     // Disconnect client
     if (_client != NULL)
@@ -432,6 +427,12 @@ void MainWindow::toggleMapControls(bool value)
 
 void MainWindow::on_actionLoadMap_triggered()
 {
+    // Save current map if it exists
+    _mapScene->saveMap(_sessionName.append(".map"));
+
+    // Clear the old map scene
+    _mapScene->clear();
+
     // Open file dialog box so user can select map file
     QString filename;
     filename = QFileDialog::getOpenFileName(this,
@@ -443,8 +444,15 @@ void MainWindow::on_actionLoadMap_triggered()
     }
 
     // Set session name
-    QString username = SessionDialog::getSessionName();
-    _user = username;
+#if 0
+    if (_user == "")
+    {
+        QString username = SessionDialog::getSessionName();
+        _user = username;
+    }
+#else
+    _user = SessionDialog::getSessionName();
+#endif
 
     // Load the map from file
     _mapScene->loadMapFromFile(filename);
@@ -460,8 +468,9 @@ void MainWindow::on_actionLoadMap_triggered()
     _goalsComboBox->addItems(_mapScene->goalList());
 
     // Start data logging
+    _sessionName.clear();
     QTextStream ts(&_sessionName);
-    ts << username << '_' << _mapScene->getMapName() << '_' << QDateTime::currentDateTime().toString(QString("yyyy_MM_dd_hh:mm:ss"));
+    ts << _user << '_' << _mapScene->getMapName() << '_' << QDateTime::currentDateTime().toString(QString("yyyy_MM_dd_hh:mm:ss"));
     startDataLogging(_sessionName);
 }
 

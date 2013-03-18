@@ -394,6 +394,16 @@ void MapScene::clear()
     // Clear all goals
     _goalNames.clear();
 
+    // Clear mapped obstacle
+    if (_mappedObstacle != NULL)
+    {
+        delete _mappedObstacle;
+        _mappedObstacle = NULL;
+    }
+
+    // Clear new obstacles
+    _newObstacles.clear();
+
     // Delete map
     if (_map != NULL)
     {
@@ -432,3 +442,10 @@ QString MapScene::getMapName()
 }
 
 
+void MapScene::saveMap(QString filename)
+{
+    if (hasMap())
+    {
+        getMap()->writeFile(filename.toLocal8Bit().data());
+    }
+}

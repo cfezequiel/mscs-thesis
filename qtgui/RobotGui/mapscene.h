@@ -37,7 +37,8 @@ public:
     void updateMap();
     QString getMapName();
     void loadMapFromFile(QString filename);
-    
+    void saveMap(QString filename);
+
 signals:
     void mapChanged(ArMap *map);
     void sendData(ArRobotInfo pose, QPointF obstaclePos);
