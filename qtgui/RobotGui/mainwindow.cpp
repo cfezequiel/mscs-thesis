@@ -346,10 +346,10 @@ void MainWindow::keyPressEvent(QKeyEvent * event)
             _teleop.setTransRatio(-100);
             break;
         case Qt::Key_A: case Qt::Key_Left: // left turn
-            _teleop.setRotRatio(100);
+            _teleop.setRotRatio(50);
             break;
         case Qt::Key_D: case Qt::Key_Right: // right turn
-            _teleop.setRotRatio(-100);
+            _teleop.setRotRatio(-50);
             break;
         default:
             // do nothing
