@@ -232,6 +232,9 @@ void MapScene::_modeAddObstacleRect(QPointF pos)
     mapObjects->push_back(frObject);
     _map->setMapObjects(mapObjects);
 
+    // Fix y-coordinate
+    pos.setY(-pos.y());
+
     // Log data
     // FIXME: hack
     if (_robot != NULL)
