@@ -35,7 +35,7 @@ with open(testFile, 'rb') as csvFile:
     reader = csv.reader(csvFile, delimiter=',')
     # Generate header
     row = reader.next()
-    row = row[:keyIndex] + regHeader + row[keyIndex + skip:]
+    row = row[:keyIndex] + ['userID'] + regHeader + row[keyIndex + skip:]
     row[0] = 'Test (%s)' % str(tests).replace(',',';')
     row[1] = 'Map (%s)' % str(maps).replace(',',';')
     regTestData.append(row)
@@ -49,16 +49,18 @@ with open(testFile, 'rb') as csvFile:
         #    print 'No matching reference for %s' % key
         #    continue
         found = False
+        userID = 0
         for regKey in regData.keys():
             if regKey.find(key) >= 0:
                 found = True
                 break
+            userID += 1;
         if not found:
             print 'Warning: could not find matching entry for %s' % key
             continue
 
         regRow = regData[regKey]
-        row = row[:keyIndex] + regRow + row[keyIndex + skip:]
+        row = row[:keyIndex] + [userID] + regRow + row[keyIndex + skip:]
         regTestData.append(row)
 
 # Write merged data to file
