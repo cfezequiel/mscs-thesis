@@ -27,7 +27,10 @@ for root, dirs, files in os.walk(topDir):
         csvData = []
         with open(filePath, 'rb') as csvFile:
             reader = csv.reader(csvFile, delimiter=',')
-            csvData.append(reader.next())
+            row = reader.next()
+            y = float(row[2])
+            row[2] = str(abs(y))
+            csvData.append(row)
             csvData.append(reader.next())
             for row in reader:
                 y = float(row[-1])

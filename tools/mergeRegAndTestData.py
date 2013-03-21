@@ -30,6 +30,7 @@ with open(regFile, 'rb') as csvFile:
 keyIndex = 2
 skip = 4
 regTestData = []
+keyMap = {}
 with open(testFile, 'rb') as csvFile:
     reader = csv.reader(csvFile, delimiter=',')
     # Generate header
@@ -51,6 +52,7 @@ with open(testFile, 'rb') as csvFile:
         userID = 0
         for regKey in regData.keys():
             if regKey.find(key) >= 0:
+                keyMap[userID] = key
                 found = True
                 break
             userID += 1;
@@ -67,6 +69,14 @@ outFile = 'merged_data.csv'
 with open(outFile, 'wb') as csvFile:
     writer = csv.writer(csvFile, delimiter=',')
     for row in regTestData:
+        writer.writerow(row)
+
+# Write userID to user mapping
+outFile = 'userIDs.csv'
+with open(outFile, 'wb') as csvFile:
+    writer = csv.writer(csvFile, delimiter=',')
+    for item in keyMap:
+        row = [str(item), keyMap[item]]
         writer.writerow(row)
 
 
