@@ -13,7 +13,8 @@ tests = {'image':1,'video':0}
 
 if len(sys.argv) < 3:
     print 'Usage: %s <test csv file> <registration csv file>'
-    exit(-1) 
+    exit(-1)
+
 (regFile, testFile) = sys.argv[1:3]
 
 # Read registration file
@@ -24,6 +25,8 @@ with open(regFile, 'rb') as csvFile:
     regHeader = reader.next()[1:]
     for row in reader:
         key = row[0]
+        if key == "Jeff Vickers":
+            key = "jeffv"
         regData[key] = row[1:]
 
 # Read and process test file
@@ -34,7 +37,7 @@ with open(testFile, 'rb') as csvFile:
     reader = csv.reader(csvFile, delimiter=',')
     # Generate header
     row = reader.next()
-    row = row[:keyIndex] + ['userID'] + regHeader + row[keyIndex + skip:]
+    row = row[:keyIndex] + regHeader + row[keyIndex + skip:]
     row[0] = 'Test (%s)' % str(tests).replace(',',';')
     row[1] = 'Map (%s)' % str(maps).replace(',',';')
     regTestData.append(row)
@@ -48,18 +51,16 @@ with open(testFile, 'rb') as csvFile:
         #    print 'No matching reference for %s' % key
         #    continue
         found = False
-        userID = 0
         for regKey in regData.keys():
             if regKey.find(key) >= 0:
                 found = True
                 break
-            userID += 1;
         if not found:
             print 'Warning: could not find matching entry for %s' % key
             continue
 
         regRow = regData[regKey]
-        row = row[:keyIndex] + [userID] + regRow + row[keyIndex + skip:]
+        row = row[:keyIndex] + regRow + row[keyIndex + skip:]
         regTestData.append(row)
 
 # Write merged data to file
